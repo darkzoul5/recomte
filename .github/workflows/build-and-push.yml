@@ -5,6 +5,11 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag for stable release (e.g., v1.0.0)'
+        required: true
+        type: string
 
 jobs:
   build-and-push:
@@ -38,7 +43,8 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=sha,prefix=dev-
             type=raw,value=dev
-            type=raw,value=stable,enable={{is_default_branch}}
+            type=raw,value=${{ inputs.tag }},enable=${{ github.event_name == 'workflow_dispatch' }}
+            type=raw,value=stable,enable=${{ github.event_name == 'workflow_dispatch' }}
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image
