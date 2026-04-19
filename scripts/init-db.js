@@ -3,7 +3,7 @@ import { initDb, closeDb } from '../db/db.js';
 const init = async () => {
   try {
     console.log('🔧 Initializing database...');
-    initDb();
+    await initDb();
     console.log('✓ Database schema created successfully');
     closeDb();
     process.exit(0);

@@ -1,4 +1,5 @@
-import Database from 'better-sqlite3';
+import initSqlJs from 'sql.js';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createSchema } from './schema.js';
@@ -7,12 +8,20 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../data/app.db');
 
 let db = null;
+let SQL = null;
 
-export const initDb = () => {
+export const initDb = async () => {
   try {
-    db = new Database(DB_PATH);
-    db.pragma('journal_mode = WAL');
-    db.pragma('foreign_keys = ON');
+    // Initialize sql.js
+    SQL = await initSqlJs();
+    
+    // Try to load existing database or create new one
+    if (fs.existsSync(DB_PATH)) {
+      const data = fs.readFileSync(DB_PATH);
+      db = new SQL.Database(data);
+    } else {
+      db = new SQL.Database();
+    }
     
     // Create schema
     const schema = createSchema();
@@ -22,15 +31,29 @@ export const initDb = () => {
       .filter(s => s.length > 0);
     
     statements.forEach(statement => {
-      db.exec(statement);
+      db.run(statement);
     });
     
+    saveDb();
     console.log(`✓ Database initialized at ${DB_PATH}`);
     return db;
   } catch (error) {
     console.error('❌ Database initialization failed:', error);
     throw error;
   }
+};
+
+const saveDb = () => {
+  if (!db) return;
+  const data = db.export();
+  const buffer = Buffer.from(data);
+  
+  const dir = path.dirname(DB_PATH);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  
+  fs.writeFileSync(DB_PATH, buffer);
 };
 
 export const getDb = () => {
@@ -42,51 +65,81 @@ export const getDb = () => {
 
 export const closeDb = () => {
   if (db) {
+    saveDb();
     db.close();
     db = null;
   }
 };
 
+// Helper function to run queries
+const query = (sql, params = []) => {
+  try {
+    const stmt = db.prepare(sql);
+    stmt.bind(params);
+    const results = [];
+    while (stmt.step()) {
+      results.push(stmt.getAsObject());
+    }
+    stmt.free();
+    return results;
+  } catch (error) {
+    console.error('Query error:', error, 'SQL:', sql, 'Params:', params);
+    return [];
+  }
+};
+
+// Helper function to run single insert/update/delete
+const run = (sql, params = []) => {
+  try {
+    db.run(sql, params);
+    saveDb();
+    return { changes: db.getRowsModified() };
+  } catch (error) {
+    console.error('Run error:', error, 'SQL:', sql, 'Params:', params);
+    throw error;
+  }
+};
+
+
 // Caravans queries
 export const caravans = {
   getAll: (filters = {}) => {
-    let query = 'SELECT * FROM caravans WHERE 1=1';
+    let sql = 'SELECT * FROM caravans WHERE 1=1';
     const params = [];
     
     if (filters.status) {
-      query += ' AND status = ?';
+      sql += ' AND status = ?';
       params.push(filters.status);
     }
     if (filters.featured !== undefined) {
-      query += ' AND featured = ?';
+      sql += ' AND featured = ?';
       params.push(filters.featured ? 1 : 0);
     }
     if (filters.winter_rated !== undefined) {
-      query += ' AND winter_rated = ?';
+      sql += ' AND winter_rated = ?';
       params.push(filters.winter_rated ? 1 : 0);
     }
     
-    query += ' ORDER BY created_at DESC';
+    sql += ' ORDER BY created_at DESC';
     
-    const stmt = db.prepare(query);
-    return stmt.all(...params);
+    return query(sql, params);
   },
 
   getById: (id) => {
-    const stmt = db.prepare('SELECT * FROM caravans WHERE id = ?');
-    return stmt.get(id);
+    const results = query('SELECT * FROM caravans WHERE id = ?', [id]);
+    return results[0] || null;
   },
 
   getBySlug: (slug) => {
-    const stmt = db.prepare('SELECT * FROM caravans WHERE slug = ?');
-    return stmt.get(slug);
+    const results = query('SELECT * FROM caravans WHERE slug = ?', [slug]);
+    return results[0] || null;
   },
 
   getFeatured: (limit = 6) => {
-    const stmt = db.prepare(
-      'SELECT * FROM caravans WHERE featured = 1 AND status = "available" ORDER BY created_at DESC LIMIT ?'
+    return query(
+      'SELECT * FROM caravans WHERE featured = 1 AND status = "available" ORDER BY created_at DESC LIMIT ?',
+      [limit]
     );
-    return stmt.all(limit);
   },
 
   create: (data) => {
@@ -139,7 +192,7 @@ export const caravans = {
       features
     } = data;
 
-    const stmt = db.prepare(`
+    const sql = `
       INSERT INTO caravans (
         title, slug, description, year, price, status, featured,
         beds_count, has_shower, has_toilet, toilet_type,
@@ -161,9 +214,9 @@ export const caravans = {
         ?, ?, ?, ?, ?, ?, ?,
         ?
       )
-    `);
+    `;
 
-    const result = stmt.run(
+    const params = [
       title, slug, description, year, price, status, featured ? 1 : 0,
       beds_count, has_shower ? 1 : 0, has_toilet ? 1 : 0, toilet_type,
       fresh_water_tank_l, grey_water_tank_l, has_hot_water ? 1 : 0, water_heater_type, boiler_volume_l,
@@ -173,9 +226,15 @@ export const caravans = {
       battery_type, battery_capacity_ah, has_solar_panels ? 1 : 0, solar_wattage, inverter_wattage, has_shore_power ? 1 : 0, has_12v_system ? 1 : 0,
       length_mm, width_mm, height_mm, interior_height_mm, weight_empty_kg, max_weight_kg, axle_type,
       typeof features === 'string' ? features : JSON.stringify(features || [])
-    );
+    ];
 
-    return { id: result.lastInsertRowid, ...data };
+    run(sql, params);
+    
+    // Get the last inserted ID
+    const result = query('SELECT last_insert_rowid() as id');
+    const id = result[0]?.id || null;
+    
+    return { id, ...data };
   },
 
   update: (id, data) => {
@@ -200,40 +259,44 @@ export const caravans = {
     updates.push('updated_at = CURRENT_TIMESTAMP');
     values.push(id);
 
-    const stmt = db.prepare(`UPDATE caravans SET ${updates.join(', ')} WHERE id = ?`);
-    stmt.run(...values);
+    const sql = `UPDATE caravans SET ${updates.join(', ')} WHERE id = ?`;
+    run(sql, values);
 
     return caravans.getById(id);
   },
 
   delete: (id) => {
-    const stmt = db.prepare('DELETE FROM caravans WHERE id = ?');
-    stmt.run(id);
+    run('DELETE FROM caravans WHERE id = ?', [id]);
   }
 };
+
 
 // Images queries
 export const images = {
   getByCaravanId: (caravanId) => {
-    const stmt = db.prepare('SELECT * FROM images WHERE caravan_id = ? ORDER BY sort_order ASC');
-    return stmt.all(caravanId);
+    return query(
+      'SELECT * FROM images WHERE caravan_id = ? ORDER BY sort_order ASC',
+      [caravanId]
+    );
   },
 
   create: (caravanId, url, altText = '', sortOrder = 0) => {
-    const stmt = db.prepare(
-      'INSERT INTO images (caravan_id, url, alt_text, sort_order) VALUES (?, ?, ?, ?)'
+    run(
+      'INSERT INTO images (caravan_id, url, alt_text, sort_order) VALUES (?, ?, ?, ?)',
+      [caravanId, url, altText, sortOrder]
     );
-    const result = stmt.run(caravanId, url, altText, sortOrder);
-    return { id: result.lastInsertRowid, caravan_id: caravanId, url, alt_text: altText, sort_order: sortOrder };
+    
+    const result = query('SELECT last_insert_rowid() as id');
+    const id = result[0]?.id || null;
+    
+    return { id, caravan_id: caravanId, url, alt_text: altText, sort_order: sortOrder };
   },
 
   delete: (imageId) => {
-    const stmt = db.prepare('DELETE FROM images WHERE id = ?');
-    stmt.run(imageId);
+    run('DELETE FROM images WHERE id = ?', [imageId]);
   },
 
   reorder: (imageId, sortOrder) => {
-    const stmt = db.prepare('UPDATE images SET sort_order = ? WHERE id = ?');
-    stmt.run(sortOrder, imageId);
+    run('UPDATE images SET sort_order = ? WHERE id = ?', [sortOrder, imageId]);
   }
 };

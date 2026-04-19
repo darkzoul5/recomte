@@ -3,14 +3,14 @@ import { initDb, closeDb, caravans } from '../db/db.js';
 const seed = async () => {
   try {
     console.log('🌱 Seeding database with sample data...');
-    initDb();
+    await initDb();
 
     // Sample caravans
     const sampleCaravans = [
       {
-        title: 'Polar Travel Pro',
-        slug: 'polar-travel-pro',
-        description: 'High-end European caravan with premium amenities. Perfect for year-round travel.',
+        title: 'Полярный Путешественник Pro',
+        slug: 'polyarnyy-puteshestvennik-pro',
+        description: 'Премиум европейский кемпер с высочайшим уровнем комфорта и современными удобствами. Идеален для путешествий круглый год.',
         year: 2023,
         price: 45000,
         status: 'available',
@@ -56,9 +56,9 @@ const seed = async () => {
         features: JSON.stringify(['awning', 'bike_rack', 'air_conditioning', 'mosquito_nets'])
       },
       {
-        title: 'Classic Comfort 2022',
-        slug: 'classic-comfort-2022',
-        description: 'Reliable European caravan, excellent condition. Great starter caravan.',
+        title: 'Классический Комфорт 2022',
+        slug: 'klassicheskiy-komfort-2022',
+        description: 'Надежный европейский кемпер в отличном состоянии. Отлично подходит для первого кемпера.',
         year: 2022,
         price: 32000,
         status: 'available',
@@ -104,9 +104,9 @@ const seed = async () => {
         features: JSON.stringify(['awning', 'storage_compartments'])
       },
       {
-        title: 'Adventure XL',
-        slug: 'adventure-xl',
-        description: 'Large family caravan with multiple sleeping areas. Sold as-is.',
+        title: 'Приключение XL',
+        slug: 'priklyuchenie-xl',
+        description: 'Просторный семейный кемпер с несколькими спальными зонами. Продается как есть.',
         year: 2020,
         price: 28000,
         status: 'sold',

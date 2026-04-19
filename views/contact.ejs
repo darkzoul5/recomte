@@ -1,51 +1,80 @@
-<!-- Contact Section -->
+<%- include('layouts/header', { title: 'Контакты' }) %>
+
+<!-- Contacts Section -->
 <section class="section">
   <div class="container">
-    <h1 class="title mb-6">Контакты</h1>
+    <h2 class="title has-text-centered">Контакты</h2>
 
-    <div class="columns is-multiline">
-      <!-- Contact Info -->
-      <div class="column is-one-third">
+    <div class="columns is-multiline mt-5">
+      <!-- Working hours -->
+      <div class="column is-half">
         <div class="box">
-          <h3 class="subtitle is-4 mb-4">
-            <i class="fas fa-phone has-text-primary"></i> Телефон
-          </h3>
-          <p class="is-size-5 mb-3">
-            <a href="tel:+79991234567" class="has-text-link">+7 (999) 123-45-67</a>
-          </p>
-          <p class="help">Доступны для звонков</p>
-        </div>
-      </div>
-
-      <!-- Email -->
-      <div class="column is-one-third">
-        <div class="box">
-          <h3 class="subtitle is-4 mb-4">
-            <i class="fas fa-envelope has-text-primary"></i> Email
-          </h3>
-          <p class="is-size-5 mb-3">
-            <a href="mailto:info@recomte.ru" class="has-text-link">info@recomte.ru</a>
-          </p>
-          <p class="help">Ответ в течение 24 часов</p>
-        </div>
-      </div>
-
-      <!-- Hours -->
-      <div class="column is-one-third">
-        <div class="box">
-          <h3 class="subtitle is-4 mb-4">
-            <i class="fas fa-clock has-text-primary"></i> Часы работы
-          </h3>
-          <table class="table is-fullwidth is-narrow">
+          <h3 class="title is-5">Рабочее время</h3>
+          <table class="table is-fullwidth">
             <tbody>
               <tr>
-                <td><strong>Пн-Пт:</strong></td>
-                <td>10:00 — 18:00</td>
+                <td><strong>Пн</strong></td>
+                <td>10:00 — 17:00</td>
               </tr>
               <tr>
-                <td><strong>Сб:</strong></td>
-                <td>10:00 — 16:00</td>
+                <td><strong>Вт</strong></td>
+                <td>10:00 — 17:00</td>
               </tr>
+              <tr>
+                <td><strong>Ср</strong></td>
+                <td>10:00 — 17:00</td>
+              </tr>
+              <tr>
+                <td><strong>Чт</strong></td>
+                <td>10:00 — 17:00</td>
+              </tr>
+              <tr>
+                <td><strong>Пт</strong></td>
+                <td>10:00 — 17:00</td>
+              </tr>
+              <tr>
+                <td><strong>Сб</strong></td>
+                <td>по договоренности</td>
+              </tr>
+              <tr>
+                <td><strong>Вс</strong></td>
+                <td>по договоренности</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Contact info -->
+      <div class="column is-half">
+        <div class="box">
+          <h3 class="title is-5">Контактная информация</h3>
+          <p>Телефон: +7 (xxx) xxx-xx-xx</p>
+          <p>Email: info@recomte.ru</p>
+          <p>Соцсети: <a href="https://avito.ru">Avito</a> | <a href="https://telegram.org">Telegram</a> </p>
+        </div>
+      </div>
+
+      <!-- Address and Map -->
+      <div class="column is-half">
+        <div class="box">
+          <h3 class="title is-5">Адрес</h3>
+          <p>г. Санкт-Петербург, ул. Идрицкая</p>
+          <br/>
+          <iframe class="has-ratio" width="100%" height="400" frameborder="0" scrolling="no"
+            src="https://www.openstreetmap.org/export/embed.html?bbox=30.31859636306763%2C59.81059511051387%2C30.346190929412845%2C59.81757564372076&amp;layer=mapnik&amp;marker=59.81409047442569%2C30.332393646240234"">
+          </iframe>
+          <br/>
+          <small>
+            <a href="https://www.openstreetmap.org/?mlat=59.814067&mlon=30.331750#map=17/59.814067/30.331750">Посмотреть карту в полном размере</a>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('layouts/footer') %>
               <tr>
                 <td><strong>Вс:</strong></td>
                 <td>Выходной</td>
@@ -71,3 +100,5 @@
     </div>
   </div>
 </section>
+
+<%- include('layouts/footer') %>

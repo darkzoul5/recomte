@@ -1,11 +1,20 @@
+<%- include('layouts/header', { title: 'Каталог' }) %>
+
 <!-- Catalogue Section -->
 <section class="section">
   <div class="container">
-    <h1 class="title mb-6">Каталог Кемперов</h1>
-    
-    <% if (caravans && caravans.length > 0) { %>
+    <h2 class="title has-text-centered">Каталог прицепов</h2>
+
+    <% 
+      let availableCaravans = caravans.filter(c => c.status !== 'sold');
+      let soldCaravans = caravans.filter(c => c.status === 'sold');
+    %>
+
+    <% if (availableCaravans.length > 0) { %>
+      <!-- Available campers -->
+      <h3 class="subtitle mt-5">В продаже</h3>
       <div class="columns is-multiline">
-        <% caravans.forEach(caravan => { %>
+        <% availableCaravans.forEach(caravan => { %>
           <div class="column is-one-third">
             <div class="card">
               <div class="card-image">
@@ -13,47 +22,53 @@
                   <% if (caravan.images && caravan.images.length > 0) { %>
                     <img src="<%= caravan.images[0].url %>" alt="<%= caravan.title %>" style="object-fit: cover;">
                   <% } else { %>
-                    <img src="https://via.placeholder.com/500x375?text=No+Image" alt="<%= caravan.title %>">
+                    <img src="https://images.pexels.com/photos/20072445/pexels-photo-20072445.jpeg" alt="<%= caravan.title %>">
                   <% } %>
                 </figure>
               </div>
               <div class="card-content">
                 <h3 class="title is-5"><%= caravan.title %></h3>
-                <p class="mb-3"><%= caravan.description ? caravan.description.substring(0, 120) + '...' : 'Нет описания' %></p>
-                
-                <div class="mb-3">
-                  <% if (caravan.year) { %>
-                    <span class="tag is-info"><%= caravan.year %> год</span>
-                  <% } %>
-                  <% if (caravan.beds_count) { %>
-                    <span class="tag is-light"><i class="fas fa-bed"></i> <%= caravan.beds_count %> мест</span>
-                  <% } %>
-                  <% if (caravan.winter_rated) { %>
-                    <span class="tag is-primary"><i class="fas fa-snowflake"></i> Зима</span>
-                  <% } %>
-                </div>
-                
-                <div class="is-flex is-justify-content-space-between is-align-items-center mb-3">
-                  <span class="has-text-weight-bold is-size-5"><%= caravan.price.toLocaleString() %> €</span>
-                  <% if (caravan.status === 'sold') { %>
-                    <span class="tag is-danger">ПРОДАНО</span>
-                  <% } else { %>
-                    <span class="tag is-success">В НАЛИЧИИ</span>
-                  <% } %>
-                </div>
-                
-                <a href="/caravans/<%= caravan.slug %>" class="button is-success is-fullwidth">
-                  Подробнее
-                </a>
+                <p><%= caravan.description ? caravan.description.substring(0, 100) + '...' : 'Современный туристический кемпер для комфортных путешествий.' %></p>
+                <a class="button is-success is-small mt-2" href="/caravans/<%= caravan.slug %>">Подробнее</a>
               </div>
             </div>
           </div>
         <% }); %>
       </div>
-    <% } else { %>
+    <% } %>
+
+    <% if (soldCaravans.length > 0) { %>
+      <!-- Sold campers -->
+      <h3 class="subtitle mt-5">Проданные</h3>
+      <div class="columns is-multiline">
+        <% soldCaravans.forEach(caravan => { %>
+          <div class="column is-one-third">
+            <div class="card">
+              <div class="card-image">
+                <figure class="image is-4by3">
+                  <% if (caravan.images && caravan.images.length > 0) { %>
+                    <img src="<%= caravan.images[0].url %>" alt="<%= caravan.title %>" style="object-fit: cover;">
+                  <% } else { %>
+                    <img src="https://images.pexels.com/photos/18247305/pexels-photo-18247305.jpeg" alt="<%= caravan.title %>">
+                  <% } %>
+                </figure>
+              </div>
+              <div class="card-content">
+                <h3 class="title is-5"><%= caravan.title %></h3>
+                <p>Этот прицеп уже нашел своего владельца.</p>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } %>
+
+    <% if (caravans.length === 0) { %>
       <div class="notification is-info is-light">
         <p>К сожалению, в данный момент нет доступных кемперов</p>
       </div>
     <% } %>
   </div>
 </section>
+
+<%- include('layouts/footer') %>
