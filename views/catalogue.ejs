@@ -1,0 +1,59 @@
+<!-- Catalogue Section -->
+<section class="section">
+  <div class="container">
+    <h1 class="title mb-6">Каталог Кемперов</h1>
+    
+    <% if (caravans && caravans.length > 0) { %>
+      <div class="columns is-multiline">
+        <% caravans.forEach(caravan => { %>
+          <div class="column is-one-third">
+            <div class="card">
+              <div class="card-image">
+                <figure class="image is-4by3">
+                  <% if (caravan.images && caravan.images.length > 0) { %>
+                    <img src="<%= caravan.images[0].url %>" alt="<%= caravan.title %>" style="object-fit: cover;">
+                  <% } else { %>
+                    <img src="https://via.placeholder.com/500x375?text=No+Image" alt="<%= caravan.title %>">
+                  <% } %>
+                </figure>
+              </div>
+              <div class="card-content">
+                <h3 class="title is-5"><%= caravan.title %></h3>
+                <p class="mb-3"><%= caravan.description ? caravan.description.substring(0, 120) + '...' : 'Нет описания' %></p>
+                
+                <div class="mb-3">
+                  <% if (caravan.year) { %>
+                    <span class="tag is-info"><%= caravan.year %> год</span>
+                  <% } %>
+                  <% if (caravan.beds_count) { %>
+                    <span class="tag is-light"><i class="fas fa-bed"></i> <%= caravan.beds_count %> мест</span>
+                  <% } %>
+                  <% if (caravan.winter_rated) { %>
+                    <span class="tag is-primary"><i class="fas fa-snowflake"></i> Зима</span>
+                  <% } %>
+                </div>
+                
+                <div class="is-flex is-justify-content-space-between is-align-items-center mb-3">
+                  <span class="has-text-weight-bold is-size-5"><%= caravan.price.toLocaleString() %> €</span>
+                  <% if (caravan.status === 'sold') { %>
+                    <span class="tag is-danger">ПРОДАНО</span>
+                  <% } else { %>
+                    <span class="tag is-success">В НАЛИЧИИ</span>
+                  <% } %>
+                </div>
+                
+                <a href="/vehicles/<%= caravan.slug %>" class="button is-success is-fullwidth">
+                  Подробнее
+                </a>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="notification is-info is-light">
+        <p>К сожалению, в данный момент нет доступных кемперов</p>
+      </div>
+    <% } %>
+  </div>
+</section>

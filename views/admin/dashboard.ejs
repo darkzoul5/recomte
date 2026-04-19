@@ -1,0 +1,101 @@
+<!-- Admin Dashboard -->
+<section class="section">
+  <div class="container">
+    <div class="is-flex is-justify-content-space-between is-align-items-center mb-5">
+      <h1 class="title">Панель управления</h1>
+      <form method="POST" action="/admin/logout" style="display: inline;">
+        <button class="button is-light">
+          <span class="icon">
+            <i class="fas fa-sign-out-alt"></i>
+          </span>
+          <span>Выход</span>
+        </button>
+      </form>
+    </div>
+
+    <div class="level mb-5">
+      <div class="level-left">
+        <div class="level-item">
+          <p class="heading">Всего кемперов</p>
+        </div>
+      </div>
+      <div class="level-right">
+        <div class="level-item">
+          <p class="heading">
+            <strong class="is-size-4"><%= caravans.length %></strong>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-5">
+      <a href="/admin/new" class="button is-success is-medium">
+        <span class="icon">
+          <i class="fas fa-plus"></i>
+        </span>
+        <span>Добавить новый кемпер</span>
+      </a>
+    </div>
+
+    <% if (caravans && caravans.length > 0) { %>
+      <div class="table-container">
+        <table class="table is-fullwidth is-striped is-hoverable">
+          <thead>
+            <tr>
+              <th>Название</th>
+              <th>Год</th>
+              <th>Цена</th>
+              <th>Статус</th>
+              <th>Изображений</th>
+              <th>Действия</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% caravans.forEach(caravan => { %>
+              <tr>
+                <td>
+                  <strong><%= caravan.title %></strong>
+                  <br>
+                  <small class="has-text-grey"><%= caravan.slug %></small>
+                </td>
+                <td><%= caravan.year || '-' %></td>
+                <td><%= caravan.price ? caravan.price.toLocaleString() + ' €' : '-' %></td>
+                <td>
+                  <% if (caravan.status === 'sold') { %>
+                    <span class="tag is-danger">ПРОДАНО</span>
+                  <% } else if (caravan.status === 'reserved') { %>
+                    <span class="tag is-warning">ЗАРЕЗЕРВИРОВАНО</span>
+                  <% } else { %>
+                    <span class="tag is-success">В НАЛИЧИИ</span>
+                  <% } %>
+                </td>
+                <td>
+                  <% const imgCount = caravan.images ? caravan.images.length : 0; %>
+                  <span class="tag is-info"><%= imgCount %>/30</span>
+                </td>
+                <td>
+                  <div class="buttons are-small">
+                    <a href="/admin/edit/<%= caravan.id %>" class="button is-info is-light">
+                      <span class="icon"><i class="fas fa-edit"></i></span>
+                      <span>Редактировать</span>
+                    </a>
+                    <form method="POST" action="/admin/delete/<%= caravan.id %>" style="display: inline;" onsubmit="return confirm('Вы уверены?');">
+                      <button class="button is-danger is-light">
+                        <span class="icon"><i class="fas fa-trash"></i></span>
+                        <span>Удалить</span>
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="notification is-info is-light">
+        <p>Нет кемперов в базе. <a href="/admin/new">Добавьте первый кемпер</a></p>
+      </div>
+    <% } %>
+  </div>
+</section>

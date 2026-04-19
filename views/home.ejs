@@ -1,0 +1,93 @@
+<!-- Hero Section -->
+<section class="hero is-medium has-background-primary">
+  <div class="hero-body">
+    <div class="container has-text-centered">
+      <h1 class="title has-text-white">Добро пожаловать на Recomte.ru</h1>
+      <p class="subtitle has-text-white">Лучший выбор европейских кемперов для вашего путешествия</p>
+      <a href="/vehicles" class="button is-light is-medium mt-4">
+        <span class="icon">
+          <i class="fas fa-arrow-right"></i>
+        </span>
+        <span>Смотреть каталог</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Caravans -->
+<section class="section">
+  <div class="container">
+    <h2 class="title has-text-centered mb-6">Избранные предложения</h2>
+    
+    <% if (caravans && caravans.length > 0) { %>
+      <div class="columns is-multiline">
+        <% caravans.forEach(caravan => { %>
+          <div class="column is-one-third">
+            <div class="card">
+              <div class="card-image">
+                <figure class="image is-4by3">
+                  <% if (caravan.images && caravan.images.length > 0) { %>
+                    <img src="<%= caravan.images[0].url %>" alt="<%= caravan.title %>">
+                  <% } else { %>
+                    <img src="https://via.placeholder.com/500x375?text=No+Image" alt="<%= caravan.title %>">
+                  <% } %>
+                </figure>
+              </div>
+              <div class="card-content">
+                <h3 class="title is-5"><%= caravan.title %></h3>
+                <p class="mb-3"><%= caravan.description ? caravan.description.substring(0, 100) + '...' : '' %></p>
+                <div class="is-flex is-justify-content-space-between is-align-items-center">
+                  <span class="tag is-info"><%= caravan.year %></span>
+                  <span class="has-text-weight-bold is-size-5"><%= caravan.price.toLocaleString() %> €</span>
+                </div>
+                <a href="/vehicles/<%= caravan.slug %>" class="button is-success is-small mt-3 is-fullwidth">
+                  Подробнее
+                </a>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="notification is-info">
+        <p>Нет избранных предложений в данный момент</p>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="section has-background-light">
+  <div class="container">
+    <h2 class="title has-text-centered mb-6">Почему выбирают Recomte</h2>
+    <div class="columns is-multiline">
+      <div class="column is-one-third">
+        <div class="box has-text-centered">
+          <p class="is-size-1 has-text-primary mb-3">
+            <i class="fas fa-check-circle"></i>
+          </p>
+          <h3 class="title is-5">Качество</h3>
+          <p>Все кемперы тщательно проверены и находятся в отличном состоянии</p>
+        </div>
+      </div>
+      <div class="column is-one-third">
+        <div class="box has-text-centered">
+          <p class="is-size-1 has-text-primary mb-3">
+            <i class="fas fa-phone"></i>
+          </p>
+          <h3 class="title is-5">Поддержка</h3>
+          <p>Дружелюбный и профессиональный сервис на русском языке</p>
+        </div>
+      </div>
+      <div class="column is-one-third">
+        <div class="box has-text-centered">
+          <p class="is-size-1 has-text-primary mb-3">
+            <i class="fas fa-globe"></i>
+          </p>
+          <h3 class="title is-5">Европа</h3>
+          <p>Прямые поставки из Европы с гарантией и документацией</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

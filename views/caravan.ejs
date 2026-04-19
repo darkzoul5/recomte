@@ -1,0 +1,176 @@
+<!-- Caravan Detail Section -->
+<section class="section">
+  <div class="container">
+    <nav class="breadcrumb mb-5" aria-label="breadcrumbs">
+      <ul>
+        <li><a href="/">Главная</a></li>
+        <li><a href="/vehicles">Каталог</a></li>
+        <li class="is-active"><a aria-current="page"><%= caravan.title %></a></li>
+      </ul>
+    </nav>
+
+    <div class="columns">
+      <!-- Images Gallery -->
+      <div class="column is-two-thirds">
+        <div class="mb-5">
+          <% if (caravan.images && caravan.images.length > 0) { %>
+            <!-- Main image -->
+            <figure class="image is-3by2 mb-4">
+              <img id="mainImage" src="<%= caravan.images[0].url %>" alt="<%= caravan.title %>" style="object-fit: cover;">
+            </figure>
+            
+            <!-- Thumbnail gallery -->
+            <% if (caravan.images.length > 1) { %>
+              <div class="is-flex is-flex-wrap-wrap" style="gap: 0.5rem;">
+                <% caravan.images.forEach((img, index) => { %>
+                  <figure class="image" style="width: 100px; height: 75px; cursor: pointer;" onclick="document.getElementById('mainImage').src = '<%= img.url %>';">
+                    <img src="<%= img.url %>" alt="Image <%= index + 1 %>" style="object-fit: cover; border: 2px solid transparent;" 
+                         onmouseover="this.style.borderColor='#00d1b2'" onmouseout="this.style.borderColor='transparent'">
+                  </figure>
+                <% }); %>
+              </div>
+            <% } %>
+          <% } else { %>
+            <figure class="image is-3by2">
+              <img src="https://via.placeholder.com/800x600?text=No+Images" alt="<%= caravan.title %>">
+            </figure>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Details Sidebar -->
+      <div class="column">
+        <div class="box">
+          <h1 class="title is-3"><%= caravan.title %></h1>
+          
+          <div class="mb-5">
+            <p class="is-size-5 has-text-weight-bold has-text-primary">
+              <strong><%= caravan.price.toLocaleString() %> €</strong>
+            </p>
+            <% if (caravan.status === 'sold') { %>
+              <p class="tag is-danger is-medium">ПРОДАНО</p>
+            <% } else { %>
+              <p class="tag is-success is-medium">В НАЛИЧИИ</p>
+            <% } %>
+          </div>
+
+          <!-- Key specs -->
+          <div class="mb-5">
+            <h3 class="subtitle is-5">Основные характеристики</h3>
+            <table class="table is-fullwidth is-narrow">
+              <tbody>
+                <% if (caravan.year) { %>
+                  <tr>
+                    <td><strong>Год выпуска:</strong></td>
+                    <td><%= caravan.year %></td>
+                  </tr>
+                <% } %>
+                <% if (caravan.beds_count) { %>
+                  <tr>
+                    <td><strong>Спальных мест:</strong></td>
+                    <td><%= caravan.beds_count %></td>
+                  </tr>
+                <% } %>
+                <% if (caravan.length_mm) { %>
+                  <tr>
+                    <td><strong>Длина:</strong></td>
+                    <td><%= (caravan.length_mm / 1000).toFixed(2) %> м</td>
+                  </tr>
+                <% } %>
+                <% if (caravan.weight_empty_kg) { %>
+                  <tr>
+                    <td><strong>Вес пустой:</strong></td>
+                    <td><%= caravan.weight_empty_kg %> кг</td>
+                  </tr>
+                <% } %>
+                <% if (caravan.winter_rated) { %>
+                  <tr>
+                    <td><strong>Зимний рейтинг:</strong></td>
+                    <td><span class="tag is-primary">✓ Да</span></td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Contact button -->
+          <a href="/contact" class="button is-primary is-fullwidth is-medium mb-3">
+            <span class="icon">
+              <i class="fas fa-phone"></i>
+            </span>
+            <span>Связаться с нами</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full Description -->
+    <% if (caravan.description) { %>
+      <div class="box mt-5">
+        <h2 class="subtitle is-4">Описание</h2>
+        <p><%= caravan.description %></p>
+      </div>
+    <% } %>
+
+    <!-- Detailed specs if available -->
+    <% if (caravan.has_shower || caravan.has_toilet || caravan.fridge_volume_l || caravan.fresh_water_tank_l) { %>
+      <div class="box mt-5">
+        <h2 class="subtitle is-4">Детальные характеристики</h2>
+        
+        <div class="columns is-multiline">
+          <% if (caravan.has_shower || caravan.has_toilet) { %>
+            <div class="column is-one-third">
+              <h4 class="subtitle is-6">Сантехника</h4>
+              <ul>
+                <% if (caravan.has_shower) { %><li><i class="fas fa-check has-text-success"></i> Душ</li><% } %>
+                <% if (caravan.has_toilet) { %><li><i class="fas fa-check has-text-success"></i> Туалет</li><% } %>
+                <% if (caravan.toilet_type) { %><li>Тип: <%= caravan.toilet_type %></li><% } %>
+              </ul>
+            </div>
+          <% } %>
+
+          <% if (caravan.fresh_water_tank_l || caravan.grey_water_tank_l) { %>
+            <div class="column is-one-third">
+              <h4 class="subtitle is-6">Водные системы</h4>
+              <ul>
+                <% if (caravan.fresh_water_tank_l) { %><li>Пресная вода: <%= caravan.fresh_water_tank_l %> л</li><% } %>
+                <% if (caravan.grey_water_tank_l) { %><li>Серая вода: <%= caravan.grey_water_tank_l %> л</li><% } %>
+              </ul>
+            </div>
+          <% } %>
+
+          <% if (caravan.fridge_type || caravan.has_cooktop) { %>
+            <div class="column is-one-third">
+              <h4 class="subtitle is-6">Кухня</h4>
+              <ul>
+                <% if (caravan.fridge_type) { %><li>Холодильник: <%= caravan.fridge_type %></li><% } %>
+                <% if (caravan.has_cooktop) { %><li><i class="fas fa-check has-text-success"></i> Плита</li><% } %>
+                <% if (caravan.has_oven) { %><li><i class="fas fa-check has-text-success"></i> Духовка</li><% } %>
+              </ul>
+            </div>
+          <% } %>
+
+          <% if (caravan.heating_type || caravan.has_hot_water) { %>
+            <div class="column is-one-third">
+              <h4 class="subtitle is-6">Отопление</h4>
+              <ul>
+                <% if (caravan.heating_type) { %><li>Тип: <%= caravan.heating_type %></li><% } %>
+                <% if (caravan.has_hot_water) { %><li><i class="fas fa-check has-text-success"></i> Горячая вода</li><% } %>
+              </ul>
+            </div>
+          <% } %>
+
+          <% if (caravan.battery_type || caravan.has_solar_panels) { %>
+            <div class="column is-one-third">
+              <h4 class="subtitle is-6">Электричество</h4>
+              <ul>
+                <% if (caravan.battery_type) { %><li>Батарея: <%= caravan.battery_type %></li><% } %>
+                <% if (caravan.has_solar_panels) { %><li><i class="fas fa-check has-text-success"></i> Солнечные панели</li><% } %>
+              </ul>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</section>

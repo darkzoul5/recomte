@@ -108,11 +108,11 @@ CREATE TABLE images (
 ```
 
 **Notes:**
+
 - All fields nullable/default except title, slug, price, status
 - Features stored as JSON array (simple, flexible, no schema migration needed later)
 - Example features: `["awning", "bike_rack", "tv_mount", "ac", "mosquito_nets", "storage_compartments"]`
 - Can upgrade to separate tables later if needed (YAGNI principle)
-
 
 ### 1.1b Database Indexing
 
@@ -132,6 +132,7 @@ CREATE INDEX idx_images_sort_order ON images(caravan_id, sort_order);
 ```
 
 **Why these indexes:**
+
 - `slug` - single caravan detail page lookup (critical)
 - `status` - filter by available/sold on catalogue
 - `featured` - homepage featured display
@@ -226,31 +227,39 @@ project/
 
 Form will be organized by category for easy management:
 
-**Basic Info**
+#### Basic Info
+
 - Title, Slug, Description, Year, Price, Status, Featured
 
-**Sleeping & Facilities**
+#### Sleeping & Facilities
+
 - Beds count, Shower, Toilet, Toilet type, Sink
 
-**Water Systems**
+#### Water Systems
+
 - Fresh/grey tank capacity, Hot water (yes/no), Heater type, Boiler volume
 
-**Kitchen**
+#### Kitchen
+
 - Fridge type & volume, Cooktop (yes/no, gas/electric), Burners count, Oven
 
-**Heating & Comfort**
+#### Heating & Comfort
+
 - Heating system (type, brand, source), Insulation, Double-glazed windows, Air distribution
 
-**Electrical**
+#### Electrical
+
 - Battery type & capacity, Solar panels (yes/no, wattage), Inverter wattage, Shore power, 12V system
 
-**Dimensions & Weight**
+#### Dimensions & Weight
+
 - Length/width/height (mm), Interior height, Weight empty/max, Axle type
 
-**Features** (checkbox list)
+#### Features (checkbox list)
+
 - awning, bike_rack, tv_mount, ac, mosquito_nets, storage_compartments, etc.
 
-**Images** (upload/reorder/delete up to 30 per caravan)
+#### Images (upload/reorder/delete up to 30 per caravan)
 
 ### Authentication
 
