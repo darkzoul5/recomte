@@ -8,58 +8,238 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/bulma.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/public/css/style.css">
+  <style>
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      background-color: #f5f5f5;
+    }
+
+    .admin-login-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 450px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .login-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 2rem;
+      text-align: center;
+      color: white;
+    }
+
+    .login-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .login-header .icon {
+      font-size: 1.5rem;
+    }
+
+    .login-header p {
+      margin: 0.5rem 0 0 0;
+      opacity: 0.9;
+      font-size: 0.95rem;
+    }
+
+    .login-form {
+      padding: 2rem;
+    }
+
+    .login-form .field {
+      margin-bottom: 1.5rem;
+    }
+
+    .login-form .field:last-of-type {
+      margin-bottom: 1rem;
+    }
+
+    .login-form .label {
+      font-weight: 600;
+      color: #363636;
+      margin-bottom: 0.75rem;
+    }
+
+    .login-form .input {
+      padding: 0.75rem 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 4px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .login-form .input:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      outline: none;
+    }
+
+    .login-form .input::placeholder {
+      color: #b5b5b5;
+    }
+
+    .control.has-icons-left .icon {
+      left: 1rem;
+      color: #667eea;
+    }
+
+    .login-button {
+      width: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .login-button:hover {
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .login-button:active {
+      transform: translateY(0);
+    }
+
+    .login-footer {
+      padding: 1.5rem 2rem;
+      border-top: 1px solid #f0f0f0;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #7a7a7a;
+    }
+
+    .error-message {
+      background-color: #ffe0e0;
+      border-left: 4px solid #ff6b6b;
+      color: #c92a2a;
+      padding: 1rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.95rem;
+    }
+
+    .error-message .delete {
+      background-color: transparent;
+      border: none;
+      color: #c92a2a;
+      opacity: 0.7;
+      cursor: pointer;
+      padding: 0;
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+
+    .error-message .delete:hover {
+      opacity: 1;
+    }
+
+    .security-note {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: #7a7a7a;
+    }
+
+    .security-note i {
+      color: #667eea;
+    }
+  </style>
 </head>
-<body class="has-background-light">
+<body>
 
-<section class="section is-fullheight is-flex is-align-items-center is-justify-content-center">
-  <div class="box" style="width: 100%; max-width: 400px;">
-    <h1 class="title has-text-centered mb-5">
-      <i class="fas fa-lock has-text-primary"></i> Admin Panel
-    </h1>
+<div class="admin-login-container">
+  <div class="login-box">
+    <!-- Header -->
+    <div class="login-header">
+      <h1>
+        <i class="fas fa-lock"></i>
+        Admin Panel
+      </h1>
+      <p>Область администратора</p>
+    </div>
 
-    <% if (error) { %>
-      <div class="notification is-danger is-light">
-        <button class="delete"></button>
-        <%= error %>
-      </div>
-    <% } %>
-
-    <form method="POST" action="/admin/login">
-      <div class="field">
-        <label class="label">Пароль</label>
-        <div class="control has-icons-left">
-          <input class="input" type="password" name="password" placeholder="Введите пароль" required autofocus>
-          <span class="icon is-small is-left">
-            <i class="fas fa-key"></i>
-          </span>
+    <!-- Form -->
+    <div class="login-form">
+      <% if (error) { %>
+        <div class="error-message">
+          <span><%= error %></span>
+          <button class="delete" type="button"></button>
         </div>
-      </div>
+      <% } %>
 
-      <div class="field">
-        <div class="control">
-          <button class="button is-primary is-fullwidth is-medium">
-            <span class="icon">
-              <i class="fas fa-sign-in-alt"></i>
+      <form method="POST" action="/admin/login">
+        <div class="field">
+          <label class="label">
+            Пароль
+          </label>
+          <div class="control has-icons-left">
+            <input 
+              class="input" 
+              type="password" 
+              name="password" 
+              placeholder="Введите пароль" 
+              required 
+              autofocus
+            >
+            <span class="icon is-small is-left">
+              <i class="fas fa-key"></i>
             </span>
-            <span>Войти</span>
-          </button>
+          </div>
         </div>
-      </div>
-    </form>
 
-    <div class="content has-text-centered mt-5">
-      <p class="help">Защищенная область администратора</p>
+        <button type="submit" class="login-button">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>Войти</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      <p>© 2026 Recomte.ru</p>
     </div>
   </div>
-</section>
+</div>
 
 <script>
   document.querySelectorAll('.delete').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      e.target.closest('.notification').remove();
+      e.target.closest('.error-message')?.remove();
     });
   });
 </script>
-
-</body>
-</html>
