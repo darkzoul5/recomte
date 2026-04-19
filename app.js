@@ -120,8 +120,11 @@ fastify.get('/caravans/:slug', async (request, reply) => {
 
     // ===== ADMIN PAGES =====
 
-    // Admin root - redirect to login
+    // Admin root - redirect to login or dashboard
     fastify.get('/admin', async (request, reply) => {
+      if (request.session.adminId) {
+        return reply.redirect('/admin/dash');
+      }
       return reply.redirect('/admin/login');
     });
 
@@ -129,7 +132,7 @@ fastify.get('/caravans/:slug', async (request, reply) => {
     fastify.get('/admin/login', async (request, reply) => {
       // Redirect if already logged in
       if (request.session.adminId) {
-        return reply.redirect('/admin/dashboard');
+        return reply.redirect('/admin/dash');
       }
       return reply.view('admin/login', { title: 'Админ Вход', error: null });
     });
@@ -147,7 +150,7 @@ fastify.get('/caravans/:slug', async (request, reply) => {
         
         if (verifyAdminPassword(password)) {
           setAdminSession(request, 'admin');
-          return reply.redirect('/admin/dashboard');
+          return reply.redirect('/admin/dash');
         } else {
           return reply.view('admin/login', { title: 'Админ Вход', error: 'Неверный пароль' });
         }
@@ -165,7 +168,7 @@ fastify.get('/caravans/:slug', async (request, reply) => {
     });
 
     // Admin dashboard (protected)
-    fastify.get('/admin/dashboard', async (request, reply) => {
+    fastify.get('/admin/dash', async (request, reply) => {
       if (!request.session.adminId) {
         return reply.redirect('/admin/login');
       }
@@ -214,7 +217,8 @@ fastify.get('/caravans/:slug', async (request, reply) => {
         return reply.view('admin/edit', { 
           title: `Редактировать: ${caravan.title}`, 
           caravan,
-          isNew: false
+          isNew: false,
+          error: null
         });
       } catch (err) {
         fastify.log.error(err);
@@ -246,7 +250,8 @@ fastify.get('/caravans/:slug', async (request, reply) => {
       return reply.view('admin/edit', { 
         title: 'Добавить новый кемпер', 
         caravan: emptyCaravan,
-        isNew: true
+        isNew: true,
+        error: null
       });
     });
 
@@ -322,11 +327,11 @@ fastify.get('/caravans/:slug', async (request, reply) => {
             features: formData.features ? JSON.stringify(Array.isArray(formData.features) ? formData.features : [formData.features]) : '[]'
           });
 
-          return reply.redirect(`/admin/dashboard`);
+          return reply.redirect(`/admin/dash`);
         }
 
         // TODO: Handle multipart file uploads for images
-        return reply.redirect(`/admin/dashboard`);
+        return reply.redirect(`/admin/dash`);
       } catch (err) {
         fastify.log.error(err);
         const emptyCaravan = { title: '', slug: '', price: 0, status: 'available', featured: 0, images: [] };
@@ -405,7 +410,7 @@ fastify.get('/caravans/:slug', async (request, reply) => {
           features: formData.features ? JSON.stringify(Array.isArray(formData.features) ? formData.features : [formData.features]) : '[]'
         });
 
-        return reply.redirect(`/admin/dashboard`);
+        return reply.redirect(`/admin/dash`);
       } catch (err) {
         fastify.log.error(err);
         const { id } = request.params;
@@ -450,7 +455,7 @@ fastify.get('/caravans/:slug', async (request, reply) => {
         // Delete caravan
         caravans.delete(parseInt(id));
 
-        return reply.redirect('/admin/dashboard');
+        return reply.redirect('/admin/dash');
       } catch (err) {
         fastify.log.error(err);
         return reply.code(500).send({ message: 'Error deleting caravan: ' + err.message });

@@ -5,7 +5,7 @@
       <h1><i class="fas fa-edit"></i> <%= isNew ? 'Новый кемпер' : 'Редактировать: ' + caravan.title %></h1>
     </div>
 
-    <% if (error) { %>
+    <% if (error && typeof error !== 'undefined') { %>
       <div class="admin-error">
         <button class="delete"></button>
         <%= error %>
@@ -39,12 +39,12 @@
         <div class="form-row">
           <div class="form-group">
             <label>Цена (€)</label>
-            <input type="number" name="price" placeholder="25000" value="<%= caravan?.price || '' %>" step="100" required>
+            <input type="number" name="price" placeholder="1000000" value="<%= caravan?.price || '' %>" step="10" required>
           </div>
           
           <div class="form-group">
             <label>Год выпуска</label>
-            <input type="number" name="year" placeholder="2015" value="<%= caravan?.year || '' %>" min="1980" max="2024">
+            <input type="number" name="year" placeholder="2000" value="<%= caravan?.year || '' %>" min="1950" max="2040">
           </div>
           
           <div class="form-group">
