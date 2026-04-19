@@ -1,32 +1,7 @@
 import { caravans, images } from '../../db/db.js';
-import { isAdmin, setAdminSession, clearAdminSession, verifyAdminPassword } from '../middleware/auth.js';
+import { isAdmin } from '../middleware/auth.js';
 
 export default async function adminRoutes(fastify) {
-  // POST /admin/login - admin login
-  fastify.post('/admin/login', async (request, reply) => {
-    const { password } = request.body;
-
-    if (!password) {
-      return reply.status(400).send({ error: 'Password required' });
-    }
-
-    try {
-      if (verifyAdminPassword(password)) {
-        setAdminSession(request, 'admin');
-        return { success: true, message: 'Logged in' };
-      } else {
-        return reply.status(401).send({ error: 'Invalid password' });
-      }
-    } catch (error) {
-      return reply.status(500).send({ error: error.message });
-    }
-  });
-
-  // POST /admin/logout - admin logout
-  fastify.post('/admin/logout', async (request, reply) => {
-    clearAdminSession(request);
-    return { success: true, message: 'Logged out' };
-  });
 
   // GET /admin/api/caravans - list all caravans (including sold) for admin
   fastify.get('/admin/api/caravans', { onRequest: [isAdmin] }, async (request, reply) => {

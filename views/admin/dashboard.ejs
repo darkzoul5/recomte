@@ -1,45 +1,42 @@
-<!-- Admin Dashboard -->
-<section class="section">
-  <div class="container">
-    <div class="is-flex is-justify-content-space-between is-align-items-center mb-5">
-      <h1 class="title">Панель управления</h1>
-      <form method="POST" action="/admin/logout" style="display: inline;">
-        <button class="button is-light">
-          <span class="icon">
-            <i class="fas fa-sign-out-alt"></i>
-          </span>
-          <span>Выход</span>
-        </button>
-      </form>
+<%- include('../layouts/admin-header', { title: 'Dashboard' }) %>
+
+    <!-- Dashboard Header -->
+    <div class="admin-header">
+      <h1><i class="fas fa-th-list"></i> Панель управления</h1>
     </div>
 
-    <div class="level mb-5">
-      <div class="level-left">
-        <div class="level-item">
-          <p class="heading">Всего кемперов</p>
-        </div>
+    <!-- Stats -->
+    <div class="admin-stats">
+      <div class="admin-stat-box">
+        <div class="stat-label">Всего кемперов</div>
+        <div class="stat-value"><%= caravans.length %></div>
       </div>
-      <div class="level-right">
-        <div class="level-item">
-          <p class="heading">
-            <strong class="is-size-4"><%= caravans.length %></strong>
-          </p>
-        </div>
+      <div class="admin-stat-box">
+        <div class="stat-label">В наличии</div>
+        <div class="stat-value"><%= caravans.filter(c => c.status === 'available').length %></div>
+      </div>
+      <div class="admin-stat-box">
+        <div class="stat-label">Зарезервировано</div>
+        <div class="stat-value"><%= caravans.filter(c => c.status === 'reserved').length %></div>
+      </div>
+      <div class="admin-stat-box">
+        <div class="stat-label">Продано</div>
+        <div class="stat-value"><%= caravans.filter(c => c.status === 'sold').length %></div>
       </div>
     </div>
 
-    <div class="mb-5">
-      <a href="/admin/new" class="button is-success is-medium">
-        <span class="icon">
-          <i class="fas fa-plus"></i>
-        </span>
+    <!-- Add Button -->
+    <div style="margin-bottom: 2rem;">
+      <a href="/admin/new" class="button is-success">
+        <span class="icon"><i class="fas fa-plus"></i></span>
         <span>Добавить новый кемпер</span>
       </a>
     </div>
 
+    <!-- Caravans Table -->
     <% if (caravans && caravans.length > 0) { %>
-      <div class="table-container">
-        <table class="table is-fullwidth is-striped is-hoverable">
+      <div class="admin-table-wrapper">
+        <table class="admin-table table is-fullwidth">
           <thead>
             <tr>
               <th>Название</th>
@@ -56,31 +53,31 @@
                 <td>
                   <strong><%= caravan.title %></strong>
                   <br>
-                  <small class="has-text-grey"><%= caravan.slug %></small>
+                  <small style="color: #7a7a7a;"><%= caravan.slug %></small>
                 </td>
                 <td><%= caravan.year || '-' %></td>
-                <td><%= caravan.price ? caravan.price.toLocaleString() + ' €' : '-' %></td>
+                <td><%= caravan.price ? caravan.price.toLocaleString('ru-RU') + ' €' : '-' %></td>
                 <td>
                   <% if (caravan.status === 'sold') { %>
-                    <span class="tag is-danger">ПРОДАНО</span>
+                    <span class="status-badge status-sold">ПРОДАНО</span>
                   <% } else if (caravan.status === 'reserved') { %>
-                    <span class="tag is-warning">ЗАРЕЗЕРВИРОВАНО</span>
+                    <span class="status-badge status-reserved">ЗАРЕЗЕРВИРОВАНО</span>
                   <% } else { %>
-                    <span class="tag is-success">В НАЛИЧИИ</span>
+                    <span class="status-badge status-available">В НАЛИЧИИ</span>
                   <% } %>
                 </td>
                 <td>
                   <% const imgCount = caravan.images ? caravan.images.length : 0; %>
-                  <span class="tag is-info"><%= imgCount %>/30</span>
+                  <span style="color: #3273dc; font-weight: 600;"><%= imgCount %>/30</span>
                 </td>
                 <td>
-                  <div class="buttons are-small">
-                    <a href="/admin/edit/<%= caravan.id %>" class="button is-info is-light">
+                  <div class="admin-actions">
+                    <a href="/admin/edit/<%= caravan.id %>" class="button is-info is-light is-small">
                       <span class="icon"><i class="fas fa-edit"></i></span>
                       <span>Редактировать</span>
                     </a>
                     <form method="POST" action="/admin/delete/<%= caravan.id %>" style="display: inline;" onsubmit="return confirm('Вы уверены?');">
-                      <button class="button is-danger is-light">
+                      <button class="button is-danger is-light is-small">
                         <span class="icon"><i class="fas fa-trash"></i></span>
                         <span>Удалить</span>
                       </button>
@@ -93,9 +90,9 @@
         </table>
       </div>
     <% } else { %>
-      <div class="notification is-info is-light">
-        <p>Нет кемперов в базе. <a href="/admin/new">Добавьте первый кемпер</a></p>
+      <div style="background-color: #e8f4f8; border-left: 4px solid #3273dc; border-radius: 3px; padding: 1.5rem; color: #004080;">
+        <p><strong>Информация:</strong> Нет кемперов в базе. <a href="/admin/new" style="color: #0056b3; text-decoration: underline;">Добавьте первый кемпер</a></p>
       </div>
     <% } %>
-  </div>
-</section>
+
+<%- include('../layouts/admin-footer') %>
