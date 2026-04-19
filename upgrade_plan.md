@@ -49,18 +49,6 @@ CREATE TABLE images (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY(trailer_id) REFERENCES trailers(id) ON DELETE CASCADE
 );
-
--- inquiries table (for contact form submissions)
-CREATE TABLE inquiries (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  trailer_id INTEGER,
-  name TEXT NOT NULL,
-  email TEXT NOT NULL,
-  phone TEXT,
-  message TEXT,
-  status TEXT DEFAULT 'new', -- new/responded/closed
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
 ```
 
 ### 1.2 Node.js Backend Skeleton
@@ -74,8 +62,7 @@ project/
 ├── src/
 │   ├── routes/
 │   │   ├── trailers.js   (GET /vehicles, /vehicle/:slug)
-│   │   ├── admin.js      (admin routes)
-│   │   └── contact.js    (form submissions)
+│   │   └── admin.js      (admin routes)
 │   ├── controllers/
 │   │   └── trailers.js
 │   └── middleware/
@@ -115,10 +102,10 @@ project/
 
 | Page | Current | Future |
 |------|---------|--------|
-| **/** | Static HTML | Dynamic EJS - hero + featured trailers from DB |
+| **/** | Static HTML | Dynamic EJS - hero + featured caravans from DB |
 | **/vehicles** | `/caravans/` | Dynamic catalogue, filterable by status/price |
 | **/vehicle/:slug** | `/caravans/polar.html` | Dynamic detail page - data + images from DB |
-| **/contact** | Static form | Form submission → `inquiries` table |
+| **/contact** | Static form | Contact info (email/phone)  |
 | **/admin/login** | None | Simple session login |
 | **/admin/dashboard** | None | List all trailers, quick actions |
 | **/admin/edit/:id** | None | Edit/delete/reorder images |
@@ -261,7 +248,7 @@ static:
 - ✅ Admin routes protected with session auth
 - ✅ HTTPS everywhere (Let's Encrypt via Traefik)
 - ✅ Secrets in `.env` (never in git)
-- ✅ Input validation (trailer slug, image uploads)
+- ✅ Input validation (caravan slug, image uploads)
 - ✅ CSRF protection on forms
 - ✅ No open Docker socket
 
@@ -280,7 +267,6 @@ static:
 - [ ] Home page (dynamic, server-rendered)
 - [ ] Catalogue page (/vehicles)
 - [ ] Detail page (/vehicle/:slug)
-- [ ] Contact form handler
 
 ### Week 3
 
@@ -315,8 +301,7 @@ static:
 | Webhook deploys | 0-downtime updates, no polling |
 | Server-side rendering | Perfect for SEO + fast page loads |
 | Single codebase | Everything in one repo = easy to maintain |
-| Image gallery | Display multiple images per trailer |
-| Contact form | Capture inquiries directly |
+| Image gallery | Display multiple images per caravan |
 | Responsive design | Reuse Bulma CSS framework |
 
 ---
