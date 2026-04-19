@@ -197,8 +197,8 @@ project/
 | Page | Current | Future |
 |------|---------|--------|
 | **/** | Static HTML | Dynamic EJS - hero + featured caravans from DB |
-| **/vehicles** | `/caravans/` | Dynamic catalogue, filterable by status/price |
-| **/vehicle/:slug** | `/caravans/polar.html` | Dynamic detail page - data + images from DB |
+| **/caravans** | `/caravans/` | Dynamic catalogue, filterable by status/price |
+| **/caravan/:slug** | `/caravans/polar.html` | Dynamic detail page - data + images from DB |
 | **/contact** | Static form | Contact info (email/phone)  |
 | **/admin/login** | None | Simple session login |
 | **/admin/dashboard** | None | List all trailers, quick actions |

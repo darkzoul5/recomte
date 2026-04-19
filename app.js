@@ -68,7 +68,7 @@ fastify.get('/', async (request, reply) => {
 });
 
 // Caravan catalogue
-fastify.get('/vehicles', async (request, reply) => {
+fastify.get('/caravans', async (request, reply) => {
   try {
     const response = await fastify.inject({
       method: 'GET',
@@ -83,7 +83,7 @@ fastify.get('/vehicles', async (request, reply) => {
 });
 
 // Single caravan detail
-fastify.get('/vehicles/:slug', async (request, reply) => {
+fastify.get('/caravans/:slug', async (request, reply) => {
   try {
     const response = await fastify.inject({
       method: 'GET',
