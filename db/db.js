@@ -316,6 +316,15 @@ export const images = {
     );
   },
 
+  getById: (imageId) => {
+    // Validate image ID
+    if (!Number.isInteger(imageId) || imageId <= 0) {
+      return null;
+    }
+    const results = query('SELECT * FROM images WHERE id = ?', [imageId]);
+    return results[0] || null;
+  },
+
   create: (caravanId, url, altText = '', sortOrder = 0) => {
     // Validate inputs
     if (!Number.isInteger(caravanId) || caravanId <= 0) {
@@ -344,11 +353,34 @@ export const images = {
     return { id, caravan_id: caravanId, url, alt_text: altText, sort_order: sortOrder };
   },
 
-  delete: (imageId) => {
+  delete: (imageId, deleteFile = true) => {
     // Validate image ID
     if (!Number.isInteger(imageId) || imageId <= 0) {
       throw new Error('Invalid image ID');
     }
+    
+    // Get image details to delete the file
+    if (deleteFile) {
+      const image = images.getById(imageId);
+      if (image && image.url) {
+        try {
+          // Convert URL path to filesystem path
+          // URL format: /public/images/caravans/5/caravan-5-filename.jpg
+          const urlPath = image.url.replace(/^\//, ''); // Remove leading slash
+          const filePath = path.join(__dirname, '..', urlPath);
+          
+          // Delete file if it exists
+          if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+            console.log(`File deleted: ${filePath}`);
+          }
+        } catch (error) {
+          console.error(`Failed to delete image file for imageId ${imageId}:`, error);
+          // Continue with DB deletion even if file deletion fails
+        }
+      }
+    }
+    
     run('DELETE FROM images WHERE id = ?', [imageId]);
   },
 

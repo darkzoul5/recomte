@@ -64,8 +64,8 @@ const fastify = Fastify({
       root: path.join(__dirname, 'views')
     });
 
-    // Health check
-    fastify.get('/health', async (request, reply) => {
+    // Health check endpoint (excluded from logging)
+    fastify.get('/healthcheck', { logLevel: 'silent' }, async (request, reply) => {
       return { status: 'ok' };
     });
 
@@ -532,7 +532,8 @@ fastify.get('/caravans/:slug', async (request, reply) => {
           
           for (const imageId of imagesToDelete) {
             if (imageId) {
-              images.delete(parseInt(imageId));
+              fastify.log.info(`Deleting image ${imageId} from disk and database...`);
+              images.delete(parseInt(imageId), true); // true = delete file from disk
             }
           }
         }
@@ -618,7 +619,7 @@ fastify.get('/caravans/:slug', async (request, reply) => {
         // Delete associated images
         const caravanImages = images.getByCaravanId(parseInt(id));
         caravanImages.forEach(img => {
-          images.delete(img.id);
+          images.delete(img.id, true); // true = delete file from disk
         });
 
         // Delete caravan

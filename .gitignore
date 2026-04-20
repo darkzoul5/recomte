@@ -4,3 +4,9 @@ data
 data/app.db
 public/images/caravans
 
+# Docker & Deployment
+letsencrypt/
+letsencrypt/acme.json
+.DS_Store
+*.log
+

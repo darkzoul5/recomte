@@ -193,7 +193,7 @@ export default async function adminRoutes(fastify) {
         return reply.status(400).send({ error: 'Invalid image ID' });
       }
 
-      images.delete(parseInt(id));
+      images.delete(parseInt(id), true); // true = delete file from disk
       return { success: true, message: 'Image deleted' };
     } catch (error) {
       fastify.log.error(error);

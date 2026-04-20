@@ -1,0 +1,63 @@
+services:
+  app:
+    image: git.darkzoul.org/dark_zoul/campersite:latest
+    environment:
+      - NODE_ENV=production
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+    volumes:
+      - ./data:/app/data
+      - ./public/images:/app/public/images
+    restart: unless-stopped
+    networks:
+      - traefik-proxy
+    labels:
+      # traefik
+      traefik.enable: "true"
+      # Main router
+      traefik.http.routers.app.rule: "Host(`recomte.ru`)"
+      traefik.http.routers.app.entrypoints: "websecure"
+      traefik.http.routers.app.tls.certresolver: "letsencrypt"
+      traefik.http.routers.app.middlewares: "nginx-headers@docker"
+      traefik.http.routers.app.service: "app"
+      # WWW redirect router
+      traefik.http.routers.app-www.rule: "Host(`www.recomte.ru`)"
+      traefik.http.routers.app-www.entrypoints: "websecure"
+      traefik.http.routers.app-www.tls.certresolver: "letsencrypt"
+      traefik.http.routers.app-www.middlewares: "redirect-www-to-root,nginx-headers@docker"
+      traefik.http.routers.app-www.service: "app"
+      # Redirect middleware
+      traefik.http.middlewares.redirect-www-to-root.redirectregex.regex: "^https://www\\.recomte\\.ru/(.*)"
+      traefik.http.middlewares.redirect-www-to-root.redirectregex.replacement: "https://recomte.ru/$${1}"
+      traefik.http.middlewares.redirect-www-to-root.redirectregex.permanent: "true"
+      # Service
+      traefik.http.services.app.loadbalancer.server.port: "3000"
+      # Headers
+      traefik.http.middlewares.nginx-headers.headers.customResponseHeaders.Server: ""
+
+  app_test:
+    image: git.darkzoul.org/dark_zoul/campersite:dev
+    environment:
+      - NODE_ENV=production
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+    volumes:
+      - ./data:/app/data
+      - ./public/images:/app/public/images
+    restart: unless-stopped
+    networks:
+      - traefik-proxy
+    labels:
+      # traefik
+      traefik.enable: "true"
+      # Main router 
+      traefik.http.routers.app-test.rule: "Host(`test.recomte.ru`)"
+      traefik.http.routers.app-test.entrypoints: "websecure"
+      traefik.http.routers.app-test.tls.certresolver: "letsencrypt"
+      traefik.http.routers.app-test.middlewares: "nginx-headers@docker"
+      traefik.http.routers.app-test.service: "app-test"
+      # Service
+      traefik.http.services.app-test.loadbalancer.server.port: "3000"
+    
+networks:
+  traefik-proxy:
+    external: true    
+      
