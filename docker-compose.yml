@@ -2,8 +2,11 @@ services:
   app:
     image: git.darkzoul.org/dark_zoul/campersite:latest
     environment:
+      - DB_PATH=/app/data/app.db
       - NODE_ENV=production
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET}
     volumes:
       - ./data:/app/data
       - ./public/images:/app/public/images
@@ -37,8 +40,11 @@ services:
   app_test:
     image: git.darkzoul.org/dark_zoul/campersite:dev
     environment:
+      - DB_PATH=/app/data/app.db
       - NODE_ENV=production
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET}
     volumes:
       - ./data:/app/data
       - ./public/images:/app/public/images
