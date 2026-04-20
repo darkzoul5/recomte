@@ -16,10 +16,15 @@ COPY db/ ./db
 COPY src/ ./src
 COPY views/ ./views
 COPY public/ ./public
+COPY scripts/ ./scripts
+COPY entrypoint.sh .
+
+# Make entrypoint executable
+RUN chmod +x entrypoint.sh
 
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/healthcheck || exit 1
 
-CMD ["node", "app.js"]
+ENTRYPOINT ["/app/entrypoint.sh"]
