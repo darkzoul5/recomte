@@ -422,11 +422,8 @@
                   <button type="button" class="delete-image-btn button is-danger is-light is-small" data-image-id="<%= img.id %>" style="width: 100%; padding: 0.5rem;">
                     <i class="fas fa-trash"></i>
                   </button>
-                  <div class="delete-marker" style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 0, 0, 0.3); z-index: 1; border: 2px solid #ff3860; border-radius: 4px; flex-direction: column; justify-content: center; align-items: center; gap: 0.75rem;">
-                    <span style="color: #ff3860; font-weight: bold; background: white; padding: 0.5rem 1rem; border-radius: 4px;">Удалится при обновлении</span>
-                    <button type="button" class="unmark-delete-btn button is-success is-light is-small" data-image-id="<%= img.id %>" style="background: white; color: #48c774; border: 2px solid #48c774; font-weight: bold;">
-                      <i class="fas fa-undo"></i> Отменить
-                    </button>
+                  <div class="delete-marker" style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 0, 0, 0.3); z-index: 1; border: 2px solid #ff3860; border-radius: 4px; justify-content: center; align-items: center;">
+                    <span style="color: #ff3860; font-weight: bold; background: white; padding: 0.5rem 1rem; border-radius: 4px;">Будет удалено</span>
                   </div>
                 </div>
                 <input type="hidden" class="image-delete-input" name="images_to_delete" data-image-id="<%= img.id %>" value="<%= img.id %>" disabled>
@@ -438,7 +435,10 @@
         <div class="form-row">
           <div class="form-group" style="grid-column: 1 / -1;">
             <label>Добавить изображения</label>
-            <input type="file" name="images" multiple accept="image/*">
+            <input type="file" id="fileInput" name="images" multiple accept="image/*" style="display: none;">
+            <label for="fileInput" class="file-input-label">
+              <i class="fas fa-cloud-upload-alt"></i> Выбрать файлы
+            </label>
             <p style="margin-top: 0.5rem; font-size: 0.875rem; color: #666;">Макс. 30 изображений на кемпер</p>
           </div>
         </div>
@@ -449,7 +449,7 @@
         <button type="submit" class="button is-primary">
           <i class="fas fa-save"></i> <%= caravan ? 'Обновить' : 'Создать' %>
         </button>
-        <a href="/admin" class="button is-light">Отмена</a>
+        <a href="/admin/dash" class="button is-light">Отмена</a>
       </div>
     </form>
 

@@ -112,6 +112,11 @@
   background-color: #fafafa;
 }
 
+/* Image deletion marker overlay - don't block pointer events */
+.delete-marker {
+  pointer-events: none;
+}
+
 .admin-table td {
   padding: 1rem !important;
   vertical-align: middle;
@@ -293,6 +298,33 @@
 .form-actions .button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* File input styling - label-based button */
+.file-input-label {
+  display: inline-block;
+  width: fit-content;
+  padding: 0.75rem 1.5rem;
+  background-color: #3273dc;
+  color: white;
+  border: 1px solid #3273dc;
+  border-radius: 3px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 0;
+}
+
+.file-input-label:hover {
+  background-color: #2366d1;
+  border-color: #2366d1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.file-input-label i {
+  margin-right: 0.5rem;
 }
 
 .form-actions .button.is-primary {
