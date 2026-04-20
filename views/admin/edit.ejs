@@ -61,14 +61,14 @@
           <div class="form-group">
             <label>
               <input type="checkbox" name="featured" <%= caravan?.featured ? 'checked' : '' %>>
-              Избранное (показывать на главной)
+              Показывать на главной
             </label>
           </div>
           
           <div class="form-group">
             <label>
               <input type="checkbox" name="winter_rated" <%= caravan?.winter_rated ? 'checked' : '' %>>
-              Зимний рейтинг
+              Зимний кемпер
             </label>
           </div>
         </div>
@@ -100,14 +100,14 @@
           
           <div class="form-group">
             <label>Тип туалета</label>
-            <input type="text" name="toilet_type" placeholder="Chemical" value="<%= caravan?.toilet_type || '' %>">
+            <input type="text" name="toilet_type" placeholder="Биологический" value="<%= caravan?.toilet_type || '' %>">
           </div>
         </div>
       </div>
 
       <!-- Water Systems -->
       <div class="form-section">
-        <h3><i class="fas fa-water"></i> Водные системы</h3>
+        <h3><i class="fas fa-water"></i> Водные баки</h3>
         
         <div class="form-row">
           <div class="form-group">
@@ -134,7 +134,7 @@
         <div class="form-row">
           <div class="form-group">
             <label>Тип холодильника</label>
-            <input type="text" name="fridge_type" placeholder="Absorption" value="<%= caravan?.fridge_type || '' %>">
+            <input type="text" name="fridge_type" placeholder="Электрический" value="<%= caravan?.fridge_type || '' %>">
           </div>
           
           <div class="form-group">

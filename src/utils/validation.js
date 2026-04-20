@@ -166,12 +166,13 @@ export const validateCaravanData = (data, isUpdate = false) => {
   ];
 
   for (const field of booleanFields) {
-    if (data[field] !== undefined && !validateBoolean(data[field])) {
+    // Only validate if field has a value (skip empty strings for optional fields)
+    if (data[field] !== undefined && data[field] !== '' && !validateBoolean(data[field])) {
       errors.push(`${field} must be a boolean value`);
     }
   }
 
-  // Validate integer fields
+  // Validate integer fields - allow empty values for optional fields
   const integerFields = [
     'beds_count', 'fresh_water_tank_l', 'grey_water_tank_l', 'boiler_volume_l',
     'fridge_volume_l', 'stove_burners_count', 'battery_capacity_ah', 'solar_wattage',
@@ -180,8 +181,11 @@ export const validateCaravanData = (data, isUpdate = false) => {
   ];
 
   for (const field of integerFields) {
-    if (data[field] !== undefined && !validateInteger(data[field], 0, 1000000)) {
-      errors.push(`${field} must be a valid number`);
+    // Only validate if field has a value (not empty, null, or undefined)
+    if (data[field] !== undefined && data[field] !== null && data[field] !== '') {
+      if (!validateInteger(data[field], 0, 1000000)) {
+        errors.push(`${field} must be a valid number`);
+      }
     }
   }
 
