@@ -44,10 +44,7 @@ jobs:
         with:
           images: git.darkzoul.org/dark_zoul/campersite
           tags: |
-            type=raw,value=${{ inputs.tag }},enable=${{ github.event_name == 'workflow_dispatch' }}
-            type=raw,value=latest,enable=${{ github.event_name == 'workflow_dispatch' }}
-            type=raw,value=dev
-            type=sha,prefix=dev-
+            type=raw,value=old
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
