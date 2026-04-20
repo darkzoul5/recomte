@@ -13,8 +13,9 @@ import { caravans, images } from './db/db.js';
 import caravansRoutes from './src/routes/caravans.js';
 import adminRoutes from './src/routes/admin.js';
 
-// Load environment variables
-dotenv.config();
+// Load environment variables from .env file if it exists
+// Docker environment variables will be used if .env doesn't exist
+dotenv.config({ override: false });
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
