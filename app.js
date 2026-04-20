@@ -481,6 +481,19 @@ fastify.get('/caravans/:slug', async (request, reply) => {
           features: formData.features ? JSON.stringify(Array.isArray(formData.features) ? formData.features : [formData.features]) : '[]'
         });
 
+        // Handle image deletions (marked for deletion in form)
+        if (formData.images_to_delete) {
+          const imagesToDelete = Array.isArray(formData.images_to_delete) 
+            ? formData.images_to_delete 
+            : [formData.images_to_delete];
+          
+          for (const imageId of imagesToDelete) {
+            if (imageId) {
+              images.delete(parseInt(imageId));
+            }
+          }
+        }
+
         // Handle uploaded images
         if (uploadedFiles.length > 0) {
           const imagesDir = path.join(__dirname, 'public', 'images', 'caravans', String(id));
@@ -515,7 +528,7 @@ fastify.get('/caravans/:slug', async (request, reply) => {
           }
         }
 
-        return reply.redirect(`/admin/dash`);
+        return reply.redirect(`/admin/edit/${id}`);
       } catch (err) {
         fastify.log.error(err);
         const { id } = request.params;
