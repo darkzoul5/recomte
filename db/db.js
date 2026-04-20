@@ -362,5 +362,4 @@ export const images = {
     }
     run('UPDATE images SET sort_order = ? WHERE id = ?', [sortOrder, imageId]);
   }
-  }
 };
