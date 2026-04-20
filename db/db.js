@@ -3,6 +3,13 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createSchema } from './schema.js';
+import {
+  validateColumnName,
+  validateCaravanData,
+  filterCaravanData,
+  validateImageData,
+  filterImageData
+} from '../src/utils/validation.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../data/app.db');
@@ -143,6 +150,12 @@ export const caravans = {
   },
 
   create: (data) => {
+    // Validate data before creating
+    const validation = validateCaravanData(data, false);
+    if (!validation.isValid) {
+      throw new Error(`Validation failed: ${validation.errors.join('; ')}`);
+    }
+
     const {
       title,
       slug,
@@ -238,11 +251,30 @@ export const caravans = {
   },
 
   update: (id, data) => {
+    // Validate ID is an integer
+    if (!Number.isInteger(id) || id <= 0) {
+      throw new Error('Invalid caravan ID');
+    }
+
+    // Validate and filter data - only allow whitelisted columns
+    const validation = validateCaravanData(data, true);
+    if (!validation.isValid) {
+      throw new Error(`Validation failed: ${validation.errors.join('; ')}`);
+    }
+
+    // Filter to only allow whitelisted columns
+    const filteredData = filterCaravanData(data, true);
+
+    if (Object.keys(filteredData).length === 0) {
+      return caravans.getById(id); // No updates
+    }
+
     const updates = [];
     const values = [];
 
-    Object.entries(data).forEach(([key, value]) => {
-      if (key !== 'id' && key !== 'created_at') {
+    // Process each field with proper validation based on type
+    Object.entries(filteredData).forEach(([key, value]) => {
+      if (key !== 'id' && key !== 'created_at' && key !== 'updated_at') {
         updates.push(`${key} = ?`);
         if (typeof value === 'boolean') {
           values.push(value ? 1 : 0);
@@ -254,7 +286,7 @@ export const caravans = {
       }
     });
 
-    if (updates.length === 0) return null;
+    if (updates.length === 0) return caravans.getById(id);
 
     updates.push('updated_at = CURRENT_TIMESTAMP');
     values.push(id);
@@ -274,6 +306,10 @@ export const caravans = {
 // Images queries
 export const images = {
   getByCaravanId: (caravanId) => {
+    // Validate caravan ID
+    if (!Number.isInteger(caravanId) || caravanId <= 0) {
+      return [];
+    }
     return query(
       'SELECT * FROM images WHERE caravan_id = ? ORDER BY sort_order ASC',
       [caravanId]
@@ -281,6 +317,22 @@ export const images = {
   },
 
   create: (caravanId, url, altText = '', sortOrder = 0) => {
+    // Validate inputs
+    if (!Number.isInteger(caravanId) || caravanId <= 0) {
+      throw new Error('Invalid caravan ID');
+    }
+
+    const imageData = {
+      url,
+      alt_text: altText,
+      sort_order: sortOrder
+    };
+
+    const validation = validateImageData(imageData);
+    if (!validation.isValid) {
+      throw new Error(`Validation failed: ${validation.errors.join('; ')}`);
+    }
+
     run(
       'INSERT INTO images (caravan_id, url, alt_text, sort_order) VALUES (?, ?, ?, ?)',
       [caravanId, url, altText, sortOrder]
@@ -293,10 +345,22 @@ export const images = {
   },
 
   delete: (imageId) => {
+    // Validate image ID
+    if (!Number.isInteger(imageId) || imageId <= 0) {
+      throw new Error('Invalid image ID');
+    }
     run('DELETE FROM images WHERE id = ?', [imageId]);
   },
 
   reorder: (imageId, sortOrder) => {
+    // Validate inputs
+    if (!Number.isInteger(imageId) || imageId <= 0) {
+      throw new Error('Invalid image ID');
+    }
+    if (!Number.isInteger(sortOrder) || sortOrder < 0) {
+      throw new Error('Invalid sort order');
+    }
     run('UPDATE images SET sort_order = ? WHERE id = ?', [sortOrder, imageId]);
+  }
   }
 };

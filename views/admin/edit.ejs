@@ -12,7 +12,7 @@
       </div>
     <% } %>
 
-    <form method="POST" action="<%= isNew ? '/admin/new' : '/admin/edit/' + caravan.id %>" class="admin-form">
+    <form method="POST" action="<%= isNew ? '/admin/new' : '/admin/edit/' + caravan.id %>" class="admin-form" enctype="multipart/form-data">
       <!-- Basic Info -->
       <div class="form-section">
         <h3><i class="fas fa-info-circle"></i> Основная информация</h3>

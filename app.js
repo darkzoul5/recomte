@@ -4,8 +4,10 @@ import fastifyCookie from '@fastify/cookie';
 import fastifySession from '@fastify/session';
 import fastifyStatic from '@fastify/static';
 import fastifyFormbody from '@fastify/formbody';
+import fastifyMultipart from '@fastify/multipart';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 import { initDb, closeDb } from './db/db.js';
 import { caravans, images } from './db/db.js';
 import caravansRoutes from './src/routes/caravans.js';
@@ -30,6 +32,12 @@ const fastify = Fastify({
     await fastify.register(fastifyCookie);
 
     await fastify.register(fastifyFormbody);
+
+    await fastify.register(fastifyMultipart, {
+      limits: {
+        fileSize: 10 * 1024 * 1024 // 10MB per file
+      }
+    });
 
     await fastify.register(fastifySession, {
       secret: process.env.SESSION_SECRET || 'default_secret_change_in_production',
@@ -255,82 +263,128 @@ fastify.get('/caravans/:slug', async (request, reply) => {
       });
     });
 
-    // POST /admin/new - create new caravan from form
+    // POST /admin/new - create new caravan from form with file uploads
     fastify.post('/admin/new', async (request, reply) => {
       if (!request.session.adminId) {
         return reply.redirect('/admin/login');
       }
 
       try {
-        const data = await request.file();
-        
-        if (!data) {
-          // No multipart data, just handle form fields
-          const formData = request.body;
-          if (!formData.title || !formData.slug || !formData.price) {
-            const emptyCaravan = { title: '', slug: '', price: 0, status: 'available', featured: 0, images: [] };
-            return reply.view('admin/edit', { 
-              title: 'Добавить новый кемпер', 
-              caravan: emptyCaravan,
-              isNew: true,
-              error: 'Заполните обязательные поля: название, slug и цена'
-            });
+        const formData = {};
+        const uploadedFiles = [];
+
+        // Parse multipart form data
+        const parts = request.parts();
+        for await (const part of parts) {
+          if (part.type === 'field') {
+            // Handle form fields
+            formData[part.fieldname] = part.value;
+          } else if (part.type === 'file') {
+            // Only save files with fieldname 'images'
+            if (part.fieldname === 'images') {
+              uploadedFiles.push(part);
+            } else {
+              // Consume the stream even if we don't save it
+              await part.toBuffer();
+            }
           }
-
-          const newCaravan = caravans.create({
-            title: formData.title,
-            slug: formData.slug,
-            description: formData.description || '',
-            year: formData.year ? parseInt(formData.year) : null,
-            price: parseInt(formData.price),
-            status: formData.status || 'available',
-            featured: formData.featured ? 1 : 0,
-            beds_count: formData.beds_count ? parseInt(formData.beds_count) : null,
-            has_shower: formData.has_shower ? 1 : 0,
-            has_toilet: formData.has_toilet ? 1 : 0,
-            toilet_type: formData.toilet_type || null,
-            fresh_water_tank_l: formData.fresh_water_tank_l ? parseInt(formData.fresh_water_tank_l) : null,
-            grey_water_tank_l: formData.grey_water_tank_l ? parseInt(formData.grey_water_tank_l) : null,
-            black_water_tank_l: formData.black_water_tank_l ? parseInt(formData.black_water_tank_l) : null,
-            has_hot_water: formData.has_hot_water ? 1 : 0,
-            water_heater_type: formData.water_heater_type || null,
-            boiler_volume_l: formData.boiler_volume_l ? parseInt(formData.boiler_volume_l) : null,
-            fridge_type: formData.fridge_type || null,
-            fridge_volume_l: formData.fridge_volume_l ? parseInt(formData.fridge_volume_l) : null,
-            sink_present: formData.sink_present ? 1 : 0,
-            has_cooktop: formData.has_cooktop ? 1 : 0,
-            cooktop_type: formData.cooktop_type || null,
-            stove_burners_count: formData.stove_burners_count ? parseInt(formData.stove_burners_count) : null,
-            has_oven: formData.has_oven ? 1 : 0,
-            has_heating: formData.has_heating ? 1 : 0,
-            heating_type: formData.heating_type || null,
-            heater_brand: formData.heater_brand || null,
-            heating_source: formData.heating_source || null,
-            heating_distribution: formData.heating_distribution || null,
-            has_insulation: formData.has_insulation ? 1 : 0,
-            double_glazed_windows: formData.double_glazed_windows ? 1 : 0,
-            winter_rated: formData.winter_rated ? 1 : 0,
-            battery_type: formData.battery_type || null,
-            battery_capacity_ah: formData.battery_capacity_ah ? parseInt(formData.battery_capacity_ah) : null,
-            has_solar_panels: formData.has_solar_panels ? 1 : 0,
-            solar_wattage: formData.solar_wattage ? parseInt(formData.solar_wattage) : null,
-            inverter_wattage: formData.inverter_wattage ? parseInt(formData.inverter_wattage) : null,
-            has_shore_power: formData.has_shore_power ? 1 : 0,
-            has_12v_system: formData.has_12v_system ? 1 : 0,
-            length_mm: formData.length_mm ? parseInt(formData.length_mm) : null,
-            width_mm: formData.width_mm ? parseInt(formData.width_mm) : null,
-            height_mm: formData.height_mm ? parseInt(formData.height_mm) : null,
-            interior_height_mm: formData.interior_height_mm ? parseInt(formData.interior_height_mm) : null,
-            weight_empty_kg: formData.weight_empty_kg ? parseInt(formData.weight_empty_kg) : null,
-            max_weight_kg: formData.max_weight_kg ? parseInt(formData.max_weight_kg) : null,
-            axle_type: formData.axle_type || null,
-            features: formData.features ? JSON.stringify(Array.isArray(formData.features) ? formData.features : [formData.features]) : '[]'
-          });
-
-          return reply.redirect(`/admin/dash`);
         }
 
-        // TODO: Handle multipart file uploads for images
+        if (!formData.title || !formData.slug || !formData.price) {
+          const emptyCaravan = { title: '', slug: '', price: 0, status: 'available', featured: 0, images: [] };
+          return reply.view('admin/edit', { 
+            title: 'Добавить новый кемпер', 
+            caravan: emptyCaravan,
+            isNew: true,
+            error: 'Заполните обязательные поля: название, slug и цена'
+          });
+        }
+
+        // Create caravan
+        const newCaravan = caravans.create({
+          title: formData.title,
+          slug: formData.slug,
+          description: formData.description || '',
+          year: formData.year ? parseInt(formData.year) : null,
+          price: parseInt(formData.price),
+          status: formData.status || 'available',
+          featured: formData.featured ? 1 : 0,
+          beds_count: formData.beds_count ? parseInt(formData.beds_count) : null,
+          has_shower: formData.has_shower ? 1 : 0,
+          has_toilet: formData.has_toilet ? 1 : 0,
+          toilet_type: formData.toilet_type || null,
+          fresh_water_tank_l: formData.fresh_water_tank_l ? parseInt(formData.fresh_water_tank_l) : null,
+          grey_water_tank_l: formData.grey_water_tank_l ? parseInt(formData.grey_water_tank_l) : null,
+          black_water_tank_l: formData.black_water_tank_l ? parseInt(formData.black_water_tank_l) : null,
+          has_hot_water: formData.has_hot_water ? 1 : 0,
+          water_heater_type: formData.water_heater_type || null,
+          boiler_volume_l: formData.boiler_volume_l ? parseInt(formData.boiler_volume_l) : null,
+          fridge_type: formData.fridge_type || null,
+          fridge_volume_l: formData.fridge_volume_l ? parseInt(formData.fridge_volume_l) : null,
+          sink_present: formData.sink_present ? 1 : 0,
+          has_cooktop: formData.has_cooktop ? 1 : 0,
+          cooktop_type: formData.cooktop_type || null,
+          stove_burners_count: formData.stove_burners_count ? parseInt(formData.stove_burners_count) : null,
+          has_oven: formData.has_oven ? 1 : 0,
+          has_heating: formData.has_heating ? 1 : 0,
+          heating_type: formData.heating_type || null,
+          heater_brand: formData.heater_brand || null,
+          heating_source: formData.heating_source || null,
+          heating_distribution: formData.heating_distribution || null,
+          has_insulation: formData.has_insulation ? 1 : 0,
+          double_glazed_windows: formData.double_glazed_windows ? 1 : 0,
+          winter_rated: formData.winter_rated ? 1 : 0,
+          battery_type: formData.battery_type || null,
+          battery_capacity_ah: formData.battery_capacity_ah ? parseInt(formData.battery_capacity_ah) : null,
+          has_solar_panels: formData.has_solar_panels ? 1 : 0,
+          solar_wattage: formData.solar_wattage ? parseInt(formData.solar_wattage) : null,
+          inverter_wattage: formData.inverter_wattage ? parseInt(formData.inverter_wattage) : null,
+          has_shore_power: formData.has_shore_power ? 1 : 0,
+          has_12v_system: formData.has_12v_system ? 1 : 0,
+          length_mm: formData.length_mm ? parseInt(formData.length_mm) : null,
+          width_mm: formData.width_mm ? parseInt(formData.width_mm) : null,
+          height_mm: formData.height_mm ? parseInt(formData.height_mm) : null,
+          interior_height_mm: formData.interior_height_mm ? parseInt(formData.interior_height_mm) : null,
+          weight_empty_kg: formData.weight_empty_kg ? parseInt(formData.weight_empty_kg) : null,
+          max_weight_kg: formData.max_weight_kg ? parseInt(formData.max_weight_kg) : null,
+          axle_type: formData.axle_type || null,
+          features: formData.features ? JSON.stringify(Array.isArray(formData.features) ? formData.features : [formData.features]) : '[]'
+        });
+
+        // Handle uploaded images
+        if (uploadedFiles.length > 0) {
+          const imagesDir = path.join(__dirname, 'public', 'images', 'caravans', String(newCaravan.id));
+          if (!fs.existsSync(imagesDir)) {
+            fs.mkdirSync(imagesDir, { recursive: true });
+          }
+
+          for (const file of uploadedFiles) {
+            try {
+              // Generate unique filename with caravan ID
+              const ext = path.extname(file.filename);
+              const baseName = path.basename(file.filename, ext);
+              const fileName = `caravan-${newCaravan.id}-${baseName}-${Date.now()}${ext}`;
+              const filePath = path.join(imagesDir, fileName);
+
+              // Use createWriteStream to handle file writing
+              const writeStream = fs.createWriteStream(filePath);
+              await new Promise((resolve, reject) => {
+                // file.file is the readable stream from @fastify/multipart
+                file.file.pipe(writeStream);
+                writeStream.on('finish', resolve);
+                writeStream.on('error', reject);
+                file.file.on('error', reject);
+              });
+
+              // Store image URL in database
+              const imageUrl = `/public/images/caravans/${newCaravan.id}/${fileName}`;
+              images.create(newCaravan.id, imageUrl, file.filename, 0);
+            } catch (fileErr) {
+              fastify.log.warn(`Image upload failed for file ${file.filename}: ${fileErr.message}`);
+            }
+          }
+        }
+
         return reply.redirect(`/admin/dash`);
       } catch (err) {
         fastify.log.error(err);
@@ -344,7 +398,7 @@ fastify.get('/caravans/:slug', async (request, reply) => {
       }
     });
 
-    // POST /admin/edit/:id - update caravan from form
+    // POST /admin/edit/:id - update caravan from form with file uploads
     fastify.post('/admin/edit/:id', async (request, reply) => {
       if (!request.session.adminId) {
         return reply.redirect('/admin/login');
@@ -358,7 +412,24 @@ fastify.get('/caravans/:slug', async (request, reply) => {
           return reply.code(404).send({ message: 'Caravan not found' });
         }
 
-        const formData = request.body;
+        const formData = {};
+        const uploadedFiles = [];
+
+        // Parse multipart form data
+        const parts = request.parts();
+        for await (const part of parts) {
+          if (part.type === 'field') {
+            formData[part.fieldname] = part.value;
+          } else if (part.type === 'file') {
+            // Only save files with fieldname 'images'
+            if (part.fieldname === 'images') {
+              uploadedFiles.push(part);
+            } else {
+              // Consume the stream even if we don't save it
+              await part.toBuffer();
+            }
+          }
+        }
 
         const updatedCaravan = caravans.update(parseInt(id), {
           title: formData.title,
@@ -409,6 +480,40 @@ fastify.get('/caravans/:slug', async (request, reply) => {
           axle_type: formData.axle_type || null,
           features: formData.features ? JSON.stringify(Array.isArray(formData.features) ? formData.features : [formData.features]) : '[]'
         });
+
+        // Handle uploaded images
+        if (uploadedFiles.length > 0) {
+          const imagesDir = path.join(__dirname, 'public', 'images', 'caravans', String(id));
+          if (!fs.existsSync(imagesDir)) {
+            fs.mkdirSync(imagesDir, { recursive: true });
+          }
+
+          for (const file of uploadedFiles) {
+            try {
+              // Generate unique filename with caravan ID
+              const ext = path.extname(file.filename);
+              const baseName = path.basename(file.filename, ext);
+              const fileName = `caravan-${id}-${baseName}-${Date.now()}${ext}`;
+              const filePath = path.join(imagesDir, fileName);
+
+              // Use createWriteStream to handle file writing
+              const writeStream = fs.createWriteStream(filePath);
+              await new Promise((resolve, reject) => {
+                // file.file is the readable stream from @fastify/multipart
+                file.file.pipe(writeStream);
+                writeStream.on('finish', resolve);
+                writeStream.on('error', reject);
+                file.file.on('error', reject);
+              });
+
+              // Store image URL in database
+              const imageUrl = `/public/images/caravans/${id}/${fileName}`;
+              images.create(parseInt(id), imageUrl, file.filename, 0);
+            } catch (fileErr) {
+              fastify.log.warn(`Image upload failed for file ${file.filename}: ${fileErr.message}`);
+            }
+          }
+        }
 
         return reply.redirect(`/admin/dash`);
       } catch (err) {
