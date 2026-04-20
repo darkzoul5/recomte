@@ -2,6 +2,34 @@ import { caravans, images } from '../../db/db.js';
 import { isAdmin } from '../middleware/auth.js';
 import { validateCaravanData, validateImageData, validateInteger } from '../utils/validation.js';
 
+// Helper function to convert feature checkboxes to features array
+const processFeatures = (data) => {
+  const features = [];
+  const featureMap = {
+    'features_air_conditioning': 'air_conditioning',
+    'features_awning': 'awning',
+    'features_bike_rack': 'bike_rack',
+    'features_mosquito_nets': 'mosquito_nets',
+    'features_tv_mount': 'tv_mount',
+    'features_storage_compartments': 'storage_compartments'
+  };
+
+  for (const [key, featureName] of Object.entries(featureMap)) {
+    if (data[key]) {
+      features.push(featureName);
+      delete data[key]; // Remove checkbox field from data
+    } else {
+      delete data[key]; // Remove unchecked checkbox field from data
+    }
+  }
+
+  if (features.length > 0) {
+    data.features = features;
+  }
+
+  return data;
+};
+
 export default async function adminRoutes(fastify) {
 
   // GET /admin/api/caravans - list all caravans (including sold) for admin
@@ -57,7 +85,10 @@ export default async function adminRoutes(fastify) {
   // POST /admin/api/caravans - create new caravan
   fastify.post('/admin/api/caravans', { onRequest: [isAdmin] }, async (request, reply) => {
     try {
-      const data = request.body;
+      let data = request.body;
+
+      // Process features from checkboxes
+      data = processFeatures(data);
 
       // Validate required fields
       if (!data.title || !data.slug || !data.price) {
@@ -82,12 +113,15 @@ export default async function adminRoutes(fastify) {
   fastify.put('/admin/api/caravans/:id', { onRequest: [isAdmin] }, async (request, reply) => {
     try {
       const { id } = request.params;
-      const data = request.body;
+      let data = request.body;
 
       // Validate ID
       if (!validateInteger(parseInt(id), 1, Number.MAX_SAFE_INTEGER)) {
         return reply.status(400).send({ error: 'Invalid caravan ID' });
       }
+
+      // Process features from checkboxes
+      data = processFeatures(data);
 
       const updated = caravans.update(parseInt(id), data);
       return { success: true, caravan: updated };

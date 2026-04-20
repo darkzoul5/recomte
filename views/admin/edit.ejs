@@ -46,7 +46,9 @@
             <label>Год выпуска</label>
             <input type="number" name="year" placeholder="2000" value="<%= caravan?.year || '' %>" min="1950" max="2040">
           </div>
-          
+        </div>
+        
+        <div class="form-row">
           <div class="form-group">
             <label>Статус</label>
             <select name="status">
@@ -55,18 +57,23 @@
               <option value="sold" <%= caravan?.status === 'sold' ? 'selected' : '' %>>Продано</option>
             </select>
           </div>
-        </div>
-        
-        <div class="form-row">
+          
           <div class="form-group">
-            <label>
+            <label style="font-weight: normal;">
               <input type="checkbox" name="featured" <%= caravan?.featured ? 'checked' : '' %>>
               Показывать на главной
             </label>
           </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Спальных мест</label>
+            <input type="number" name="beds_count" placeholder="2" value="<%= caravan?.beds_count || '' %>">
+          </div>
           
           <div class="form-group">
-            <label>
+            <label style="font-weight: normal;">
               <input type="checkbox" name="winter_rated" <%= caravan?.winter_rated ? 'checked' : '' %>>
               Зимний кемпер
             </label>
@@ -76,38 +83,42 @@
 
       <!-- Comfort & Layout -->
       <div class="form-section">
-        <h3><i class="fas fa-bed"></i> Комфорт и расположение</h3>
+        <h3><i class="fas fa-bed"></i> Комфорт и ванная</h3>
         
         <div class="form-row">
           <div class="form-group">
-            <label>Спальных мест</label>
-            <input type="number" name="beds_count" placeholder="2" value="<%= caravan?.beds_count || '' %>">
-          </div>
-          
-          <div class="form-group">
-            <label>
+            <label style="font-weight: normal;">
               <input type="checkbox" name="has_shower" <%= caravan?.has_shower ? 'checked' : '' %>>
               Душ
             </label>
           </div>
           
           <div class="form-group">
-            <label>
+            <label style="font-weight: normal;">
               <input type="checkbox" name="has_toilet" <%= caravan?.has_toilet ? 'checked' : '' %>>
               Туалет
             </label>
           </div>
-          
+        </div>
+        
+        <div class="form-row">
           <div class="form-group">
             <label>Тип туалета</label>
             <input type="text" name="toilet_type" placeholder="Биологический" value="<%= caravan?.toilet_type || '' %>">
+          </div>
+          
+          <div class="form-group">
+            <label style="font-weight: normal;">
+              <input type="checkbox" name="sink_present" <%= caravan?.sink_present ? 'checked' : '' %>>
+              Раковина
+            </label>
           </div>
         </div>
       </div>
 
       <!-- Water Systems -->
       <div class="form-section">
-        <h3><i class="fas fa-water"></i> Водные баки</h3>
+        <h3><i class="fas fa-water"></i> Водные системы</h3>
         
         <div class="form-row">
           <div class="form-group">
@@ -119,10 +130,26 @@
             <label>Бак серой воды (л)</label>
             <input type="number" name="grey_water_tank_l" placeholder="100" value="<%= caravan?.grey_water_tank_l || '' %>">
           </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label style="font-weight: normal;">
+              <input type="checkbox" name="has_hot_water" <%= caravan?.has_hot_water ? 'checked' : '' %>>
+              Горячее водоснабжение
+            </label>
+          </div>
           
           <div class="form-group">
-            <label>Бак чёрной воды (л)</label>
-            <input type="number" name="black_water_tank_l" placeholder="50" value="<%= caravan?.black_water_tank_l || '' %>">
+            <label>Тип горячей воды</label>
+            <input type="text" name="water_heater_type" placeholder="Электрический" value="<%= caravan?.water_heater_type || '' %>">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Объём бойлера (л)</label>
+            <input type="number" name="boiler_volume_l" placeholder="15" value="<%= caravan?.boiler_volume_l || '' %>">
           </div>
         </div>
       </div>
@@ -141,16 +168,30 @@
             <label>Объём холодильника (л)</label>
             <input type="number" name="fridge_volume_l" placeholder="150" value="<%= caravan?.fridge_volume_l || '' %>">
           </div>
-          
+        </div>
+        
+        <div class="form-row">
           <div class="form-group">
-            <label>
+            <label style="font-weight: normal;">
               <input type="checkbox" name="has_cooktop" <%= caravan?.has_cooktop ? 'checked' : '' %>>
               Плита
             </label>
           </div>
           
           <div class="form-group">
-            <label>
+            <label>Тип плиты</label>
+            <input type="text" name="cooktop_type" placeholder="Газовая" value="<%= caravan?.cooktop_type || '' %>">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Количество конфорок</label>
+            <input type="number" name="stove_burners_count" placeholder="2" value="<%= caravan?.stove_burners_count || '' %>">
+          </div>
+          
+          <div class="form-group">
+            <label style="font-weight: normal;">
               <input type="checkbox" name="has_oven" <%= caravan?.has_oven ? 'checked' : '' %>>
               Духовка
             </label>
@@ -158,74 +199,110 @@
         </div>
       </div>
 
-      <!-- Heating & Hot Water -->
+      <!-- Heating -->
       <div class="form-section">
-        <h3><i class="fas fa-fire"></i> Отопление и вода</h3>
+        <h3><i class="fas fa-fire"></i> Отопление</h3>
         
         <div class="form-row">
           <div class="form-group">
-            <label>Тип отопления</label>
-            <input type="text" name="heating_type" placeholder="Diesel" value="<%= caravan?.heating_type || '' %>">
-          </div>
-          
-          <div class="form-group">
-            <label>Марка отопления</label>
-            <input type="text" name="heating_brand" placeholder="Alde" value="<%= caravan?.heating_brand || '' %>">
-          </div>
-          
-          <div class="form-group">
-            <label>Источник отопления</label>
-            <input type="text" name="heating_source" placeholder="Diesel/Electric" value="<%= caravan?.heating_source || '' %>">
-          </div>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label>
-              <input type="checkbox" name="has_hot_water" <%= caravan?.has_hot_water ? 'checked' : '' %>>
-              Горячее водоснабжение
+            <label style="font-weight: normal;">
+              <input type="checkbox" name="has_heating" <%= caravan?.has_heating ? 'checked' : '' %>>
+              Отопление
             </label>
           </div>
           
           <div class="form-group">
-            <label>Тип горячей воды</label>
-            <input type="text" name="hot_water_type" placeholder="Instantaneous" value="<%= caravan?.hot_water_type || '' %>">
+            <label>Тип отопления</label>
+            <input type="text" name="heating_type" placeholder="Водяное" value="<%= caravan?.heating_type || '' %>">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Марка отопления</label>
+            <input type="text" name="heater_brand" placeholder="Truma" value="<%= caravan?.heater_brand || '' %>">
+          </div>
+          
+          <div class="form-group">
+            <label>Источник отопления</label>
+            <input type="text" name="heating_source" placeholder="Дизель/электро" value="<%= caravan?.heating_source || '' %>">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Распределение тепла</label>
+            <input type="text" name="heating_distribution" placeholder="Воздушная/водяная" value="<%= caravan?.heating_distribution || '' %>">
+          </div>
+          
+          <div class="form-group">
+            <label style="font-weight: normal;">
+              <input type="checkbox" name="has_insulation" <%= caravan?.has_insulation ? 'checked' : '' %>>
+              Изоляция
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label style="font-weight: normal;">
+              <input type="checkbox" name="double_glazed_windows" <%= caravan?.double_glazed_windows ? 'checked' : '' %>>
+              Двойное остекление
+            </label>
           </div>
         </div>
       </div>
 
-      <!-- Electrical -->
+      <!-- Electrical System -->
       <div class="form-section">
         <h3><i class="fas fa-plug"></i> Электроснабжение</h3>
         
         <div class="form-row">
           <div class="form-group">
             <label>Тип батареи</label>
-            <input type="text" name="battery_type" placeholder="Lithium" value="<%= caravan?.battery_type || '' %>">
+            <input type="text" name="battery_type" placeholder="Литий" value="<%= caravan?.battery_type || '' %>">
           </div>
           
           <div class="form-group">
             <label>Ёмкость батареи (Ач)</label>
-            <input type="number" name="battery_capacity_ah" placeholder="100" value="<%= caravan?.battery_capacity_ah || '' %>">
-          </div>
-          
-          <div class="form-group">
-            <label>Инвертор (W)</label>
-            <input type="number" name="inverter_watts" placeholder="2000" value="<%= caravan?.inverter_watts || '' %>">
+            <input type="number" name="battery_capacity_ah" placeholder="200" value="<%= caravan?.battery_capacity_ah || '' %>">
           </div>
         </div>
         
         <div class="form-row">
           <div class="form-group">
-            <label>
+            <label>Инвертор (W)</label>
+            <input type="number" name="inverter_wattage" placeholder="3000" value="<%= caravan?.inverter_wattage || '' %>">
+          </div>
+          
+          <div class="form-group">
+            <label style="font-weight: normal;">
+              <input type="checkbox" name="has_12v_system" <%= caravan?.has_12v_system ? 'checked' : '' %>>
+              12V система
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label style="font-weight: normal;">
               <input type="checkbox" name="has_solar_panels" <%= caravan?.has_solar_panels ? 'checked' : '' %>>
               Солнечные панели
             </label>
           </div>
           
           <div class="form-group">
-            <label>Мощность солнечных панелей (W)</label>
-            <input type="number" name="solar_panels_watts" placeholder="400" value="<%= caravan?.solar_panels_watts || '' %>">
+            <label>Мощность панелей (W)</label>
+            <input type="number" name="solar_wattage" placeholder="400" value="<%= caravan?.solar_wattage || '' %>">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label style="font-weight: normal;">
+              <input type="checkbox" name="has_shore_power" <%= caravan?.has_shore_power ? 'checked' : '' %>>
+              "Береговое" питание
+            </label>
           </div>
         </div>
       </div>
@@ -242,14 +319,23 @@
           
           <div class="form-group">
             <label>Ширина (мм)</label>
-            <input type="number" name="width_mm" placeholder="2200" value="<%= caravan?.width_mm || '' %>">
+            <input type="number" name="width_mm" placeholder="2400" value="<%= caravan?.width_mm || '' %>">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Высота (мм)</label>
+            <input type="number" name="height_mm" placeholder="2900" value="<%= caravan?.height_mm || '' %>">
           </div>
           
           <div class="form-group">
-            <label>Высота (мм)</label>
-            <input type="number" name="height_mm" placeholder="2400" value="<%= caravan?.height_mm || '' %>">
+            <label>Внутренняя высота (мм)</label>
+            <input type="number" name="interior_height_mm" placeholder="2000" value="<%= caravan?.interior_height_mm || '' %>">
           </div>
-          
+        </div>
+        
+        <div class="form-row">
           <div class="form-group">
             <label>Вес пустой (кг)</label>
             <input type="number" name="weight_empty_kg" placeholder="1500" value="<%= caravan?.weight_empty_kg || '' %>">
@@ -257,7 +343,67 @@
           
           <div class="form-group">
             <label>Макс. вес (кг)</label>
-            <input type="number" name="weight_max_kg" placeholder="2000" value="<%= caravan?.weight_max_kg || '' %>">
+            <input type="number" name="max_weight_kg" placeholder="2000" value="<%= caravan?.max_weight_kg || '' %>">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Тип оси</label>
+            <input type="text" name="axle_type" placeholder="Одинарная" value="<%= caravan?.axle_type || '' %>">
+          </div>
+        </div>
+      </div>
+
+      <!-- Amenities & Features -->
+      <div class="form-section">
+        <h3><i class="fas fa-star"></i> Удобства и опции</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label style="font-weight: normal;">
+              <input type="checkbox" name="features_air_conditioning" <%= caravan?.features && caravan.features.includes('air_conditioning') ? 'checked' : '' %>>
+              Кондиционер
+            </label>
+          </div>
+          
+          <div class="form-group">
+            <label style="font-weight: normal;">
+              <input type="checkbox" name="features_awning" <%= caravan?.features && caravan.features.includes('awning') ? 'checked' : '' %>>
+              Маркиза
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label style="font-weight: normal;">
+              <input type="checkbox" name="features_bike_rack" <%= caravan?.features && caravan.features.includes('bike_rack') ? 'checked' : '' %>>
+              Велосипедная стойка
+            </label>
+          </div>
+          
+          <div class="form-group">
+            <label style="font-weight: normal;">
+              <input type="checkbox" name="features_mosquito_nets" <%= caravan?.features && caravan.features.includes('mosquito_nets') ? 'checked' : '' %>>
+              Москитные сетки
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label style="font-weight: normal;">
+              <input type="checkbox" name="features_tv_mount" <%= caravan?.features && caravan.features.includes('tv_mount') ? 'checked' : '' %>>
+              ТВ кронштейн
+            </label>
+          </div>
+          
+          <div class="form-group">
+            <label style="font-weight: normal;">
+              <input type="checkbox" name="features_storage_compartments" <%= caravan?.features && caravan.features.includes('storage_compartments') ? 'checked' : '' %>>
+              Отсеки для хранения
+            </label>
           </div>
         </div>
       </div>
