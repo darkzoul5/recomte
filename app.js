@@ -278,11 +278,26 @@ fastify.get('/caravans/:slug', async (request, reply) => {
         for await (const part of parts) {
           if (part.type === 'field') {
             // Handle form fields
-            formData[part.fieldname] = part.value;
+            if (part.fieldname === 'features' && formData[part.fieldname]) {
+              // Handle multiple feature checkboxes
+              if (Array.isArray(formData[part.fieldname])) {
+                formData[part.fieldname].push(part.value);
+              } else {
+                formData[part.fieldname] = [formData[part.fieldname], part.value];
+              }
+            } else {
+              formData[part.fieldname] = part.value;
+            }
           } else if (part.type === 'file') {
             // Only save files with fieldname 'images'
             if (part.fieldname === 'images') {
-              uploadedFiles.push(part);
+              // Convert stream to buffer immediately
+              const buffer = await part.toBuffer();
+              uploadedFiles.push({
+                filename: part.filename,
+                buffer: buffer,
+                mimetype: part.mimetype
+              });
             } else {
               // Consume the stream even if we don't save it
               await part.toBuffer();
@@ -358,29 +373,30 @@ fastify.get('/caravans/:slug', async (request, reply) => {
             fs.mkdirSync(imagesDir, { recursive: true });
           }
 
-          for (const file of uploadedFiles) {
+          for (const fileData of uploadedFiles) {
             try {
-              // Generate unique filename with caravan ID
-              const ext = path.extname(file.filename);
-              const baseName = path.basename(file.filename, ext);
-              const fileName = `caravan-${newCaravan.id}-${baseName}-${Date.now()}${ext}`;
+              // Skip empty files
+              if (!fileData.buffer || fileData.buffer.length === 0) {
+                fastify.log.warn(`Skipping empty file: ${fileData.filename}`);
+                continue;
+              }
+
+              // Generate unique filename with caravan ID, sanitizing the original filename
+              const ext = path.extname(fileData.filename);
+              const baseName = path.basename(fileData.filename, ext);
+              // Sanitize: replace spaces and special chars with hyphens, keep only alphanumeric, hyphens, underscores
+              const sanitized = baseName.replace(/[^a-zA-Z0-9_-]/g, '-').replace(/-+/g, '-');
+              const fileName = `caravan-${newCaravan.id}-${sanitized}-${Date.now()}${ext}`;
               const filePath = path.join(imagesDir, fileName);
 
-              // Use createWriteStream to handle file writing
-              const writeStream = fs.createWriteStream(filePath);
-              await new Promise((resolve, reject) => {
-                // file.file is the readable stream from @fastify/multipart
-                file.file.pipe(writeStream);
-                writeStream.on('finish', resolve);
-                writeStream.on('error', reject);
-                file.file.on('error', reject);
-              });
+              // Write file buffer to disk
+              fs.writeFileSync(filePath, fileData.buffer);
 
               // Store image URL in database
               const imageUrl = `/public/images/caravans/${newCaravan.id}/${fileName}`;
-              images.create(newCaravan.id, imageUrl, file.filename, 0);
+              images.create(newCaravan.id, imageUrl, fileData.filename, 0);
             } catch (fileErr) {
-              fastify.log.warn(`Image upload failed for file ${file.filename}: ${fileErr.message}`);
+              fastify.log.error(`Image upload failed for file ${fileData.filename}: ${fileErr.message}`);
             }
           }
         }
@@ -419,17 +435,44 @@ fastify.get('/caravans/:slug', async (request, reply) => {
         const parts = request.parts();
         for await (const part of parts) {
           if (part.type === 'field') {
-            formData[part.fieldname] = part.value;
+            // Handle multiple values with same fieldname (e.g., images_to_delete)
+            if (part.fieldname === 'images_to_delete') {
+              if (formData[part.fieldname]) {
+                // Convert to array or push to existing array
+                if (Array.isArray(formData[part.fieldname])) {
+                  formData[part.fieldname].push(part.value);
+                } else {
+                  formData[part.fieldname] = [formData[part.fieldname], part.value];
+                }
+              } else {
+                formData[part.fieldname] = part.value;
+              }
+            } else {
+              formData[part.fieldname] = part.value;
+            }
           } else if (part.type === 'file') {
             // Only save files with fieldname 'images'
             if (part.fieldname === 'images') {
-              uploadedFiles.push(part);
+              fastify.log.info(`File received: ${part.filename}, encoding: ${part.encoding}, mimetype: ${part.mimetype}`);
+              // Convert stream to buffer immediately
+              const buffer = await part.toBuffer();
+              fastify.log.info(`Buffer size for ${part.filename}: ${buffer.length} bytes`);
+              if (buffer && buffer.length > 0) {
+                uploadedFiles.push({
+                  filename: part.filename,
+                  buffer: buffer,
+                  mimetype: part.mimetype
+                });
+              } else {
+                fastify.log.warn(`Skipped empty file: ${part.filename}`);
+              }
             } else {
               // Consume the stream even if we don't save it
               await part.toBuffer();
             }
           }
         }
+        fastify.log.info(`Total files to upload: ${uploadedFiles.length}`);
 
         const updatedCaravan = caravans.update(parseInt(id), {
           title: formData.title,
@@ -496,36 +539,44 @@ fastify.get('/caravans/:slug', async (request, reply) => {
 
         // Handle uploaded images
         if (uploadedFiles.length > 0) {
+          fastify.log.info(`Processing ${uploadedFiles.length} uploaded files...`);
           const imagesDir = path.join(__dirname, 'public', 'images', 'caravans', String(id));
           if (!fs.existsSync(imagesDir)) {
+            fastify.log.info(`Creating directory: ${imagesDir}`);
             fs.mkdirSync(imagesDir, { recursive: true });
           }
 
-          for (const file of uploadedFiles) {
+          for (const fileData of uploadedFiles) {
             try {
-              // Generate unique filename with caravan ID
-              const ext = path.extname(file.filename);
-              const baseName = path.basename(file.filename, ext);
-              const fileName = `caravan-${id}-${baseName}-${Date.now()}${ext}`;
+              // Skip empty files
+              if (!fileData.buffer || fileData.buffer.length === 0) {
+                fastify.log.warn(`Skipping empty file: ${fileData.filename}`);
+                continue;
+              }
+
+              // Generate unique filename with caravan ID, sanitizing the original filename
+              const ext = path.extname(fileData.filename);
+              const baseName = path.basename(fileData.filename, ext);
+              // Sanitize: replace spaces and special chars with hyphens, keep only alphanumeric, hyphens, underscores
+              const sanitized = baseName.replace(/[^a-zA-Z0-9_-]/g, '-').replace(/-+/g, '-');
+              const fileName = `caravan-${id}-${sanitized}-${Date.now()}${ext}`;
               const filePath = path.join(imagesDir, fileName);
 
-              // Use createWriteStream to handle file writing
-              const writeStream = fs.createWriteStream(filePath);
-              await new Promise((resolve, reject) => {
-                // file.file is the readable stream from @fastify/multipart
-                file.file.pipe(writeStream);
-                writeStream.on('finish', resolve);
-                writeStream.on('error', reject);
-                file.file.on('error', reject);
-              });
+              fastify.log.info(`Writing file to: ${filePath}`);
+              // Write file buffer to disk synchronously
+              fs.writeFileSync(filePath, fileData.buffer);
+              fastify.log.info(`File written successfully: ${fileName}`);
 
               // Store image URL in database
               const imageUrl = `/public/images/caravans/${id}/${fileName}`;
-              images.create(parseInt(id), imageUrl, file.filename, 0);
+              images.create(parseInt(id), imageUrl, fileData.filename, 0);
+              fastify.log.info(`Image record created in database for: ${imageUrl}`);
             } catch (fileErr) {
-              fastify.log.warn(`Image upload failed for file ${file.filename}: ${fileErr.message}`);
+              fastify.log.error(`Image upload failed for file ${fileData.filename}: ${fileErr.message}`);
             }
           }
+        } else {
+          fastify.log.info(`No files to upload (uploadedFiles.length = ${uploadedFiles.length})`);
         }
 
         return reply.redirect(`/admin/edit/${id}`);
