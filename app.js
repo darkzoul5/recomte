@@ -44,11 +44,13 @@ const fastify = Fastify({
 
     await fastify.register(fastifySession, {
       secret: process.env.SESSION_SECRET || 'default_secret_change_in_production',
+      saveUninitialized: true,
       cookie: {
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
-        secure: process.env.NODE_ENV === 'production',
+        secure: false, // reverse proxy handles HTTPS, internal connection is HTTP
         httpOnly: true,
-        sameSite: 'lax'
+        sameSite: 'lax',
+        path: '/'
       }
     });
 
@@ -161,8 +163,9 @@ fastify.get('/caravans/:slug', async (request, reply) => {
         const { verifyAdminPassword, setAdminSession } = await import('./src/middleware/auth.js');
         
         if (verifyAdminPassword(password)) {
-          fastify.log.info('Login successful');
+          fastify.log.info('Login successful, setting session');
           setAdminSession(request, 'admin');
+          fastify.log.info('Session after login:', { adminId: request.session.adminId, sessionID: request.sessionID });
           return reply.redirect('/admin/dash');
         } else {
           fastify.log.info('Login request with invalid credentials');
