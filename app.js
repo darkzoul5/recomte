@@ -48,7 +48,7 @@ const fastify = Fastify({
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
-        sameSite: 'strict'
+        sameSite: 'lax'
       }
     });
 
@@ -150,29 +150,26 @@ fastify.get('/caravans/:slug', async (request, reply) => {
 
     // Admin login form handler
     fastify.post('/admin/login', async (request, reply) => {
-      fastify.log.debug('POST /admin/login received');
       const { password } = request.body;
 
       if (!password) {
-        fastify.log.warn('Login attempt with no password');
+        fastify.log.info('Login request with invalid credentials');
         return reply.view('admin/login', { title: 'Админ Вход', error: 'Пароль требуется' });
       }
 
       try {
-        fastify.log.debug('Attempting password verification');
         const { verifyAdminPassword, setAdminSession } = await import('./src/middleware/auth.js');
         
         if (verifyAdminPassword(password)) {
-          fastify.log.info('Login successful, setting session');
+          fastify.log.info('Login successful');
           setAdminSession(request, 'admin');
           return reply.redirect('/admin/dash');
         } else {
-          fastify.log.warn('Login failed - incorrect password');
+          fastify.log.info('Login request with invalid credentials');
           return reply.view('admin/login', { title: 'Админ Вход', error: 'Неверный пароль' });
         }
       } catch (err) {
-        fastify.log.error({ err }, 'Login error: %s', err.message);
-        fastify.log.error('ADMIN_PASSWORD env var is set:', !!process.env.ADMIN_PASSWORD);
+        fastify.log.error(err);
         return reply.view('admin/login', { title: 'Админ Вход', error: 'Ошибка сервера' });
       }
     });
@@ -186,7 +183,13 @@ fastify.get('/caravans/:slug', async (request, reply) => {
 
     // Admin dashboard (protected)
     fastify.get('/admin/dash', async (request, reply) => {
+      fastify.log.debug('GET /admin/dash - checking session', { sessionId: request.sessionID, adminId: request.session?.adminId });
+      console.log('Current session in /admin/dash:', JSON.stringify(request.session));
+      console.log('Session ID:', request.sessionID);
+      console.log('Cookies received:', request.headers.cookie);
+      
       if (!request.session.adminId) {
+        fastify.log.warn('Admin session not found, redirecting to login');
         return reply.redirect('/admin/login');
       }
 
