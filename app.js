@@ -20,7 +20,9 @@ dotenv.config({ override: false });
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const fastify = Fastify({
-  logger: process.env.NODE_ENV === 'development'
+  logger: {
+    level: process.env.LOG_LEVEL || 'info'
+  }
 });
 
 // Initialize and start server

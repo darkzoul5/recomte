@@ -35,4 +35,7 @@ fi
 
 # Start the application
 echo "Starting Node.js application..."
+echo "Environment: $NODE_ENV"
+echo "Database path: $DB_PATH"
+echo "Log level: $LOG_LEVEL"
 exec node /app/app.js
