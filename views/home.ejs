@@ -12,9 +12,9 @@
               <div class="card-image">
                 <figure class="image is-4by3">
                   <% if (caravan.images && caravan.images.length > 0) { %>
-                    <img src="<%= caravan.images[0].url %>" alt="<%= caravan.title %>">
+                    <img src="<%= caravan.images[0].url %>" alt="<%= caravan.title %>" style="object-fit: cover;">
                   <% } else { %>
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a3/Image-not-found.png?text=<%= caravan.title %>" alt="<%= caravan.title %>">
+                    <img src="/public/no-image-available.png?text=<%= caravan.title %>" alt="<%= caravan.title %>" style="object-fit: contain;">
                   <% } %>
                 </figure>
               </div>
