@@ -53,8 +53,34 @@ const seed = () => {
         interior_height_mm: 2100,
         weight_empty_kg: 2500,
         max_weight_kg: 3500,
-        axle_type: 'single',
-        features: JSON.stringify(['awning', 'bike_rack', 'air_conditioning', 'mosquito_nets'])
+        // Phase 1: Layout
+        shower_type: 'separate',
+        bed_layout: 'bunk',
+        windows_count: 6,
+        door_position: 'right',
+        // Phase 1: Gas system
+        gas_system_present: 1,
+        gas_bottles_count: 2,
+        // Phase 1: Climate & ventilation
+        has_ac: 1,
+        vent_fans_count: 2,
+        skylights_count: 2,
+        // Phase 1: Condition & history
+        condition: 'excellent',
+        damp_detected: 0,
+        last_service_date: '2024-11-15',
+        ownership_count: 1,
+        // Phase 1: Chassis & towing
+        axles_count: 1,
+        brake_type: 'hydraulic',
+        suspension_type: 'leaf_spring',
+        wheel_size_inch: 15,
+        hitch_weight_kg: 180,
+        braked: 1,
+        stabilizer_present: 1,
+        recommended_tow_vehicle_min_kg: 2200,
+        license_requirement: 'BE',
+        features: JSON.stringify(['awning', 'bike_rack', 'mosquito_nets'])
       },
       {
         title: 'Классический Комфорт 2022',
@@ -102,7 +128,33 @@ const seed = () => {
         interior_height_mm: 2000,
         weight_empty_kg: 1800,
         max_weight_kg: 2500,
-        axle_type: 'single',
+        // Phase 1: Layout
+        shower_type: 'combined',
+        bed_layout: 'dinette',
+        windows_count: 5,
+        door_position: 'left',
+        // Phase 1: Gas system
+        gas_system_present: 1,
+        gas_bottles_count: 1,
+        // Phase 1: Climate & ventilation
+        has_ac: 0,
+        vent_fans_count: 1,
+        skylights_count: 1,
+        // Phase 1: Condition & history
+        condition: 'good',
+        damp_detected: 0,
+        last_service_date: '2024-10-20',
+        ownership_count: 2,
+        // Phase 1: Chassis & towing
+        axles_count: 1,
+        brake_type: 'electric',
+        suspension_type: 'coil_spring',
+        wheel_size_inch: 14,
+        hitch_weight_kg: 120,
+        braked: 1,
+        stabilizer_present: 0,
+        recommended_tow_vehicle_min_kg: 1600,
+        license_requirement: 'B',
         features: JSON.stringify(['awning', 'storage_compartments'])
       },
       {
@@ -151,8 +203,34 @@ const seed = () => {
         interior_height_mm: 2150,
         weight_empty_kg: 3200,
         max_weight_kg: 4500,
-        axle_type: 'double',
-        features: JSON.stringify(['awning', 'bike_rack', 'tv_mount', 'air_conditioning', 'mosquito_nets', 'storage_compartments'])
+        // Phase 1: Layout
+        shower_type: 'separate',
+        bed_layout: 'bunk',
+        windows_count: 8,
+        door_position: 'right',
+        // Phase 1: Gas system
+        gas_system_present: 1,
+        gas_bottles_count: 3,
+        // Phase 1: Climate & ventilation
+        has_ac: 1,
+        vent_fans_count: 3,
+        skylights_count: 3,
+        // Phase 1: Condition & history
+        condition: 'excellent',
+        damp_detected: 0,
+        last_service_date: '2024-12-05',
+        ownership_count: 1,
+        // Phase 1: Chassis & towing
+        axles_count: 2,
+        brake_type: 'hydraulic',
+        suspension_type: 'air_suspension',
+        wheel_size_inch: 16,
+        hitch_weight_kg: 220,
+        braked: 1,
+        stabilizer_present: 1,
+        recommended_tow_vehicle_min_kg: 3000,
+        license_requirement: 'BE',
+        features: JSON.stringify(['awning', 'bike_rack', 'tv_mount', 'mosquito_nets', 'storage_compartments'])
       }
     ];
 

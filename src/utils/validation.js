@@ -5,13 +5,37 @@
 // Whitelist of allowed column names for caravans table
 const ALLOWED_CARAVAN_COLUMNS = new Set([
   'title', 'slug', 'description', 'year', 'price', 'status', 'featured',
-  'beds_count', 'has_shower', 'has_toilet', 'toilet_type',
+  // Sleeping & Basic (Phase 1 & 2)
+  'beds_count', 'shower_type', 'toilet_type', 'bed_layout', 'windows_count', 'door_position',
+  // Legacy fields (kept for backwards compatibility)
+  'has_shower', 'has_toilet',
+  // Water systems
   'fresh_water_tank_l', 'grey_water_tank_l', 'has_hot_water', 'water_heater_type', 'boiler_volume_l',
-  'fridge_type', 'fridge_volume_l', 'sink_present', 'has_cooktop', 'cooktop_type', 'stove_burners_count', 'has_oven', 'kitchen_outlets_count',
-  'has_heating', 'heating_type', 'heater_brand', 'heating_source', 'heating_distribution',
+  // Kitchen (Phase 1 & 2)
+  'fridge_type', 'fridge_volume_l', 'sink_present', 'cooktop_type', 'stove_burners_count',
+  // Legacy kitchen (kept for backwards compatibility)
+  'has_cooktop', 'has_oven', 'kitchen_outlets_count',
+  // Heating & Climate (Phase 1 & 2)
+  'heating_type', 'heating_source', 'has_ac', 'vent_fans_count', 'skylights_count',
+  // Legacy heating (kept for backwards compatibility)
+  'has_heating', 'heater_brand', 'heating_distribution',
+  // Insulation & Comfort
   'has_insulation', 'double_glazed_windows', 'winter_rated',
-  'battery_type', 'battery_capacity_ah', 'has_solar_panels', 'solar_wattage', 'inverter_wattage', 'has_shore_power', 'has_12v_system',
-  'length_mm', 'width_mm', 'height_mm', 'interior_height_mm', 'weight_empty_kg', 'max_weight_kg', 'axle_type',
+  // Electrical System (Phase 1 & 2)
+  'battery_type', 'battery_capacity_ah', 'solar_wattage', 'inverter_wattage', 'has_shore_power', 'has_12v_system',
+  // Legacy electrical (kept for backwards compatibility)
+  'has_solar_panels',
+  // Gas System (Phase 1)
+  'gas_system_present', 'gas_bottles_count',
+  // Dimensions & Weight
+  'length_mm', 'width_mm', 'height_mm', 'interior_height_mm', 'weight_empty_kg', 'max_weight_kg',
+  // Chassis & Towing (Phase 1)
+  'axles_count', 'brake_type', 'suspension_type', 'wheel_size_inch', 'hitch_weight_kg', 'braked', 'stabilizer_present', 'recommended_tow_vehicle_min_kg', 'license_requirement',
+  // Legacy chassis (kept for backwards compatibility)
+  'axle_type',
+  // Condition & History (Phase 1)
+  'condition', 'damp_detected', 'last_service_date', 'ownership_count',
+  // Flexible features
   'features'
 ]);
 

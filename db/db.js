@@ -49,12 +49,6 @@ export const initDb = () => {
       }
     });
 
-    // Migration: Add kitchen_outlets_count column if it doesn't exist
-    try {
-      db.exec('ALTER TABLE caravans ADD COLUMN kitchen_outlets_count INTEGER');
-    } catch (e) {
-      // Column likely already exists, ignore error
-    }
 
     console.log(`✓ Database initialized at ${DB_PATH}`);
     return db;
