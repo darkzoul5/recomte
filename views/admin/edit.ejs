@@ -83,19 +83,8 @@
 
       <!-- Comfort & Layout (Phase 1) -->
       <div class="form-section">
-        <h3><i class="fas fa-home"></i> Комфорт</h3>
-        
+        <h3><i class="fas fa-home"></i> Комфорт и Планировка</h3>
         <div class="form-row">
-          <div class="form-group">
-            <label>Тип душа</label>
-            <select name="shower_type">
-              <option value="">Выбрать...</option>
-              <option value="separate" <%= caravan?.shower_type === 'separate' ? 'selected' : '' %>>Отдельная кабинка</option>
-              <option value="combined" <%= caravan?.shower_type === 'combined' ? 'selected' : '' %>>Внутри</option>
-              <option value="none" <%= caravan?.shower_type === 'none' ? 'selected' : '' %>>Нет</option>
-            </select>
-          </div>
-          
           <div class="form-group">
             <label>Кровати</label>
             <select name="bed_layout">
@@ -125,6 +114,38 @@
           </div>
         </div>
       </div>
+
+      <!-- Bathroom -->
+      <div class="form-section">
+        <h3><i class="fas fa-home"></i> Ванная комната</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Тип душа</label>
+            <select name="shower_type">
+              <option value="">Выбрать...</option>
+              <option value="separate" <%= caravan?.shower_type === 'separate' ? 'selected' : '' %>>Отдельная кабинка</option>
+              <option value="combined" <%= caravan?.shower_type === 'combined' ? 'selected' : '' %>>Внутри</option>
+              <option value="none" <%= caravan?.shower_type === 'none' ? 'selected' : '' %>>Нет</option>
+            </select>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Тип туалета</label>
+              <input type="text" name="toilet_type" placeholder="Биологический" value="<%= caravan?.toilet_type || '' %>">
+          </div>
+
+
+          <div class="form-group">
+            <label style="font-weight: normal;">
+              <input type="checkbox" name="sink_present" <%= caravan?.sink_present ? 'checked' : '' %>>
+              Раковина
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
 
       <!-- Climate & Ventilation (Phase 1) -->
       <div class="form-section">
@@ -167,23 +188,6 @@
           <div class="form-group">
             <label>Количество газовых баллонов</label>
             <input type="number" name="gas_bottles_count" placeholder="2" value="<%= caravan?.gas_bottles_count || '' %>" min="0">
-          </div>
-        </div>
-      </div>
-          </div>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label>Тип туалета</label>
-            <input type="text" name="toilet_type" placeholder="Биологический" value="<%= caravan?.toilet_type || '' %>">
-          </div>
-          
-          <div class="form-group">
-            <label style="font-weight: normal;">
-              <input type="checkbox" name="sink_present" <%= caravan?.sink_present ? 'checked' : '' %>>
-              Раковина
-            </label>
           </div>
         </div>
       </div>
