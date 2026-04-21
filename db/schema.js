@@ -100,6 +100,17 @@ CREATE TABLE IF NOT EXISTS images (
   FOREIGN KEY(caravan_id) REFERENCES caravans(id) ON DELETE CASCADE
 );
 
+-- caravan_features table (queryable features for better filtering)
+CREATE TABLE IF NOT EXISTS caravan_features (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  caravan_id INTEGER NOT NULL,
+  feature_key TEXT NOT NULL,
+  feature_value TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY(caravan_id) REFERENCES caravans(id) ON DELETE CASCADE,
+  UNIQUE(caravan_id, feature_key)
+);
+
 -- Performance indexes (Phase 6)
 CREATE INDEX IF NOT EXISTS idx_caravans_slug ON caravans(slug);
 CREATE INDEX IF NOT EXISTS idx_caravans_status ON caravans(status);
@@ -113,6 +124,8 @@ CREATE INDEX IF NOT EXISTS idx_caravans_condition ON caravans(condition);
 CREATE INDEX IF NOT EXISTS idx_caravans_created_at ON caravans(created_at);
 CREATE INDEX IF NOT EXISTS idx_images_caravan_id ON images(caravan_id);
 CREATE INDEX IF NOT EXISTS idx_images_sort_order ON images(caravan_id, sort_order);
+CREATE INDEX IF NOT EXISTS idx_features_caravan_id ON caravan_features(caravan_id);
+CREATE INDEX IF NOT EXISTS idx_features_key_value ON caravan_features(feature_key, feature_value);
   `;
 
   return schema;

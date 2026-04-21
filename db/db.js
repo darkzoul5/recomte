@@ -95,6 +95,38 @@ const run = (sql, params = []) => {
   }
 };
 
+// Dynamic SQL Builder - converts values to appropriate types
+const convertValue = (value) => {
+  if (value === null || value === undefined) return null;
+  if (typeof value === 'boolean') return value ? 1 : 0;
+  if (typeof value === 'object') return JSON.stringify(value);
+  return value;
+};
+
+// Dynamic INSERT builder
+const buildInsert = (table, data) => {
+  const keys = Object.keys(data);
+  if (keys.length === 0) throw new Error('No data provided for INSERT');
+  
+  const placeholders = keys.map(() => '?').join(', ');
+  const sql = `INSERT INTO ${table} (${keys.join(', ')}) VALUES (${placeholders})`;
+  const values = keys.map(key => convertValue(data[key]));
+  
+  return { sql, values };
+};
+
+// Dynamic UPDATE builder
+const buildUpdate = (table, data, whereClause, whereValues = []) => {
+  const keys = Object.keys(data).filter(k => k !== 'id' && k !== 'created_at' && k !== 'updated_at');
+  if (keys.length === 0) throw new Error('No data provided for UPDATE');
+  
+  const updates = keys.map(key => `${key} = ?`).join(', ');
+  const values = keys.map(key => convertValue(data[key]));
+  const sql = `UPDATE ${table} SET ${updates} WHERE ${whereClause}`;
+  
+  return { sql, values: [...values, ...whereValues] };
+};
+
 
 // Caravans queries
 export const caravans = {
@@ -132,7 +164,7 @@ export const caravans = {
 
   getFeatured: (limit = 6) => {
     return query(
-      'SELECT * FROM caravans WHERE featured = 1 AND status = "available" ORDER BY created_at DESC LIMIT ?',
+      'SELECT * FROM caravans WHERE featured = 1 ORDER BY created_at DESC LIMIT ?',
       [limit]
     );
   },
@@ -144,93 +176,37 @@ export const caravans = {
       throw new Error(`Validation failed: ${validation.errors.join('; ')}`);
     }
 
-    const {
-      title,
-      slug,
-      description,
-      year,
-      price,
-      status,
-      featured,
-      beds_count,
-      has_shower,
-      has_toilet,
-      toilet_type,
-      fresh_water_tank_l,
-      grey_water_tank_l,
-      has_hot_water,
-      water_heater_type,
-      boiler_volume_l,
-      fridge_type,
-      fridge_volume_l,
-      sink_present,
-      has_cooktop,
-      cooktop_type,
-      stove_burners_count,
-      has_oven,
-      kitchen_outlets_count,
-      has_heating,
-      heating_type,
-      heater_brand,
-      heating_source,
-      heating_distribution,
-      has_insulation,
-      double_glazed_windows,
-      winter_rated,
-      battery_type,
-      battery_capacity_ah,
-      has_solar_panels,
-      solar_wattage,
-      inverter_wattage,
-      has_shore_power,
-      has_12v_system,
-      length_mm,
-      width_mm,
-      height_mm,
-      interior_height_mm,
-      weight_empty_kg,
-      max_weight_kg,
-      axle_type,
-      features
-    } = data;
+    // Extract features separately (stored in caravan_features table)
+    const { features, ...caravanData } = data;
 
-    const sql = `
-      INSERT INTO caravans (
-        title, slug, description, year, price, status, featured,
-        beds_count, has_shower, has_toilet, toilet_type,
-        fresh_water_tank_l, grey_water_tank_l, has_hot_water, water_heater_type, boiler_volume_l,
-        fridge_type, fridge_volume_l, sink_present, has_cooktop, cooktop_type, stove_burners_count, has_oven, kitchen_outlets_count,
-        has_heating, heating_type, heater_brand, heating_source, heating_distribution,
-        has_insulation, double_glazed_windows, winter_rated,
-        battery_type, battery_capacity_ah, has_solar_panels, solar_wattage, inverter_wattage, has_shore_power, has_12v_system,
-        length_mm, width_mm, height_mm, interior_height_mm, weight_empty_kg, max_weight_kg, axle_type,
-        features
-      ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?,
-        ?, ?, ?, ?,
-        ?, ?, ?, ?, ?,
-        ?, ?, ?, ?, ?, ?, ?,
-        ?, ?, ?, ?, ?,
-        ?, ?, ?,
-        ?, ?, ?, ?, ?, ?, ?,
-        ?, ?, ?, ?, ?, ?, ?,
-        ?
-      )
-    `;
+    // Filter to only include whitelisted columns
+    const filteredData = filterCaravanData(caravanData, false);
 
-    const params = [
-      title, slug, description, year, price, status, featured ? 1 : 0,
-      beds_count, has_shower ? 1 : 0, has_toilet ? 1 : 0, toilet_type,
-      fresh_water_tank_l, grey_water_tank_l, has_hot_water ? 1 : 0, water_heater_type, boiler_volume_l,
-      fridge_type, fridge_volume_l, sink_present ? 1 : 0, has_cooktop ? 1 : 0, cooktop_type, stove_burners_count, has_oven ? 1 : 0, kitchen_outlets_count,
-      has_heating ? 1 : 0, heating_type, heater_brand, heating_source, heating_distribution,
-      has_insulation ? 1 : 0, double_glazed_windows ? 1 : 0, winter_rated ? 1 : 0,
-      battery_type, battery_capacity_ah, has_solar_panels ? 1 : 0, solar_wattage, inverter_wattage, has_shore_power ? 1 : 0, has_12v_system ? 1 : 0,
-      length_mm, width_mm, height_mm, interior_height_mm, weight_empty_kg, max_weight_kg, axle_type,
-      typeof features === 'string' ? features : JSON.stringify(features || [])
-    ];
-
-    const result = run(sql, params);
+    // Build and execute INSERT
+    const { sql, values } = buildInsert('caravans', filteredData);
+    const result = run(sql, values);
+    
+    // Handle features in caravan_features table
+    if (features && (typeof features === 'object' || typeof features === 'string')) {
+      const featuresObj = typeof features === 'string' ? JSON.parse(features) : features;
+      if (Array.isArray(featuresObj)) {
+        featuresObj.forEach(feature => {
+          if (typeof feature === 'object' && feature.key && feature.value !== undefined) {
+            run(
+              'INSERT INTO caravan_features (caravan_id, feature_key, feature_value) VALUES (?, ?, ?)',
+              [result.lastInsertRowid, feature.key, String(feature.value)]
+            );
+          }
+        });
+      } else if (typeof featuresObj === 'object') {
+        Object.entries(featuresObj).forEach(([key, value]) => {
+          run(
+            'INSERT INTO caravan_features (caravan_id, feature_key, feature_value) VALUES (?, ?, ?)',
+            [result.lastInsertRowid, key, String(value)]
+          );
+        });
+      }
+    }
     
     return { id: result.lastInsertRowid, ...data };
   },
@@ -241,43 +217,58 @@ export const caravans = {
       throw new Error('Invalid caravan ID');
     }
 
+    // Extract features before validation
+    const { features, ...dataWithoutFeatures } = data;
+
     // Validate and filter data - only allow whitelisted columns
-    const validation = validateCaravanData(data, true);
+    const validation = validateCaravanData(dataWithoutFeatures, true);
     if (!validation.isValid) {
       throw new Error(`Validation failed: ${validation.errors.join('; ')}`);
     }
 
     // Filter to only allow whitelisted columns
-    const filteredData = filterCaravanData(data, true);
+    const filteredData = filterCaravanData(dataWithoutFeatures, true);
 
-    if (Object.keys(filteredData).length === 0) {
-      return caravans.getById(id); // No updates
+    // Remove system fields that shouldn't be updated
+    delete filteredData.id;
+    delete filteredData.created_at;
+    delete filteredData.updated_at;
+
+    // Build UPDATE statement if there are fields to update
+    if (Object.keys(filteredData).length > 0) {
+      const { sql, values } = buildUpdate('caravans', filteredData, 'id = ?', [id]);
+      // Add timestamp
+      const sqlWithTimestamp = sql.replace('WHERE id = ?', ', updated_at = CURRENT_TIMESTAMP WHERE id = ?');
+      run(sqlWithTimestamp, values);
     }
 
-    const updates = [];
-    const values = [];
-
-    // Process each field with proper validation based on type
-    Object.entries(filteredData).forEach(([key, value]) => {
-      if (key !== 'id' && key !== 'created_at' && key !== 'updated_at') {
-        updates.push(`${key} = ?`);
-        if (typeof value === 'boolean') {
-          values.push(value ? 1 : 0);
-        } else if (typeof value === 'object' && value !== null) {
-          values.push(JSON.stringify(value));
-        } else {
-          values.push(value);
+    // Handle features in caravan_features table if provided
+    if (features !== undefined) {
+      // Clear existing features
+      run('DELETE FROM caravan_features WHERE caravan_id = ?', [id]);
+      
+      // Insert new features
+      if (features && (typeof features === 'object' || typeof features === 'string')) {
+        const featuresObj = typeof features === 'string' ? JSON.parse(features) : features;
+        if (Array.isArray(featuresObj)) {
+          featuresObj.forEach(feature => {
+            if (typeof feature === 'object' && feature.key && feature.value !== undefined) {
+              run(
+                'INSERT INTO caravan_features (caravan_id, feature_key, feature_value) VALUES (?, ?, ?)',
+                [id, feature.key, String(feature.value)]
+              );
+            }
+          });
+        } else if (typeof featuresObj === 'object') {
+          Object.entries(featuresObj).forEach(([key, value]) => {
+            run(
+              'INSERT INTO caravan_features (caravan_id, feature_key, feature_value) VALUES (?, ?, ?)',
+              [id, key, String(value)]
+            );
+          });
         }
       }
-    });
-
-    if (updates.length === 0) return caravans.getById(id);
-
-    updates.push('updated_at = CURRENT_TIMESTAMP');
-    values.push(id);
-
-    const sql = `UPDATE caravans SET ${updates.join(', ')} WHERE id = ?`;
-    run(sql, values);
+    }
 
     return caravans.getById(id);
   },
@@ -317,6 +308,7 @@ export const images = {
     }
 
     const imageData = {
+      caravan_id: caravanId,
       url,
       alt_text: altText,
       sort_order: sortOrder
@@ -327,14 +319,10 @@ export const images = {
       throw new Error(`Validation failed: ${validation.errors.join('; ')}`);
     }
 
-    const result = run(
-      'INSERT INTO images (caravan_id, url, alt_text, sort_order) VALUES (?, ?, ?, ?)',
-      [caravanId, url, altText, sortOrder]
-    );
+    const { sql, values } = buildInsert('images', imageData);
+    const result = run(sql, values);
     
-    const id = result.lastInsertRowid;
-    
-    return { id, caravan_id: caravanId, url, alt_text: altText, sort_order: sortOrder };
+    return { id: result.lastInsertRowid, ...imageData };
   },
 
   delete: (imageId, deleteFile = true) => {
@@ -377,5 +365,58 @@ export const images = {
       throw new Error('Invalid sort order');
     }
     run('UPDATE images SET sort_order = ? WHERE id = ?', [sortOrder, imageId]);
+  }
+};
+
+// Caravan Features queries
+export const features = {
+  getByCaravanId: (caravanId) => {
+    // Validate caravan ID
+    if (!Number.isInteger(caravanId) || caravanId <= 0) {
+      return [];
+    }
+    return query(
+      'SELECT feature_key, feature_value FROM caravan_features WHERE caravan_id = ? ORDER BY feature_key ASC',
+      [caravanId]
+    );
+  },
+
+  getByKey: (caravanId, featureKey) => {
+    // Validate inputs
+    if (!Number.isInteger(caravanId) || caravanId <= 0 || typeof featureKey !== 'string') {
+      return null;
+    }
+    const results = query(
+      'SELECT feature_value FROM caravan_features WHERE caravan_id = ? AND feature_key = ?',
+      [caravanId, featureKey]
+    );
+    return results[0]?.feature_value || null;
+  },
+
+  set: (caravanId, featureKey, featureValue) => {
+    // Validate inputs
+    if (!Number.isInteger(caravanId) || caravanId <= 0 || typeof featureKey !== 'string') {
+      throw new Error('Invalid caravan ID or feature key');
+    }
+
+    run(
+      'INSERT INTO caravan_features (caravan_id, feature_key, feature_value) VALUES (?, ?, ?) ON CONFLICT(caravan_id, feature_key) DO UPDATE SET feature_value = ?',
+      [caravanId, featureKey, String(featureValue), String(featureValue)]
+    );
+  },
+
+  delete: (caravanId, featureKey) => {
+    // Validate inputs
+    if (!Number.isInteger(caravanId) || caravanId <= 0) {
+      throw new Error('Invalid caravan ID');
+    }
+
+    if (featureKey) {
+      // Delete specific feature
+      run('DELETE FROM caravan_features WHERE caravan_id = ? AND feature_key = ?', [caravanId, featureKey]);
+    } else {
+      // Delete all features for caravan
+      run('DELETE FROM caravan_features WHERE caravan_id = ?', [caravanId]);
+    }
   }
 };

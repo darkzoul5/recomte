@@ -59,10 +59,10 @@
 
 ### Fields Moved to Features ✅
 
-- ✅ `kitchen_outlets_count` → features JSON
-- ✅ `heating_distribution` → features JSON
-- ✅ `heater_brand` → features JSON
-- ✅ `fuse_type` → (reserved for features)
+- ✅ `kitchen_outlets_count` → caravan_features table
+- ✅ `heating_distribution` → caravan_features table
+- ✅ `heater_brand` → caravan_features table
+- ✅ `fuse_type` → (reserved for caravan_features)
 
 ### New Indexes (Phase 6) ✅
 
@@ -72,73 +72,92 @@
 
 ---
 
+## Phase 2.5 — Features Table (NEWLY ADDED) ✅ COMPLETE
+
+### New caravan_features Table ✅
+
+- ✅ Normalized feature storage with `caravan_id`, `feature_key`, `feature_value`
+- ✅ UNIQUE constraint on (caravan_id, feature_key) for integrity
+- ✅ Indexes: `idx_features_caravan_id`, `idx_features_key_value`
+- ✅ Full queryability: `SELECT * FROM caravans WHERE id IN (SELECT caravan_id FROM caravan_features WHERE feature_key='kitchen_outlets_count' AND feature_value > '5')`
+
+### Features API in db.js ✅
+
+- ✅ `features.getByCaravanId(caravanId)` - Get all features for caravan
+- ✅ `features.getByKey(caravanId, featureKey)` - Get specific feature value
+- ✅ `features.set(caravanId, featureKey, featureValue)` - Set/update feature
+- ✅ `features.delete(caravanId, featureKey)` - Delete feature or all features
+
+---
+
 ## Code Updates ✅
 
 ### db/schema.js ✅
 
 - ✅ Updated CREATE TABLE with all Phase 1 fields
-- ✅ Removed redundant boolean columns from schema definition
-- ✅ Added new indexes for filtering
+- ✅ Added caravan_features table with foreign key
+- ✅ Added indexes for feature queries
+- ✅ Features column removed from caravans table (now in separate table)
 
 ### db/db.js ✅
 
-- ✅ Added migrations for existing databases (15 new columns)
-- ✅ Updated `caravans.create()` destructuring with all Phase 1 fields
-- ✅ Updated INSERT SQL statement with all Phase 1 columns
+- ✅ Updated `caravans.create()` with all Phase 1 field destructuring
+- ✅ Updated INSERT SQL statement with Phase 1 columns
 - ✅ Updated params array with proper type conversions
-- ✅ Backwards-compatible with legacy fields
+- ✅ Features now inserted into caravan_features table (supports both object and array formats)
+- ✅ Updated `caravans.update()` to handle features separately
+- ✅ Features deletion on update, then re-insertion
+- ✅ Added complete `features` query API (get, set, delete)
 
 ### src/utils/validation.js ✅
 
-- ✅ Updated `ALLOWED_CARAVAN_COLUMNS` whitelist with all Phase 1 fields
+- ✅ ALLOWED_CARAVAN_COLUMNS whitelist complete with all Phase 1 fields
 - ✅ Maintained legacy fields for backwards compatibility
-- ✅ Properly organized by section (sleeping, towing, gas, etc.)
+- ✅ Features field included for validation pass-through
 
 ### scripts/seed-db.js ✅
 
-- ✅ Updated all 3 sample caravans with realistic Phase 1 data
-- ✅ Added layout, gas, climate, condition, and chassis data
-- ✅ Removed old `axle_type` fields, use new `axles_count`, `brake_type`, etc.
+- ✅ Updated with Phase 1 data (if needed when data exists)
+
+### app.js ✅
+
+- ✅ Form handlers (POST /admin/new, POST /admin/edit) use Phase 1 fields
+- ✅ Features handled as separate form field, passed to db layer
 
 ---
 
 ## ⏭️ Next Phases
 
-### Phase 3 — Flexible Features Table (Optional)
+### Phase 3 — Search & Filtering (Optional)
 
-- If needed: Create caravan_features table for truly dynamic attributes
+- [ ] Build filtering UI for all Phase 1 fields
+- [ ] Support queries like "under 1200kg", "winter ready", "with AC"
+- [ ] Feature-based queries using caravan_features table
 
-### Phase 4 — Table Restructuring (Optional for scaling)
-
-- If needed: Split into caravans, caravan_specs, caravan_condition tables
-
-### Phase 5 — Business Logic (Next Priority)
+### Phase 4 — Business Logic Validation (Next Priority)
 
 - [ ] Add form validation for impossible states
 - [ ] Add weight validation (empty < max)
 - [ ] Implement derived field logic
+- [ ] Validate towing vehicle weight vs caravan weight
 
-### Phase 6 — Search & Filtering (Next Priority)
+### Phase 5 — Advanced Features (Future)
 
-- [ ] Build filtering UI for all Phase 1 fields
-- [ ] Support queries like "under 1200kg", "winter ready", "with AC"
-
-### Phase 7 — Admin Form (Next Priority)
-
-- [ ] Add Phase 1 fields to views/admin/edit.ejs
-- [ ] Update forms to use new field names
+- [ ] Implement feature presets/templates
+- [ ] Add audit trail for condition/history changes
+- [ ] Seasonal pricing based on condition/features
 
 ---
 
 ## Testing Status
 
-- [ ] Database initialization with new schema
-- [ ] Existing database migration (backwards compatibility)
-- [ ] Create caravan with new Phase 1 fields
-- [ ] Edit caravan with new Phase 1 fields
-- [ ] Sample data seeding with all 3 caravans
+- ✅ Database initialization with new schema
+- ✅ caravan_features table created and indexed
+- ✅ Feature API working (getByCaravanId, set, delete)
+- [ ] Create caravan with Phase 1 fields and features
+- [ ] Edit caravan with Phase 1 fields and features
+- [ ] Query caravans by features
 - [ ] Display Phase 1 fields on public caravan pages
-- [ ] Admin form displays all Phase 1 fields
 
 ---
 
@@ -147,4 +166,6 @@
 - Legacy fields (has_cooktop, has_oven, etc.) are kept for backwards compatibility
 - No data loss - all existing caravans will work
 - New fields default to NULL for existing records
+- Features now normalized in separate table for full queryability
+- Feature values stored as TEXT but can be queried with range operators
 - Migration script runs automatically on next `npm start`

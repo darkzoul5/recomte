@@ -154,8 +154,8 @@ export const validateCaravanData = (data, isUpdate = false) => {
       errors.push('Slug is required and must contain only lowercase letters, numbers, hyphens, and underscores');
     }
 
-    if (!data.price || !validateInteger(data.price, 0, 1000000)) {
-      errors.push('Price is required and must be a number between 0 and 1,000,000');
+    if (!data.price || !validateInteger(data.price, 0, 100000000)) {
+      errors.push('Price is required and must be a number between 0 and 100,000,000');
     }
   }
 
@@ -164,8 +164,8 @@ export const validateCaravanData = (data, isUpdate = false) => {
     errors.push('Slug format is invalid');
   }
 
-  if (data.price !== undefined && !validateInteger(data.price, 0, 1000000)) {
-    errors.push('Price must be a number between 0 and 1,000,000');
+  if (data.price !== undefined && !validateInteger(data.price, 0, 100000000)) {
+    errors.push('Price must be a number between 0 and 100,000,000');
   }
 
   if (data.status && !validateStatus(data.status)) {
@@ -207,7 +207,7 @@ export const validateCaravanData = (data, isUpdate = false) => {
   for (const field of integerFields) {
     // Only validate if field has a value (not empty, null, or undefined)
     if (data[field] !== undefined && data[field] !== null && data[field] !== '') {
-      if (!validateInteger(data[field], 0, 1000000)) {
+      if (!validateInteger(data[field], 0, 100000000)) {
         errors.push(`${field} must be a valid number`);
       }
     }
