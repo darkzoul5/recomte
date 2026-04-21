@@ -1,9 +1,9 @@
 import { initDb, closeDb } from '../db/db.js';
 
-const init = async () => {
+const init = () => {
   try {
     console.log('🔧 Initializing database...');
-    await initDb();
+    initDb();
     console.log('✓ Database schema created successfully');
     closeDb();
     process.exit(0);

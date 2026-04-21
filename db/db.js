@@ -1,4 +1,4 @@
-import initSqlJs from 'sql.js';
+import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -15,59 +15,53 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../data/app.db');
 
 let db = null;
-let SQL = null;
 
-export const initDb = async () => {
+export const initDb = () => {
   try {
-    // Initialize sql.js
-    SQL = await initSqlJs();
-    
-    // Try to load existing database or create new one
-    if (fs.existsSync(DB_PATH)) {
-      const data = fs.readFileSync(DB_PATH);
-      db = new SQL.Database(data);
-    } else {
-      db = new SQL.Database();
+    // Ensure directory exists
+    const dir = path.dirname(DB_PATH);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
+
+    // Initialize better-sqlite3
+    db = new Database(DB_PATH);
     
+    // Enable foreign keys and set journal mode for better concurrency
+    db.pragma('foreign_keys = ON');
+    db.pragma('journal_mode = WAL');
+
     // Create schema
     const schema = createSchema();
     const statements = schema
       .split(';')
       .map(s => s.trim())
       .filter(s => s.length > 0);
-    
+
     statements.forEach(statement => {
-      db.run(statement);
+      try {
+        db.exec(statement);
+      } catch (e) {
+        // Silently ignore if table/index already exists
+        if (!e.message.includes('already exists')) {
+          console.error('Schema error:', e);
+        }
+      }
     });
-    
+
     // Migration: Add kitchen_outlets_count column if it doesn't exist
     try {
-      db.run('ALTER TABLE caravans ADD COLUMN kitchen_outlets_count INTEGER');
+      db.exec('ALTER TABLE caravans ADD COLUMN kitchen_outlets_count INTEGER');
     } catch (e) {
       // Column likely already exists, ignore error
     }
-    
-    saveDb();
+
     console.log(`✓ Database initialized at ${DB_PATH}`);
     return db;
   } catch (error) {
     console.error('❌ Database initialization failed:', error);
     throw error;
   }
-};
-
-const saveDb = () => {
-  if (!db) return;
-  const data = db.export();
-  const buffer = Buffer.from(data);
-  
-  const dir = path.dirname(DB_PATH);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  
-  fs.writeFileSync(DB_PATH, buffer);
 };
 
 export const getDb = () => {
@@ -79,35 +73,28 @@ export const getDb = () => {
 
 export const closeDb = () => {
   if (db) {
-    saveDb();
     db.close();
     db = null;
   }
 };
 
-// Helper function to run queries
+// Helper function to run SELECT queries
 const query = (sql, params = []) => {
   try {
     const stmt = db.prepare(sql);
-    stmt.bind(params);
-    const results = [];
-    while (stmt.step()) {
-      results.push(stmt.getAsObject());
-    }
-    stmt.free();
-    return results;
+    return stmt.all(...params);
   } catch (error) {
     console.error('Query error:', error, 'SQL:', sql, 'Params:', params);
     return [];
   }
 };
 
-// Helper function to run single insert/update/delete
+// Helper function to run INSERT/UPDATE/DELETE
 const run = (sql, params = []) => {
   try {
-    db.run(sql, params);
-    saveDb();
-    return { changes: db.getRowsModified() };
+    const stmt = db.prepare(sql);
+    const result = stmt.run(...params);
+    return { changes: result.changes, lastInsertRowid: result.lastInsertRowid };
   } catch (error) {
     console.error('Run error:', error, 'SQL:', sql, 'Params:', params);
     throw error;
@@ -249,13 +236,9 @@ export const caravans = {
       typeof features === 'string' ? features : JSON.stringify(features || [])
     ];
 
-    run(sql, params);
+    const result = run(sql, params);
     
-    // Get the last inserted ID
-    const result = query('SELECT last_insert_rowid() as id');
-    const id = result[0]?.id || null;
-    
-    return { id, ...data };
+    return { id: result.lastInsertRowid, ...data };
   },
 
   update: (id, data) => {
@@ -350,13 +333,12 @@ export const images = {
       throw new Error(`Validation failed: ${validation.errors.join('; ')}`);
     }
 
-    run(
+    const result = run(
       'INSERT INTO images (caravan_id, url, alt_text, sort_order) VALUES (?, ?, ?, ?)',
       [caravanId, url, altText, sortOrder]
     );
     
-    const result = query('SELECT last_insert_rowid() as id');
-    const id = result[0]?.id || null;
+    const id = result.lastInsertRowid;
     
     return { id, caravan_id: caravanId, url, alt_text: altText, sort_order: sortOrder };
   },

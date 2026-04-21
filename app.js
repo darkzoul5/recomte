@@ -28,8 +28,8 @@ const fastify = Fastify({
 // Initialize and start server
 (async () => {
   try {
-    // Initialize database
-    await initDb();
+    // Initialize database (synchronous)
+    initDb();
 
     // Register plugins
     await fastify.register(fastifyCookie);
