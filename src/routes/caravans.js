@@ -2,12 +2,10 @@ import { caravans, images } from '../../db/db.js';
 import { validateSlug, validateInteger } from '../utils/validation.js';
 
 export default async function caravansRoutes(fastify) {
-  // GET /api/caravans - list all available caravans
+  // GET /api/caravans - list caravans for catalogue
   fastify.get('/api/caravans', async (request, reply) => {
     try {
-      const filters = {
-        status: 'available'
-      };
+      const filters = {};
       
       if (request.query.winter_rated === 'true') {
         filters.winter_rated = true;
