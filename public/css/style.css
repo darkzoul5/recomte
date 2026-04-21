@@ -62,7 +62,7 @@ header.has-background-image h2 {
 }
 
 /* Footer grid layout for mobile */
-@media screen and (max-width: 1023px) {
+@media screen and (max-width: 770px) {
     #footer-columns {
         display: grid !important;
         grid-template-columns: 1fr 1fr;
@@ -70,14 +70,14 @@ header.has-background-image h2 {
         gap: 1rem;
     }
     
-    .footer-company {
+    .footer-services {
         grid-column: 1;
         grid-row: 1;
         width: 100% !important;
         margin: 0 !important;
     }
     
-    .footer-services {
+    .footer-company {
         grid-column: 1;
         grid-row: 2;
         width: 100% !important;

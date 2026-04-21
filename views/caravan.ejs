@@ -47,7 +47,7 @@
           
           <div class="mb-5">
             <p class="is-size-5 has-text-weight-bold has-text-primary">
-              <strong><%= caravan.price.toLocaleString() %> €</strong>
+              <strong><%= caravan.price.toLocaleString('ru-RU') %> ₽</strong>
             </p>
             <% if (caravan.status === 'sold') { %>
               <p class="tag is-danger is-medium">ПРОДАНО</p>
@@ -148,6 +148,7 @@
                 <% if (caravan.fridge_type) { %><li>Холодильник: <%= caravan.fridge_type %></li><% } %>
                 <% if (caravan.has_cooktop) { %><li><i class="fas fa-check has-text-success"></i> Плита</li><% } %>
                 <% if (caravan.has_oven) { %><li><i class="fas fa-check has-text-success"></i> Духовка</li><% } %>
+                <% if (caravan.kitchen_outlets_count) { %><li>Розеток: <%= caravan.kitchen_outlets_count %></li><% } %>
               </ul>
             </div>
           <% } %>

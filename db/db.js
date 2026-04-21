@@ -41,6 +41,13 @@ export const initDb = async () => {
       db.run(statement);
     });
     
+    // Migration: Add kitchen_outlets_count column if it doesn't exist
+    try {
+      db.run('ALTER TABLE caravans ADD COLUMN kitchen_outlets_count INTEGER');
+    } catch (e) {
+      // Column likely already exists, ignore error
+    }
+    
     saveDb();
     console.log(`✓ Database initialized at ${DB_PATH}`);
     return db;
@@ -180,6 +187,7 @@ export const caravans = {
       cooktop_type,
       stove_burners_count,
       has_oven,
+      kitchen_outlets_count,
       has_heating,
       heating_type,
       heater_brand,
@@ -210,7 +218,7 @@ export const caravans = {
         title, slug, description, year, price, status, featured,
         beds_count, has_shower, has_toilet, toilet_type,
         fresh_water_tank_l, grey_water_tank_l, has_hot_water, water_heater_type, boiler_volume_l,
-        fridge_type, fridge_volume_l, sink_present, has_cooktop, cooktop_type, stove_burners_count, has_oven,
+        fridge_type, fridge_volume_l, sink_present, has_cooktop, cooktop_type, stove_burners_count, has_oven, kitchen_outlets_count,
         has_heating, heating_type, heater_brand, heating_source, heating_distribution,
         has_insulation, double_glazed_windows, winter_rated,
         battery_type, battery_capacity_ah, has_solar_panels, solar_wattage, inverter_wattage, has_shore_power, has_12v_system,
@@ -233,7 +241,7 @@ export const caravans = {
       title, slug, description, year, price, status, featured ? 1 : 0,
       beds_count, has_shower ? 1 : 0, has_toilet ? 1 : 0, toilet_type,
       fresh_water_tank_l, grey_water_tank_l, has_hot_water ? 1 : 0, water_heater_type, boiler_volume_l,
-      fridge_type, fridge_volume_l, sink_present ? 1 : 0, has_cooktop ? 1 : 0, cooktop_type, stove_burners_count, has_oven ? 1 : 0,
+      fridge_type, fridge_volume_l, sink_present ? 1 : 0, has_cooktop ? 1 : 0, cooktop_type, stove_burners_count, has_oven ? 1 : 0, kitchen_outlets_count,
       has_heating ? 1 : 0, heating_type, heater_brand, heating_source, heating_distribution,
       has_insulation ? 1 : 0, double_glazed_windows ? 1 : 0, winter_rated ? 1 : 0,
       battery_type, battery_capacity_ah, has_solar_panels ? 1 : 0, solar_wattage, inverter_wattage, has_shore_power ? 1 : 0, has_12v_system ? 1 : 0,

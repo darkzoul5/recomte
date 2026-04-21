@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS caravans (
   cooktop_type TEXT,
   stove_burners_count INTEGER,
   has_oven BOOLEAN DEFAULT 0,
+  kitchen_outlets_count INTEGER,
   
   -- HEATING
   has_heating BOOLEAN DEFAULT 0,

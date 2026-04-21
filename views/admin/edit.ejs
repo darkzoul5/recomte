@@ -38,8 +38,8 @@
         
         <div class="form-row">
           <div class="form-group">
-            <label>Цена (€)</label>
-            <input type="number" name="price" placeholder="1000000" value="<%= caravan?.price || '' %>" step="10" required>
+            <label>Цена (₽)</label>
+            <input type="number" name="price" placeholder="2000000" value="<%= caravan?.price || '' %>" step="10" required>
           </div>
           
           <div class="form-group">
@@ -195,6 +195,13 @@
               <input type="checkbox" name="has_oven" <%= caravan?.has_oven ? 'checked' : '' %>>
               Духовка
             </label>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Количество розеток</label>
+            <input type="number" name="kitchen_outlets_count" placeholder="3" value="<%= caravan?.kitchen_outlets_count || '' %>">
           </div>
         </div>
       </div>
