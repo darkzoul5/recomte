@@ -33,6 +33,18 @@
   font-weight: 700;
 }
 
+/* Navbar burger styling */
+.navbar-burger {
+  cursor: pointer;
+  display: block;
+}
+
+@media screen and (min-width: 1024px) {
+  .navbar-burger {
+    display: none;
+  }
+}
+
 /* Admin page header */
 .admin-header {
   display: flex;
