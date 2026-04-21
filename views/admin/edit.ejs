@@ -81,23 +81,95 @@
         </div>
       </div>
 
-      <!-- Comfort & Layout -->
+      <!-- Comfort & Layout (Phase 1) -->
       <div class="form-section">
-        <h3><i class="fas fa-bed"></i> Комфорт и ванная</h3>
+        <h3><i class="fas fa-home"></i> Комфорт</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Тип душа</label>
+            <select name="shower_type">
+              <option value="">Выбрать...</option>
+              <option value="separate" <%= caravan?.shower_type === 'separate' ? 'selected' : '' %>>Отдельная кабинка</option>
+              <option value="combined" <%= caravan?.shower_type === 'combined' ? 'selected' : '' %>>Внутри</option>
+              <option value="none" <%= caravan?.shower_type === 'none' ? 'selected' : '' %>>Нет</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Кровати</label>
+            <select name="bed_layout">
+              <option value="">Выбрать...</option>
+              <option value="bunk" <%= caravan?.bed_layout === 'bunk' ? 'selected' : '' %>>Двухъярусная</option>
+              <option value="twin" <%= caravan?.bed_layout === 'twin' ? 'selected' : '' %>>Две отдельные</option>
+              <option value="dinette" <%= caravan?.bed_layout === 'dinette' ? 'selected' : '' %>>Трансформер из стола</option>
+              <option value="fixed" <%= caravan?.bed_layout === 'fixed' ? 'selected' : '' %>>Стационарная</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Количество окон</label>
+            <input type="number" name="windows_count" placeholder="5" value="<%= caravan?.windows_count || '' %>" min="0">
+          </div>
+          
+          <div class="form-group">
+            <label>Позиция двери</label>
+            <select name="door_position">
+              <option value="">Выбрать...</option>
+              <option value="left" <%= caravan?.door_position === 'left' ? 'selected' : '' %>>Левая</option>
+              <option value="right" <%= caravan?.door_position === 'right' ? 'selected' : '' %>>Правая</option>
+              <option value="both" <%= caravan?.door_position === 'both' ? 'selected' : '' %>>С обоих сторон</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Climate & Ventilation (Phase 1) -->
+      <div class="form-section">
+        <h3><i class="fas fa-wind"></i> Климат и вентиляция</h3>
         
         <div class="form-row">
           <div class="form-group">
             <label style="font-weight: normal;">
-              <input type="checkbox" name="has_shower" <%= caravan?.has_shower ? 'checked' : '' %>>
-              Душ
+              <input type="checkbox" name="has_ac" <%= caravan?.has_ac ? 'checked' : '' %>>
+              Кондиционер
             </label>
           </div>
           
           <div class="form-group">
+            <label>Вентиляторы</label>
+            <input type="number" name="vent_fans_count" placeholder="1" value="<%= caravan?.vent_fans_count || '' %>" min="0">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Люки</label>
+            <input type="number" name="skylights_count" placeholder="2" value="<%= caravan?.skylights_count || '' %>" min="0">
+          </div>
+        </div>
+      </div>
+
+      <!-- Gas System (Phase 1) -->
+      <div class="form-section">
+        <h3><i class="fas fa-fire"></i> Газовая система</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
             <label style="font-weight: normal;">
-              <input type="checkbox" name="has_toilet" <%= caravan?.has_toilet ? 'checked' : '' %>>
-              Туалет
+              <input type="checkbox" name="gas_system_present" <%= caravan?.gas_system_present ? 'checked' : '' %>>
+              Газовая система присутствует
             </label>
+          </div>
+          
+          <div class="form-group">
+            <label>Количество газовых баллонов</label>
+            <input type="number" name="gas_bottles_count" placeholder="2" value="<%= caravan?.gas_bottles_count || '' %>" min="0">
+          </div>
+        </div>
+      </div>
           </div>
         </div>
         
@@ -314,6 +386,124 @@
         </div>
       </div>
 
+      <!-- Chassis & Towing (Phase 1) -->
+      <div class="form-section">
+        <h3><i class="fas fa-link"></i> Шасси и буксировка</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Количество осей</label>
+            <input type="number" name="axles_count" placeholder="1" value="<%= caravan?.axles_count || '' %>" min="1">
+          </div>
+          
+          <div class="form-group">
+            <label>Тип тормозов</label>
+            <select name="brake_type">
+              <option value="">Выбрать...</option>
+              <option value="hydraulic" <%= caravan?.brake_type === 'hydraulic' ? 'selected' : '' %>>Гидравлические</option>
+              <option value="electric" <%= caravan?.brake_type === 'electric' ? 'selected' : '' %>>Электрические</option>
+              <option value="drum" <%= caravan?.brake_type === 'drum' ? 'selected' : '' %>>Барабанные</option>
+              <option value="none" <%= caravan?.brake_type === 'none' ? 'selected' : '' %>>Нет</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Тип подвески</label>
+            <select name="suspension_type">
+              <option value="">Выбрать...</option>
+              <option value="leaf_spring" <%= caravan?.suspension_type === 'leaf_spring' ? 'selected' : '' %>>Рессоры</option>
+              <option value="coil_spring" <%= caravan?.suspension_type === 'coil_spring' ? 'selected' : '' %>>Пружины</option>
+              <option value="air_suspension" <%= caravan?.suspension_type === 'air_suspension' ? 'selected' : '' %>>Пневматическая</option>
+              <option value="independent" <%= caravan?.suspension_type === 'independent' ? 'selected' : '' %>>Независимая</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Размер колеса (дюймы)</label>
+            <input type="number" name="wheel_size_inch" placeholder="15" value="<%= caravan?.wheel_size_inch || '' %>" min="10" max="22">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Масса сцепки (кг)</label>
+            <input type="number" name="hitch_weight_kg" placeholder="150" value="<%= caravan?.hitch_weight_kg || '' %>" min="0">
+          </div>
+          
+          <div class="form-group">
+            <label style="font-weight: normal;">
+              <input type="checkbox" name="braked" <%= caravan?.braked ? 'checked' : '' %>>
+              С тормозами на оси
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label style="font-weight: normal;">
+              <input type="checkbox" name="stabilizer_present" <%= caravan?.stabilizer_present ? 'checked' : '' %>>
+              Стабилизатор присутствует
+            </label>
+          </div>
+          
+          <div class="form-group">
+            <label>Мин. масса авто для буксировки (кг)</label>
+            <input type="number" name="recommended_tow_vehicle_min_kg" placeholder="1800" value="<%= caravan?.recommended_tow_vehicle_min_kg || '' %>" min="0">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Требуемая категория прав</label>
+            <select name="license_requirement">
+              <option value="">Выбрать...</option>
+              <option value="B" <%= caravan?.license_requirement === 'B' ? 'selected' : '' %>>B (до 750кг)</option>
+              <option value="BE" <%= caravan?.license_requirement === 'BE' ? 'selected' : '' %>>BE (свыше 750кг)</option>
+              <option value="B96" <%= caravan?.license_requirement === 'B96' ? 'selected' : '' %>>B96</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Condition & History (Phase 1) -->
+      <div class="form-section">
+        <h3><i class="fas fa-history"></i> Состояние и история</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Состояние</label>
+            <select name="condition">
+              <option value="">Выбрать...</option>
+              <option value="excellent" <%= caravan?.condition === 'excellent' ? 'selected' : '' %>>Отличное</option>
+              <option value="good" <%= caravan?.condition === 'good' ? 'selected' : '' %>>Хорошее</option>
+              <option value="fair" <%= caravan?.condition === 'fair' ? 'selected' : '' %>>Удовлетворительное</option>
+              <option value="needs_work" <%= caravan?.condition === 'needs_work' ? 'selected' : '' %>>Требует ремонта</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label style="font-weight: normal;">
+              <input type="checkbox" name="damp_detected" <%= caravan?.damp_detected ? 'checked' : '' %>>
+              Обнаружена сырость
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Дата последнего обслуживания</label>
+            <input type="date" name="last_service_date" value="<%= caravan?.last_service_date || '' %>">
+          </div>
+          
+          <div class="form-group">
+            <label>Количество владельцев</label>
+            <input type="number" name="ownership_count" placeholder="1" value="<%= caravan?.ownership_count || '' %>" min="1">
+          </div>
+        </div>
+      </div>
+
       <!-- Dimensions & Weight -->
       <div class="form-section">
         <h3><i class="fas fa-ruler"></i> Размеры и вес</h3>
@@ -353,13 +543,7 @@
             <input type="number" name="max_weight_kg" placeholder="2000" value="<%= caravan?.max_weight_kg || '' %>">
           </div>
         </div>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label>Тип оси</label>
-            <input type="text" name="axle_type" placeholder="Одинарная" value="<%= caravan?.axle_type || '' %>">
-          </div>
-        </div>
+
       </div>
 
       <!-- Amenities & Features -->
