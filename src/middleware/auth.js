@@ -23,7 +23,12 @@ export const isAdminLoggedIn = (request) => {
 export const verifyAdminPassword = (password) => {
   const adminPassword = process.env.ADMIN_PASSWORD;
   if (!adminPassword) {
+    console.error('ADMIN_PASSWORD environment variable is not set');
     throw new Error('ADMIN_PASSWORD not set in environment');
   }
-  return password === adminPassword;
+  console.log('Password length received:', password ? password.length : 'null/undefined');
+  console.log('ADMIN_PASSWORD length configured:', adminPassword.length);
+  const isValid = password === adminPassword;
+  console.log('Password verification result:', isValid);
+  return isValid;
 };

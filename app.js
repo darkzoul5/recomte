@@ -150,23 +150,29 @@ fastify.get('/caravans/:slug', async (request, reply) => {
 
     // Admin login form handler
     fastify.post('/admin/login', async (request, reply) => {
+      fastify.log.debug('POST /admin/login received');
       const { password } = request.body;
 
       if (!password) {
+        fastify.log.warn('Login attempt with no password');
         return reply.view('admin/login', { title: 'Админ Вход', error: 'Пароль требуется' });
       }
 
       try {
+        fastify.log.debug('Attempting password verification');
         const { verifyAdminPassword, setAdminSession } = await import('./src/middleware/auth.js');
         
         if (verifyAdminPassword(password)) {
+          fastify.log.info('Login successful, setting session');
           setAdminSession(request, 'admin');
           return reply.redirect('/admin/dash');
         } else {
+          fastify.log.warn('Login failed - incorrect password');
           return reply.view('admin/login', { title: 'Админ Вход', error: 'Неверный пароль' });
         }
       } catch (err) {
-        fastify.log.error(err);
+        fastify.log.error({ err }, 'Login error: %s', err.message);
+        fastify.log.error('ADMIN_PASSWORD env var is set:', !!process.env.ADMIN_PASSWORD);
         return reply.view('admin/login', { title: 'Админ Вход', error: 'Ошибка сервера' });
       }
     });
