@@ -22,7 +22,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const fastify = Fastify({
   logger: {
     level: process.env.LOG_LEVEL || 'info'
-  }
+  },
+  trustProxy: true
 });
 
 // Initialize and start server
@@ -52,6 +53,54 @@ const fastify = Fastify({
         sameSite: 'lax',
         path: '/'
       }
+    });
+
+    const cspHeader = [
+      "default-src 'self'",
+      "img-src 'self' https: data:",
+      "style-src 'self' 'unsafe-inline' https:",
+      "script-src 'self' https:",
+      "font-src 'self' https: data:",
+      'frame-src https://www.openstreetmap.org',
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'self'"
+    ].join('; ');
+
+    const permissionsPolicyHeader = [
+      'geolocation=()',
+      'camera=()',
+      'microphone=()',
+      'payment=()',
+      'usb=()',
+      'magnetometer=()',
+      'gyroscope=()',
+      'accelerometer=()',
+      'fullscreen=(self)'
+    ].join(', ');
+
+    fastify.addHook('onRequest', async (request, reply) => {
+      const forwardedProto = request.headers['x-forwarded-proto'];
+      const protocol = Array.isArray(forwardedProto)
+        ? forwardedProto[0]
+        : (forwardedProto || '').split(',')[0].trim();
+
+      if (protocol && protocol !== 'https') {
+        return reply.redirect(301, `https://${request.headers.host}${request.raw.url}`);
+      }
+    });
+
+    fastify.addHook('onSend', async (request, reply, payload) => {
+      reply.removeHeader('server');
+      reply.header('X-Content-Type-Options', 'nosniff');
+      reply.header('X-Frame-Options', 'SAMEORIGIN');
+      reply.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+      reply.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+      reply.header('X-Robots-Tag', 'noindex, nofollow');
+      reply.header('Content-Security-Policy', cspHeader);
+      reply.header('Permissions-Policy', permissionsPolicyHeader);
+      return payload;
     });
 
     // Serve static files from public directory
