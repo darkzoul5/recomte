@@ -6,6 +6,7 @@ services:
       - NODE_ENV=production
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - ADMIN_PORT=3001
       - SESSION_SECRET=${SESSION_SECRET}
       - WEBHOOK_SECRET=${WEBHOOK_SECRET}
     volumes:
@@ -35,6 +36,12 @@ services:
       traefik.http.middlewares.redirect-www-to-root.redirectregex.permanent: "true"
       # Service
       traefik.http.services.app.loadbalancer.server.port: "3000"
+      traefik.http.routers.admin.rule: "Host(`admin.recomte.ru`)"
+      traefik.http.routers.admin.entrypoints: "websecure"
+      traefik.http.routers.admin.tls.certresolver: "letsencrypt"
+      traefik.http.routers.admin.middlewares: "nginx-headers@docker"
+      traefik.http.routers.admin.service: "app-admin"
+      traefik.http.services.app-admin.loadbalancer.server.port: "3001"
       # Headers
       traefik.http.middlewares.nginx-headers.headers.customResponseHeaders.Server: ""
 
@@ -45,6 +52,7 @@ services:
       - NODE_ENV=production
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - ADMIN_PORT=3001
       - SESSION_SECRET=${SESSION_SECRET}
       - WEBHOOK_SECRET=${WEBHOOK_SECRET}
     volumes:
@@ -64,6 +72,12 @@ services:
       traefik.http.routers.app-test.service: "app-test"
       # Service
       traefik.http.services.app-test.loadbalancer.server.port: "3000"
+      traefik.http.routers.app-test-admin.rule: "Host(`admin.test.recomte.ru`)"
+      traefik.http.routers.app-test-admin.entrypoints: "websecure"
+      traefik.http.routers.app-test-admin.tls.certresolver: "letsencrypt"
+      traefik.http.routers.app-test-admin.middlewares: "nginx-headers@docker"
+      traefik.http.routers.app-test-admin.service: "app-test-admin"
+      traefik.http.services.app-test-admin.loadbalancer.server.port: "3001"
     
 networks:
   traefik-proxy:

@@ -38,4 +38,11 @@ echo "Starting Node.js application..."
 echo "Environment: $NODE_ENV"
 echo "Database path: $DB_PATH"
 echo "Log level: $LOG_LEVEL"
-exec node /app/app.js
+
+node /app/public-server.js &
+PUBLIC_PID=$!
+node /app/admin-app.js &
+ADMIN_PID=$!
+
+trap 'kill $PUBLIC_PID $ADMIN_PID 2>/dev/null || true' INT TERM
+wait $PUBLIC_PID $ADMIN_PID

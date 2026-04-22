@@ -11,7 +11,8 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 
 # Copy only necessary application files
-COPY app.js .
+COPY public-server.js .
+COPY admin-app.js .
 COPY db/ ./db
 COPY src/ ./src
 COPY views/ ./views
@@ -22,7 +23,7 @@ COPY entrypoint.sh .
 # Make entrypoint executable
 RUN chmod +x entrypoint.sh
 
-EXPOSE 3000
+EXPOSE 3000 3001
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/healthcheck || exit 1

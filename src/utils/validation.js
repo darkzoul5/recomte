@@ -45,7 +45,7 @@ const ALLOWED_IMAGE_COLUMNS = new Set([
 ]);
 
 // Whitelist of allowed caravan statuses
-const ALLOWED_STATUSES = new Set(['available', 'sold', 'pending']);
+const ALLOWED_STATUSES = new Set(['available', 'sold', 'reserved', 'pending']);
 
 /**
  * Validate column name against whitelist
@@ -172,7 +172,7 @@ export const validateCaravanData = (data, isUpdate = false) => {
     errors.push('Status is not allowed');
   }
 
-  if (data.year !== undefined && !validateInteger(data.year, 1950, 2100)) {
+  if (data.year !== undefined && data.year !== null && data.year !== '' && !validateInteger(data.year, 1950, 2100)) {
     errors.push('Year must be between 1950 and 2100');
   }
 

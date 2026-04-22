@@ -5,8 +5,8 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "node app.js",
-    "dev": "NODE_ENV=development node app.js",
+    "start": "node scripts/start-all.js",
+    "dev": "NODE_ENV=development node scripts/start-all.js",
     "db:init": "node scripts/init-db.js",
     "db:seed": "node scripts/seed-db.js"
   },

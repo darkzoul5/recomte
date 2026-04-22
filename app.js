@@ -1,56 +1,149 @@
 import dotenv from 'dotenv';
-import Fastify from 'fastify';
-import fastifyCookie from '@fastify/cookie';
-import fastifySession from '@fastify/session';
-import fastifyStatic from '@fastify/static';
-import fastifyFormbody from '@fastify/formbody';
-import fastifyMultipart from '@fastify/multipart';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import fs from 'fs';
 import { initDb, closeDb } from './db/db.js';
-import { caravans, images } from './db/db.js';
+import { createServer, registerCommonPlugins } from './src/server/setup.js';
+import publicPagesRoutes from './src/routes/public-pages.js';
 import caravansRoutes from './src/routes/caravans.js';
-import adminRoutes from './src/routes/admin.js';
 
-// Load environment variables from .env file if it exists
-// Docker environment variables will be used if .env doesn't exist
 dotenv.config({ override: false });
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const fastify = createServer();
 
-const fastify = Fastify({
-  logger: {
-    level: process.env.LOG_LEVEL || 'info'
-  },
-  trustProxy: true
-});
-
-// Initialize and start server
 (async () => {
   try {
-    // Initialize database (synchronous)
     initDb();
 
-    // Register plugins
-    await fastify.register(fastifyCookie);
+    await registerCommonPlugins(fastify, { rootDir: __dirname });
 
-    await fastify.register(fastifyFormbody);
+    fastify.get('/healthcheck', { logLevel: 'silent' }, async () => ({ status: 'ok' }));
 
-    await fastify.register(fastifyMultipart, {
-      limits: {
-        fileSize: 10 * 1024 * 1024 // 10MB per file
-      }
+    await fastify.register(caravansRoutes);
+    await fastify.register(publicPagesRoutes);
+
+    fastify.get('*', async (request, reply) => {
+      return reply.code(404).view('404');
     });
 
-    await fastify.register(fastifySession, {
-      secret: process.env.SESSION_SECRET || 'default_secret_change_in_production',
-      saveUninitialized: true,
-      cookie: {
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
-        secure: false, // reverse proxy handles HTTPS, internal connection is HTTP
-        httpOnly: true,
-        sameSite: 'lax',
+    fastify.post('*', async (request, reply) => {
+      return reply.code(404).view('404');
+    });
+
+    const closeGracefully = async (signal) => {
+      fastify.log.info(`Received ${signal}, closing gracefully`);
+      closeDb();
+      await fastify.close();
+      process.exit(0);
+    };
+
+    process.on('SIGINT', () => closeGracefully('SIGINT'));
+    process.on('SIGTERM', () => closeGracefully('SIGTERM'));
+
+    const host = process.env.HOST || '0.0.0.0';
+    const port = parseInt(process.env.PORT || '3000', 10);
+
+    await fastify.listen({ host, port });
+    fastify.log.info(`🚀 Public server running at http://${host}:${port}`);
+  } catch (error) {
+    console.error('Failed to start public server:', error);
+    process.exit(1);
+  }
+})();import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { initDb, closeDb } from './db/db.js';
+import { createServer, registerCommonPlugins } from './src/server/setup.js';
+import publicPagesRoutes from './src/routes/public-pages.js';
+import caravansRoutes from './src/routes/caravans.js';
+
+dotenv.config({ override: false });
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const fastify = createServer();
+
+(async () => {
+  try {
+    initDb();
+
+    await registerCommonPlugins(fastify, { rootDir: __dirname });
+
+    fastify.get('/healthcheck', { logLevel: 'silent' }, async () => ({ status: 'ok' }));
+
+    await fastify.register(caravansRoutes);
+    await fastify.register(publicPagesRoutes);
+
+    fastify.get('*', async (request, reply) => {
+      return reply.code(404).view('404');
+    });
+
+    fastify.post('*', async (request, reply) => {
+      return reply.code(404).view('404');
+    });
+
+    const closeGracefully = async (signal) => {
+      fastify.log.info(`Received ${signal}, closing gracefully`);
+      closeDb();
+      await fastify.close();
+      process.exit(0);
+    };
+
+    process.on('SIGINT', () => closeGracefully('SIGINT'));
+    process.on('SIGTERM', () => closeGracefully('SIGTERM'));
+
+    const host = process.env.HOST || '0.0.0.0';
+    const port = parseInt(process.env.PORT || '3000', 10);
+
+    await fastify.listen({ host, port });
+    fastify.log.info(`🚀 Public server running at http://${host}:${port}`);
+  } catch (error) {
+    console.error('Failed to start public server:', error);
+    process.exit(1);
+  }
+})();import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { initDb, closeDb } from './db/db.js';
+import { createServer, registerCommonPlugins } from './src/server/setup.js';
+import publicPagesRoutes from './src/routes/public-pages.js';
+import caravansRoutes from './src/routes/caravans.js';
+
+dotenv.config({ override: false });
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const fastify = createServer();
+
+(async () => {
+  try {
+    initDb();
+
+    await registerCommonPlugins(fastify, { rootDir: __dirname });
+
+    fastify.get('/healthcheck', { logLevel: 'silent' }, async () => ({ status: 'ok' }));
+
+    await fastify.register(caravansRoutes);
+    await fastify.register(publicPagesRoutes);
+
+    const closeGracefully = async (signal) => {
+      fastify.log.info(`Received ${signal}, closing gracefully`);
+      closeDb();
+      await fastify.close();
+      process.exit(0);
+    };
+
+    process.on('SIGINT', () => closeGracefully('SIGINT'));
+    process.on('SIGTERM', () => closeGracefully('SIGTERM'));
+
+    const host = process.env.HOST || '0.0.0.0';
+    const port = parseInt(process.env.PORT || '3000', 10);
+
+    await fastify.listen({ host, port });
+    fastify.log.info(`🚀 Public server running at http://${host}:${port}`);
+  } catch (error) {
+    console.error('Failed to start public server:', error);
+    process.exit(1);
+  }
+})();import dotenv from 'dotenv';
         path: '/'
       }
     });
