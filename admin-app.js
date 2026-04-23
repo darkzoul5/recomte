@@ -14,6 +14,18 @@ const fastify = createServer();
 
 const processFeatures = (data) => {
   const features = {};
+  const reservedFeatureKeys = new Set([
+    'air_conditioning',
+    'awning',
+    'bike_rack',
+    'mosquito_nets',
+    'tv_mount',
+    'storage_compartments',
+    'kitchen_outlets_count',
+    'heater_brand',
+    'heating_distribution',
+    'fuse_type'
+  ]);
   const featureMap = {
     features_air_conditioning: 'air_conditioning',
     features_awning: 'awning',
@@ -37,6 +49,53 @@ const processFeatures = (data) => {
       features[movedKey] = data[movedKey];
     }
     delete data[movedKey];
+  }
+
+  const customFeaturesPayload = typeof data.custom_features_json === 'string'
+    ? data.custom_features_json
+    : (typeof data.custom_features === 'string' ? data.custom_features : '');
+  delete data.custom_features_json;
+  delete data.custom_features;
+
+  let parsedCustomFeatures = [];
+  if (customFeaturesPayload) {
+    try {
+      const parsed = JSON.parse(customFeaturesPayload);
+      parsedCustomFeatures = Array.isArray(parsed) ? parsed : [];
+    } catch {
+      parsedCustomFeatures = [];
+    }
+  }
+
+  if (parsedCustomFeatures.length === 0 && typeof customFeaturesPayload === 'string' && customFeaturesPayload.includes('\n')) {
+    for (const line of customFeaturesPayload.split(/\r?\n/)) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+
+      const separatorIndex = trimmed.indexOf('=') >= 0 ? trimmed.indexOf('=') : trimmed.indexOf(':');
+      let key = trimmed;
+      let value = '1';
+
+      if (separatorIndex >= 0) {
+        key = trimmed.slice(0, separatorIndex).trim();
+        value = trimmed.slice(separatorIndex + 1).trim();
+      }
+
+      parsedCustomFeatures.push({ key, value });
+    }
+  }
+
+  for (const entry of parsedCustomFeatures) {
+    if (!entry || typeof entry !== 'object') continue;
+
+    const key = typeof entry.key === 'string' ? entry.key.trim() : '';
+    const value = entry.value === undefined || entry.value === null || entry.value === '' ? '1' : String(entry.value);
+
+    if (!key || reservedFeatureKeys.has(key)) {
+      continue;
+    }
+
+    features[key] = value;
   }
 
   if (Object.keys(features).length > 0) {

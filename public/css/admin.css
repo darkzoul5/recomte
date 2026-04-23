@@ -261,6 +261,45 @@
   min-height: 120px;
 }
 
+.custom-feature-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.custom-features-list {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.custom-feature-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+}
+
+.custom-feature-item span {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 768px) {
+  .custom-feature-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .custom-feature-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
 /* Checkbox styling */
 .form-group input[type="checkbox"] {
   width: auto;

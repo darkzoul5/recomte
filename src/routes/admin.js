@@ -11,6 +11,31 @@ const FEATURE_FLAGS = new Set([
   'storage_compartments'
 ]);
 
+const RESERVED_FEATURE_KEYS = new Set([
+  ...FEATURE_FLAGS,
+  'kitchen_outlets_count',
+  'heater_brand',
+  'heating_distribution',
+  'fuse_type'
+]);
+
+const serializeCustomFeatures = (featureMap) => {
+  if (!featureMap || typeof featureMap !== 'object') return '';
+
+  return Object.entries(featureMap)
+    .filter(([key]) => !RESERVED_FEATURE_KEYS.has(key))
+    .map(([key, value]) => `${key} = ${value}`)
+    .join('\n');
+};
+
+const collectCustomFeatureItems = (featureMap) => {
+  if (!featureMap || typeof featureMap !== 'object') return [];
+
+  return Object.entries(featureMap)
+    .filter(([key]) => !RESERVED_FEATURE_KEYS.has(key))
+    .map(([key, value]) => ({ key, value }));
+};
+
 const hydrateCaravan = (caravan) => {
   const caravanImages = images.getByCaravanId(caravan.id);
   const featureRows = features.getByCaravanId(caravan.id);
@@ -30,13 +55,15 @@ const hydrateCaravan = (caravan) => {
     ...featureMap,
     images: caravanImages,
     features: featureFlags,
-    feature_map: featureMap
+    feature_map: featureMap,
+    custom_features_text: serializeCustomFeatures(featureMap),
+    custom_features_items: collectCustomFeatureItems(featureMap)
   };
 };
 
 // Helper function to convert feature checkboxes to features array
 const processFeatures = (data) => {
-  const features = [];
+  const features = {};
   const featureMap = {
     'features_air_conditioning': 'air_conditioning',
     'features_awning': 'awning',
@@ -48,16 +75,61 @@ const processFeatures = (data) => {
 
   for (const [key, featureName] of Object.entries(featureMap)) {
     if (data[key]) {
-      features.push(featureName);
-      delete data[key]; // Remove checkbox field from data
+      features[featureName] = 1;
     } else {
-      delete data[key]; // Remove unchecked checkbox field from data
+      delete data[key];
+    }
+    delete data[key];
+  }
+
+  const customFeaturesPayload = typeof data.custom_features_json === 'string'
+    ? data.custom_features_json
+    : (typeof data.custom_features === 'string' ? data.custom_features : '');
+  delete data.custom_features_json;
+  delete data.custom_features;
+
+  let parsedCustomFeatures = [];
+  if (customFeaturesPayload) {
+    try {
+      const parsed = JSON.parse(customFeaturesPayload);
+      parsedCustomFeatures = Array.isArray(parsed) ? parsed : [];
+    } catch {
+      parsedCustomFeatures = [];
     }
   }
 
-  if (features.length > 0) {
-    data.features = features;
+  if (parsedCustomFeatures.length === 0 && typeof customFeaturesPayload === 'string' && customFeaturesPayload.includes('\n')) {
+    for (const line of customFeaturesPayload.split(/\r?\n/)) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+
+      const separatorIndex = trimmed.indexOf('=') >= 0 ? trimmed.indexOf('=') : trimmed.indexOf(':');
+      let key = trimmed;
+      let value = '1';
+
+      if (separatorIndex >= 0) {
+        key = trimmed.slice(0, separatorIndex).trim();
+        value = trimmed.slice(separatorIndex + 1).trim();
+      }
+
+      parsedCustomFeatures.push({ key, value });
+    }
   }
+
+  for (const entry of parsedCustomFeatures) {
+    if (!entry || typeof entry !== 'object') continue;
+
+    const key = typeof entry.key === 'string' ? entry.key.trim() : '';
+    const value = entry.value === undefined || entry.value === null || entry.value === '' ? '1' : String(entry.value);
+
+    if (!key || RESERVED_FEATURE_KEYS.has(key)) {
+      continue;
+    }
+
+    features[key] = value;
+  }
+
+  data.features = features;
 
   return data;
 };
