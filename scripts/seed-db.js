@@ -67,7 +67,7 @@ const seed = () => {
         hitch_weight_kg: 180,
         braked: 1,
         stabilizer_present: 1,
-        recommended_tow_vehicle_min_kg: 2200,
+        recommended_tow_vehicle_min_kg: 3600,
         license_requirement: 'BE',
         features: {
           awning: 1,
@@ -138,8 +138,8 @@ const seed = () => {
         hitch_weight_kg: 120,
         braked: 1,
         stabilizer_present: 0,
-        recommended_tow_vehicle_min_kg: 1600,
-        license_requirement: 'B',
+        recommended_tow_vehicle_min_kg: 2600,
+        license_requirement: 'B96',
         features: {
           awning: 1,
           storage_compartments: 1,
@@ -208,7 +208,7 @@ const seed = () => {
         hitch_weight_kg: 220,
         braked: 1,
         stabilizer_present: 1,
-        recommended_tow_vehicle_min_kg: 3000,
+        recommended_tow_vehicle_min_kg: 5000,
         license_requirement: 'BE',
         features: {
           awning: 1,
@@ -225,6 +225,11 @@ const seed = () => {
 
     for (const caravan of sampleCaravans) {
       try {
+        const existing = caravans.getBySlug(caravan.slug);
+        if (existing) {
+          caravans.delete(existing.id);
+        }
+
         const created = caravans.create(caravan);
         console.log(`  ✓ Created: ${created.title}`);
       } catch (error) {

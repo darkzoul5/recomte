@@ -1,6 +1,38 @@
-import { caravans, images } from '../../db/db.js';
+import { caravans, images, features } from '../../db/db.js';
 import { isAdmin } from '../middleware/auth.js';
 import { validateCaravanData, validateImageData, validateInteger } from '../utils/validation.js';
+
+const FEATURE_FLAGS = new Set([
+  'air_conditioning',
+  'awning',
+  'bike_rack',
+  'mosquito_nets',
+  'tv_mount',
+  'storage_compartments'
+]);
+
+const hydrateCaravan = (caravan) => {
+  const caravanImages = images.getByCaravanId(caravan.id);
+  const featureRows = features.getByCaravanId(caravan.id);
+
+  const featureMap = {};
+  const featureFlags = [];
+
+  for (const row of featureRows) {
+    featureMap[row.feature_key] = row.feature_value;
+    if (FEATURE_FLAGS.has(row.feature_key) && row.feature_value !== '0') {
+      featureFlags.push(row.feature_key);
+    }
+  }
+
+  return {
+    ...caravan,
+    ...featureMap,
+    images: caravanImages,
+    features: featureFlags,
+    feature_map: featureMap
+  };
+};
 
 // Helper function to convert feature checkboxes to features array
 const processFeatures = (data) => {
@@ -37,14 +69,7 @@ export default async function adminRoutes(fastify) {
     try {
       const allCaravans = caravans.getAll();
 
-      const caravansWithImages = allCaravans.map(caravan => {
-        const caravanImages = images.getByCaravanId(caravan.id);
-        return {
-          ...caravan,
-          images: caravanImages,
-          features: caravan.features ? JSON.parse(caravan.features) : []
-        };
-      });
+      const caravansWithImages = allCaravans.map(hydrateCaravan);
 
       return { caravans: caravansWithImages };
     } catch (error) {
@@ -69,13 +94,7 @@ export default async function adminRoutes(fastify) {
         return reply.status(404).send({ error: 'Caravan not found' });
       }
 
-      const caravanImages = images.getByCaravanId(caravan.id);
-
-      return {
-        ...caravan,
-        images: caravanImages,
-        features: caravan.features ? JSON.parse(caravan.features) : []
-      };
+      return hydrateCaravan(caravan);
     } catch (error) {
       fastify.log.error(error);
       return reply.status(500).send({ error: 'Failed to fetch caravan' });

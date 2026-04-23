@@ -6,6 +6,7 @@ import { createSchema } from './schema.js';
 import {
   validateColumnName,
   validateCaravanData,
+  deriveCaravanFields,
   filterCaravanData,
   validateImageData,
   filterImageData
@@ -103,6 +104,42 @@ const convertValue = (value) => {
   return value;
 };
 
+// Accept object/array/string feature payloads and normalize them into key/value pairs.
+const normalizeFeaturesInput = (featuresInput) => {
+  if (featuresInput === undefined || featuresInput === null || featuresInput === '') {
+    return [];
+  }
+
+  let parsed = featuresInput;
+
+  if (typeof parsed === 'string') {
+    try {
+      parsed = JSON.parse(parsed);
+    } catch {
+      return [];
+    }
+  }
+
+  const normalized = [];
+
+  if (Array.isArray(parsed)) {
+    for (const entry of parsed) {
+      if (entry && typeof entry === 'object' && entry.key) {
+        normalized.push({ key: String(entry.key), value: entry.value ?? '1' });
+      } else if (typeof entry === 'string' && entry.trim()) {
+        normalized.push({ key: entry.trim(), value: '1' });
+      }
+    }
+  } else if (parsed && typeof parsed === 'object') {
+    for (const [key, value] of Object.entries(parsed)) {
+      if (!key || value === undefined || value === null || value === '') continue;
+      normalized.push({ key: String(key), value });
+    }
+  }
+
+  return normalized;
+};
+
 // Dynamic INSERT builder
 const buildInsert = (table, data) => {
   const keys = Object.keys(data);
@@ -170,14 +207,16 @@ export const caravans = {
   },
 
   create: (data) => {
+    const normalizedData = deriveCaravanFields(data);
+
     // Validate data before creating
-    const validation = validateCaravanData(data, false);
+    const validation = validateCaravanData(normalizedData, false);
     if (!validation.isValid) {
       throw new Error(`Validation failed: ${validation.errors.join('; ')}`);
     }
 
     // Extract features separately (stored in caravan_features table)
-    const { features, ...caravanData } = data;
+    const { features, ...caravanData } = normalizedData;
 
     // Filter to only include whitelisted columns
     const filteredData = filterCaravanData(caravanData, false);
@@ -187,25 +226,14 @@ export const caravans = {
     const result = run(sql, values);
     
     // Handle features in caravan_features table
-    if (features && (typeof features === 'object' || typeof features === 'string')) {
-      const featuresObj = typeof features === 'string' ? JSON.parse(features) : features;
-      if (Array.isArray(featuresObj)) {
-        featuresObj.forEach(feature => {
-          if (typeof feature === 'object' && feature.key && feature.value !== undefined) {
-            run(
-              'INSERT INTO caravan_features (caravan_id, feature_key, feature_value) VALUES (?, ?, ?)',
-              [result.lastInsertRowid, feature.key, String(feature.value)]
-            );
-          }
-        });
-      } else if (typeof featuresObj === 'object') {
-        Object.entries(featuresObj).forEach(([key, value]) => {
-          run(
-            'INSERT INTO caravan_features (caravan_id, feature_key, feature_value) VALUES (?, ?, ?)',
-            [result.lastInsertRowid, key, String(value)]
-          );
-        });
-      }
+    const featurePairs = normalizeFeaturesInput(features);
+    if (featurePairs.length > 0) {
+      featurePairs.forEach(feature => {
+        run(
+          'INSERT INTO caravan_features (caravan_id, feature_key, feature_value) VALUES (?, ?, ?)',
+          [result.lastInsertRowid, feature.key, String(feature.value)]
+        );
+      });
     }
     
     return { id: result.lastInsertRowid, ...data };
@@ -217,8 +245,10 @@ export const caravans = {
       throw new Error('Invalid caravan ID');
     }
 
+    const normalizedData = deriveCaravanFields(data);
+
     // Extract features before validation
-    const { features, ...dataWithoutFeatures } = data;
+    const { features, ...dataWithoutFeatures } = normalizedData;
 
     // Validate and filter data - only allow whitelisted columns
     const validation = validateCaravanData(dataWithoutFeatures, true);
@@ -248,25 +278,14 @@ export const caravans = {
       run('DELETE FROM caravan_features WHERE caravan_id = ?', [id]);
       
       // Insert new features
-      if (features && (typeof features === 'object' || typeof features === 'string')) {
-        const featuresObj = typeof features === 'string' ? JSON.parse(features) : features;
-        if (Array.isArray(featuresObj)) {
-          featuresObj.forEach(feature => {
-            if (typeof feature === 'object' && feature.key && feature.value !== undefined) {
-              run(
-                'INSERT INTO caravan_features (caravan_id, feature_key, feature_value) VALUES (?, ?, ?)',
-                [id, feature.key, String(feature.value)]
-              );
-            }
-          });
-        } else if (typeof featuresObj === 'object') {
-          Object.entries(featuresObj).forEach(([key, value]) => {
-            run(
-              'INSERT INTO caravan_features (caravan_id, feature_key, feature_value) VALUES (?, ?, ?)',
-              [id, key, String(value)]
-            );
-          });
-        }
+      const featurePairs = normalizeFeaturesInput(features);
+      if (featurePairs.length > 0) {
+        featurePairs.forEach(feature => {
+          run(
+            'INSERT INTO caravan_features (caravan_id, feature_key, feature_value) VALUES (?, ?, ?)',
+            [id, feature.key, String(feature.value)]
+          );
+        });
       }
     }
 
@@ -391,6 +410,24 @@ export const features = {
       [caravanId, featureKey]
     );
     return results[0]?.feature_value || null;
+  },
+
+  getByKeyValue: (featureKey, featureValue = null) => {
+    if (typeof featureKey !== 'string' || !featureKey.trim()) {
+      return [];
+    }
+
+    if (featureValue === null || featureValue === undefined || featureValue === '') {
+      return query(
+        'SELECT caravan_id, feature_key, feature_value FROM caravan_features WHERE feature_key = ?',
+        [featureKey]
+      );
+    }
+
+    return query(
+      'SELECT caravan_id, feature_key, feature_value FROM caravan_features WHERE feature_key = ? AND feature_value = ?',
+      [featureKey, String(featureValue)]
+    );
   },
 
   set: (caravanId, featureKey, featureValue) => {

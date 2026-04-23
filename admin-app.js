@@ -13,7 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const fastify = createServer();
 
 const processFeatures = (data) => {
-  const features = [];
+  const features = {};
   const featureMap = {
     features_air_conditioning: 'air_conditioning',
     features_awning: 'awning',
@@ -25,13 +25,24 @@ const processFeatures = (data) => {
 
   for (const [key, featureName] of Object.entries(featureMap)) {
     if (data[key]) {
-      features.push(featureName);
+      features[featureName] = 1;
     }
     delete data[key];
   }
 
-  if (features.length > 0) {
+  // Fields moved out of caravans table are stored in caravan_features.
+  const movedFields = ['kitchen_outlets_count', 'heater_brand', 'heating_distribution', 'fuse_type'];
+  for (const movedKey of movedFields) {
+    if (data[movedKey] !== undefined && data[movedKey] !== null && String(data[movedKey]).trim() !== '') {
+      features[movedKey] = data[movedKey];
+    }
+    delete data[movedKey];
+  }
+
+  if (Object.keys(features).length > 0) {
     data.features = features;
+  } else {
+    data.features = {};
   }
 
   return data;
@@ -96,7 +107,7 @@ const mapFormToCaravanData = (formData) => ({
   damp_detected: formData.damp_detected ? 1 : 0,
   last_service_date: formData.last_service_date || null,
   ownership_count: formData.ownership_count ? parseInt(formData.ownership_count) : null,
-  features: formData.features ? JSON.stringify(Array.isArray(formData.features) ? formData.features : [formData.features]) : '[]'
+  features: formData.features || {}
 });
 
 const parseMultipartForm = async (request) => {

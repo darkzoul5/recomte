@@ -82,9 +82,6 @@ CREATE TABLE IF NOT EXISTS caravans (
   last_service_date DATE,
   ownership_count INTEGER,
   
-  -- FLEXIBLE FEATURES (kitchen_outlets_count, heating_brand, heating_distribution, fuse_type stored here)
-  features TEXT,
-  
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );

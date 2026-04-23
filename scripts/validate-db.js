@@ -14,7 +14,7 @@ try {
     "SELECT name FROM sqlite_master WHERE type='table'"
   ).all().map(row => row.name);
   
-  const requiredTables = ['caravans', 'images'];
+  const requiredTables = ['caravans', 'images', 'caravan_features'];
   const missingTables = requiredTables.filter(t => !tables.includes(t));
   
   db.close();

@@ -186,7 +186,8 @@ export const validateCaravanData = (data, isUpdate = false) => {
   const booleanFields = [
     'featured', 'has_shower', 'has_toilet', 'has_hot_water', 'sink_present',
     'has_cooktop', 'has_oven', 'has_heating', 'has_insulation', 'double_glazed_windows',
-    'winter_rated', 'has_solar_panels', 'has_shore_power', 'has_12v_system'
+    'winter_rated', 'has_solar_panels', 'has_shore_power', 'has_12v_system',
+    'has_ac', 'gas_system_present', 'braked', 'stabilizer_present', 'damp_detected'
   ];
 
   for (const field of booleanFields) {
@@ -201,7 +202,9 @@ export const validateCaravanData = (data, isUpdate = false) => {
     'beds_count', 'fresh_water_tank_l', 'grey_water_tank_l', 'boiler_volume_l',
     'fridge_volume_l', 'stove_burners_count', 'battery_capacity_ah', 'solar_wattage',
     'inverter_wattage', 'length_mm', 'width_mm', 'height_mm', 'interior_height_mm',
-    'weight_empty_kg', 'max_weight_kg'
+    'weight_empty_kg', 'max_weight_kg', 'windows_count', 'vent_fans_count',
+    'skylights_count', 'gas_bottles_count', 'axles_count', 'wheel_size_inch',
+    'hitch_weight_kg', 'recommended_tow_vehicle_min_kg', 'ownership_count'
   ];
 
   for (const field of integerFields) {
@@ -213,10 +216,78 @@ export const validateCaravanData = (data, isUpdate = false) => {
     }
   }
 
+  // Business rules and impossible state checks
+  const weightEmpty = data.weight_empty_kg !== undefined && data.weight_empty_kg !== null && data.weight_empty_kg !== ''
+    ? parseInt(data.weight_empty_kg, 10)
+    : null;
+  const maxWeight = data.max_weight_kg !== undefined && data.max_weight_kg !== null && data.max_weight_kg !== ''
+    ? parseInt(data.max_weight_kg, 10)
+    : null;
+  const towMinWeight = data.recommended_tow_vehicle_min_kg !== undefined && data.recommended_tow_vehicle_min_kg !== null && data.recommended_tow_vehicle_min_kg !== ''
+    ? parseInt(data.recommended_tow_vehicle_min_kg, 10)
+    : null;
+
+  if (weightEmpty !== null && maxWeight !== null && weightEmpty >= maxWeight) {
+    errors.push('weight_empty_kg must be less than max_weight_kg');
+  }
+
+  if (towMinWeight !== null && maxWeight !== null && towMinWeight < maxWeight) {
+    errors.push('recommended_tow_vehicle_min_kg must be greater than or equal to max_weight_kg');
+  }
+
+  if ((data.gas_system_present === 0 || data.gas_system_present === '0' || data.gas_system_present === false) &&
+      data.gas_bottles_count !== undefined && data.gas_bottles_count !== null && data.gas_bottles_count !== '' && parseInt(data.gas_bottles_count, 10) > 0) {
+    errors.push('gas_bottles_count cannot be greater than 0 when gas_system_present is disabled');
+  }
+
+  if ((data.braked === 1 || data.braked === '1' || data.braked === true) && data.brake_type === 'none') {
+    errors.push('brake_type cannot be "none" when braked is enabled');
+  }
+
+  if (maxWeight !== null && data.license_requirement) {
+    const license = String(data.license_requirement).toUpperCase();
+    if (maxWeight <= 750 && license !== 'B') {
+      errors.push('license_requirement should be B when max_weight_kg is 750 or less');
+    }
+    if (maxWeight > 750 && maxWeight <= 3500 && !['B96', 'BE'].includes(license)) {
+      errors.push('license_requirement should be B96 or BE when max_weight_kg is between 751 and 3500');
+    }
+    if (maxWeight > 3500 && license !== 'BE') {
+      errors.push('license_requirement should be BE when max_weight_kg is above 3500');
+    }
+  }
+
   return {
     isValid: errors.length === 0,
     errors
   };
+};
+
+/**
+ * Apply derived field logic to caravan payloads.
+ * @param {object} data - Raw caravan data
+ * @returns {object} Data with derived fields applied
+ */
+export const deriveCaravanFields = (data) => {
+  if (!data || typeof data !== 'object') return {};
+
+  const result = { ...data };
+
+  const maxWeight = result.max_weight_kg !== undefined && result.max_weight_kg !== null && result.max_weight_kg !== ''
+    ? parseInt(result.max_weight_kg, 10)
+    : null;
+
+  if (!result.license_requirement && maxWeight !== null) {
+    if (maxWeight <= 750) {
+      result.license_requirement = 'B';
+    } else if (maxWeight <= 3500) {
+      result.license_requirement = 'B96';
+    } else {
+      result.license_requirement = 'BE';
+    }
+  }
+
+  return result;
 };
 
 /**

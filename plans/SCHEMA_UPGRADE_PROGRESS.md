@@ -108,21 +108,38 @@
 - ✅ Updated `caravans.update()` to handle features separately
 - ✅ Features deletion on update, then re-insertion
 - ✅ Added complete `features` query API (get, set, delete)
+- ✅ Added `features.getByKeyValue(featureKey, featureValue)` for feature-based caravan queries
+- ✅ Added feature input normalization for object/array/string payloads
 
 ### src/utils/validation.js ✅
 
 - ✅ ALLOWED_CARAVAN_COLUMNS whitelist complete with all Phase 1 fields
 - ✅ Maintained legacy fields for backwards compatibility
 - ✅ Features field included for validation pass-through
+- ✅ Added business logic validation (impossible states)
+- ✅ Added weight validation (`weight_empty_kg < max_weight_kg`)
+- ✅ Added towing/weight consistency validation
+- ✅ Added derived field logic for `license_requirement`
 
 ### scripts/seed-db.js ✅
 
 - ✅ Updated with Phase 1 data (if needed when data exists)
 
-### app.js ✅
+### admin-app.js ✅
 
 - ✅ Form handlers (POST /admin/new, POST /admin/edit) use Phase 1 fields
-- ✅ Features handled as separate form field, passed to db layer
+- ✅ Features handled as normalized key/value map, passed to db layer
+- ✅ Moved fields (`kitchen_outlets_count`, `heater_brand`, `heating_distribution`) persisted via caravan_features
+
+### src/routes/admin.js ✅
+
+- ✅ Admin API responses hydrate features from caravan_features table
+- ✅ Edit form receives feature flags and moved field values from normalized features data
+
+### src/routes/caravans.js ✅
+
+- ✅ Public API hydrates features from caravan_features table
+- ✅ Added feature-based query support via `feature_key` and optional `feature_value`
 
 ---
 
@@ -132,14 +149,14 @@
 
 - [ ] Build filtering UI for all Phase 1 fields
 - [ ] Support queries like "under 1200kg", "winter ready", "with AC"
-- [ ] Feature-based queries using caravan_features table
+- [x] Feature-based queries using caravan_features table (API layer complete)
 
 ### Phase 4 — Business Logic Validation (Next Priority)
 
-- [ ] Add form validation for impossible states
-- [ ] Add weight validation (empty < max)
-- [ ] Implement derived field logic
-- [ ] Validate towing vehicle weight vs caravan weight
+- [x] Add form validation for impossible states
+- [x] Add weight validation (empty < max)
+- [x] Implement derived field logic
+- [x] Validate towing vehicle weight vs caravan weight
 
 ### Phase 5 — Advanced Features (Future)
 
@@ -154,10 +171,10 @@
 - ✅ Database initialization with new schema
 - ✅ caravan_features table created and indexed
 - ✅ Feature API working (getByCaravanId, set, delete)
-- [ ] Create caravan with Phase 1 fields and features
-- [ ] Edit caravan with Phase 1 fields and features
-- [ ] Query caravans by features
-- [ ] Display Phase 1 fields on public caravan pages
+- [x] Create caravan with Phase 1 fields and features
+- [x] Edit caravan with Phase 1 fields and features
+- [x] Query caravans by features
+- [x] Display Phase 1 fields on public caravan pages
 
 ---
 
@@ -169,3 +186,4 @@
 - Features now normalized in separate table for full queryability
 - Feature values stored as TEXT but can be queried with range operators
 - Migration script runs automatically on next `npm start`
+- DB validator now requires `caravan_features` table

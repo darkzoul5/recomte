@@ -1,5 +1,23 @@
-import { caravans, images } from '../../db/db.js';
+import { caravans, images, features } from '../../db/db.js';
 import { validateSlug, validateInteger } from '../utils/validation.js';
+
+const hydrateCaravan = (caravan) => {
+  const caravanImages = images.getByCaravanId(caravan.id);
+  const featureRows = features.getByCaravanId(caravan.id);
+  const featureMap = {};
+
+  for (const row of featureRows) {
+    featureMap[row.feature_key] = row.feature_value;
+  }
+
+  return {
+    ...caravan,
+    ...featureMap,
+    images: caravanImages,
+    feature_map: featureMap,
+    features: Object.keys(featureMap).filter((key) => featureMap[key] !== '0')
+  };
+};
 
 export default async function caravansRoutes(fastify) {
   // GET /api/caravans - list caravans for catalogue
@@ -11,17 +29,26 @@ export default async function caravansRoutes(fastify) {
         filters.winter_rated = true;
       }
 
+      if (request.query.status) {
+        filters.status = request.query.status;
+      }
+
       const allCaravans = caravans.getAll(filters);
+
+      let filteredCaravans = allCaravans;
+      if (request.query.feature_key) {
+        const featureKey = String(request.query.feature_key).trim();
+        const featureValue = request.query.feature_value !== undefined
+          ? String(request.query.feature_value)
+          : null;
+
+        if (featureKey.length > 0) {
+          const ids = new Set(features.getByKeyValue(featureKey, featureValue).map((row) => row.caravan_id));
+          filteredCaravans = allCaravans.filter((caravan) => ids.has(caravan.id));
+        }
+      }
       
-      // Enrich with images
-      const caravansWithImages = allCaravans.map(caravan => {
-        const caravanImages = images.getByCaravanId(caravan.id);
-        return {
-          ...caravan,
-          images: caravanImages,
-          features: caravan.features ? JSON.parse(caravan.features) : []
-        };
-      });
+      const caravansWithImages = filteredCaravans.map(hydrateCaravan);
 
       return { caravans: caravansWithImages };
     } catch (error) {
@@ -46,13 +73,7 @@ export default async function caravansRoutes(fastify) {
         return reply.status(404).send({ error: 'Caravan not found' });
       }
 
-      const caravanImages = images.getByCaravanId(caravan.id);
-      
-      return {
-        ...caravan,
-        images: caravanImages,
-        features: caravan.features ? JSON.parse(caravan.features) : []
-      };
+      return hydrateCaravan(caravan);
     } catch (error) {
       fastify.log.error(error);
       return reply.status(500).send({ error: 'Failed to fetch caravan' });
@@ -74,14 +95,7 @@ export default async function caravansRoutes(fastify) {
 
       const featuredCaravans = caravans.getFeatured(limit);
 
-      const caravansWithImages = featuredCaravans.map(caravan => {
-        const caravanImages = images.getByCaravanId(caravan.id);
-        return {
-          ...caravan,
-          images: caravanImages,
-          features: caravan.features ? JSON.parse(caravan.features) : []
-        };
-      });
+      const caravansWithImages = featuredCaravans.map(hydrateCaravan);
 
       return { caravans: caravansWithImages };
     } catch (error) {
