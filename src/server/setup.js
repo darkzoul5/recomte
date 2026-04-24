@@ -69,7 +69,7 @@ export const registerCommonPlugins = async (fastify, { rootDir }) => {
     saveUninitialized: true,
     cookie: {
       maxAge: SESSION_MAX_AGE,
-      secure: false,
+      secure: true,
       httpOnly: true,
       sameSite: 'lax',
       path: '/'
