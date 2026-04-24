@@ -7,6 +7,7 @@ import fastifyMultipart from '@fastify/multipart';
 import path from 'path';
 
 const SESSION_MAX_AGE = 60 * 60 * 1000; // 1 hour in milliseconds
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
 export const createServer = () => Fastify({
   logger: {
@@ -56,7 +57,7 @@ export const registerCommonPlugins = async (fastify, { rootDir }) => {
   await fastify.register(fastifyFormbody);
   await fastify.register(fastifyMultipart, {
     limits: {
-      fileSize: 10 * 1024 * 1024
+      fileSize: MAX_FILE_SIZE
     }
   });
 
