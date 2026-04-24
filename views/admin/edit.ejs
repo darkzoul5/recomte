@@ -92,13 +92,18 @@
   </div>
 
   <div class="form-section">
-    <h3><i class="fas fa-bed"></i> Кровати (повторяемые)</h3>
+    <h3><i class="fas fa-door-open"></i> Спальня</h3>
     <div class="form-row">
-      <div class="form-group">
-        <label style="font-weight: normal;"><input type="checkbox" name="bed_type_bunk" <%= caravan?.bed_types && caravan.bed_types.includes('bunk') ? 'checked' : '' %>> Двухъярусная</label>
-        <label style="font-weight: normal;"><input type="checkbox" name="bed_type_twin" <%= caravan?.bed_types && caravan.bed_types.includes('twin') ? 'checked' : '' %>> Две отдельные</label>
-        <label style="font-weight: normal;"><input type="checkbox" name="bed_type_dinette" <%= caravan?.bed_types && caravan.bed_types.includes('dinette') ? 'checked' : '' %>> Трансформер из стола</label>
-        <label style="font-weight: normal;"><input type="checkbox" name="bed_type_double" <%= caravan?.bed_types && caravan.bed_types.includes('double') ? 'checked' : '' %>> Двухместная</label>
+      <div class="form-group" style="flex: 2;">
+        <label>Типы кроватей</label>
+        <div id="bedTypesContainer" style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem;">
+          <!-- Bed rows are rendered by bed-types.js -->
+        </div>
+        <button type="button" id="addBedRowBtn" class="button is-info is-light is-small">
+          <span class="icon"><i class="fas fa-plus"></i></span>
+          <span>Добавить кровать</span>
+        </button>
+        <input type="hidden" name="bed_types_json" id="bedTypesInput" value="<%= caravan?.bed_types ? JSON.stringify(caravan.bed_types) : '[]' %>">
       </div>
       <div class="form-group">
         <label>Количество окон</label>
@@ -154,8 +159,8 @@
         <label>Тип бойлера</label>
         <select name="water_heater_type">
           <option value="">Выбрать...</option>
-          <option value="electric" <%= caravan?.water_heater_type === 'electric' ? 'selected' : '' %>>Электро</option>
-          <option value="gas" <%= caravan?.water_heater_type === 'gas' ? 'selected' : '' %>>Газ</option>
+          <option value="electric" <%= caravan?.water_heater_type === 'electric' ? 'selected' : '' %>>Электрический</option>
+          <option value="gas" <%= caravan?.water_heater_type === 'gas' ? 'selected' : '' %>>Газовый</option>
         </select>
       </div>
     </div>
@@ -205,8 +210,8 @@
       <div class="form-group">
         <label>Тип Прицеп-дачи</label>
         <select name="camper_season">
-          <option value="summer" <%= caravan?.camper_season === 'summer' ? 'selected' : '' %>>Летняя</option>
-          <option value="winter" <%= caravan?.camper_season === 'winter' ? 'selected' : '' %>>Зимняя</option>
+          <option value="summer" <%= caravan?.camper_season === 'summer' ? 'selected' : '' %>>Лето</option>
+          <option value="winter" <%= caravan?.camper_season === 'winter' ? 'selected' : '' %>>Зима</option>
         </select>
       </div>
       <div class="form-group">
@@ -451,6 +456,8 @@
   </div>
 </form>
 
+<script src="/public/js/bed-types.js"></script>
+<script src="/public/js/multi-select.js"></script>
 <script src="/public/js/admin-edit.js"></script>
 
 <%- include('../layouts/admin-footer') %>

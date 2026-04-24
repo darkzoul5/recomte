@@ -94,7 +94,7 @@
                 <% if (caravan.camper_season) { %>
                   <tr>
                     <td><strong>Тип Прицеп-дачи:</strong></td>
-                    <td><%= caravan.camper_season === 'winter' ? 'Зимняя' : 'Летняя' %></td>
+                    <td><%= caravan.camper_season === 'winter' ? 'Зима' : 'Лето' %></td>
                   </tr>
                 <% } %>
               </tbody>
@@ -129,7 +129,7 @@
           <!-- Bathroom -->
           <% if (caravan.shower_type || caravan.has_toilet || caravan.sink_present) { %>
             <div class="column is-one-third">
-              <h4 class="subtitle is-6">Ванная</h4>
+                <h4 class="subtitle is-6 has-text-weight-bold">Ванная</h4>
               <ul>
                 <% if (caravan.shower_type) { %><li>Душ: <%= caravan.shower_type === 'none' ? 'Нет' : (caravan.shower_type === 'separate' ? 'Отдельно от туалета' : 'Совмещен с туалетом') %></li><% } %>
                 <% if (caravan.has_toilet) { %><li><i class="fas fa-check has-text-success"></i> Туалет</li><% } %>
@@ -140,9 +140,31 @@
 
           <% if (caravan.bed_types || caravan.windows_count || caravan.door_position) { %>
             <div class="column is-one-third">
-              <h4 class="subtitle is-6">Спальня</h4>
+                <h4 class="subtitle is-6 has-text-weight-bold">Спальня</h4>
               <ul>
-                <% if (caravan.bed_types && caravan.bed_types.length > 0) { %><li>Кровати: <%= caravan.bed_types.join(', ') %></li><% } %>
+                <% if (caravan.bed_types && caravan.bed_types.length > 0) { %>
+                  <% 
+                    const bedTypeLabels = {
+                      bunk: { one: 'двухъярусная', many: 'двухъярусные' },
+                      twin: { one: 'раздельная', many: 'раздельные' },
+                      dinette: { one: 'трансформер из стола', many: 'трансформеры из стола' },
+                      double: { one: 'двуспальная', many: 'двуспальные' }
+                    };
+
+                    const bedCounts = new Map();
+                    caravan.bed_types.forEach((type) => {
+                      bedCounts.set(type, (bedCounts.get(type) || 0) + 1);
+                    });
+
+                    const bedTypesText = Array.from(bedCounts.entries())
+                      .map(([type, count]) => {
+                        const labels = bedTypeLabels[type] || { one: type, many: type };
+                        return count > 1 ? `${count} ${labels.many}` : labels.one;
+                      })
+                      .join(', ');
+                  %>
+                  <li>Кровати: <%= bedTypesText %></li>
+                <% } %>
                 <% if (caravan.windows_count) { %><li>Окон: <%= caravan.windows_count %></li><% } %>
                 <% if (caravan.door_position) { %><li>Дверь: <%= caravan.door_position === 'left' ? 'Левая' : (caravan.door_position === 'right' ? 'Правая' : 'С обеих сторон') %></li><% } %>
               </ul>
@@ -151,7 +173,7 @@
 
           <% if (caravan.fresh_water_tank_l || caravan.grey_water_tank_l || caravan.has_hot_water || caravan.water_heater_type || caravan.boiler_volume_l) { %>
             <div class="column is-one-third">
-              <h4 class="subtitle is-6">Водная система</h4>
+                <h4 class="subtitle is-6 has-text-weight-bold">Водная система</h4>
               <ul>
                 <% if (caravan.fresh_water_tank_l) { %><li>Пресная вода: <%= caravan.fresh_water_tank_l %> л</li><% } %>
                 <% if (caravan.grey_water_tank_l) { %><li>Серая вода: <%= caravan.grey_water_tank_l %> л</li><% } %>
@@ -164,7 +186,7 @@
 
           <% if (caravan.fridge_volume_l || (caravan.fridge_type_values && caravan.fridge_type_values.length > 0) || caravan.stove_burners_count || caravan.has_microwave || caravan.has_oven) { %>
             <div class="column is-one-third">
-              <h4 class="subtitle is-6">Кухня</h4>
+                <h4 class="subtitle is-6 has-text-weight-bold">Кухня</h4>
               <ul>
                 <% if (caravan.fridge_volume_l) { %><li>Холодильник: <%= caravan.fridge_volume_l %> л</li><% } %>
                 <% if (caravan.fridge_type_values && caravan.fridge_type_values.length > 0) { %><li>Питание холодильника: <%= caravan.fridge_type_values.map((value) => value === 'electric' ? 'Электричество' : 'Газ').join(', ') %></li><% } %>
@@ -177,12 +199,12 @@
 
           <% if ((caravan.heating_type_values && caravan.heating_type_values.length > 0) || caravan.has_ac || caravan.vent_fans_count || caravan.skylights_count || caravan.heating_distribution || caravan.heater_brand) { %>
             <div class="column is-one-third">
-              <h4 class="subtitle is-6">Климат и отопление</h4>
+                <h4 class="subtitle is-6 has-text-weight-bold">Климат и отопление</h4>
               <ul>
                 <% if (caravan.heating_type_values && caravan.heating_type_values.length > 0) { %><li>Отопление: <%= caravan.heating_type_values.map((value) => value === 'diesel' ? 'Дизельное' : (value === 'gas' ? 'Газовое' : 'Электрическое')).join(', ') %></li><% } %>
-                <% if (caravan.heating_distribution) { %><li>Распределение: <%= caravan.heating_distribution === 'liquid' ? 'Жидкостное' : 'Воздушное' %></li><% } %>
+                <% if (caravan.heating_distribution) { %><li>Распределение тепла: <%= caravan.heating_distribution === 'liquid' ? 'Жидкостное' : 'Воздушное' %></li><% } %>
                 <% if (caravan.heater_brand) { %><li>Котел: <%= caravan.heater_brand %></li><% } %>
-                <% if (caravan.camper_season) { %><li>Тип: <%= caravan.camper_season === 'winter' ? 'Зимняя' : 'Летняя' %></li><% } %>
+                <% if (caravan.camper_season) { %><li>Тип: <%= caravan.camper_season === 'winter' ? 'Зима' : 'Лето' %></li><% } %>
                 <% if (caravan.has_ac) { %><li><i class="fas fa-check has-text-success"></i> Кондиционер</li><% } %>
                 <% if (caravan.vent_fans_count) { %><li>Вентиляторов: <%= caravan.vent_fans_count %></li><% } %>
                 <% if (caravan.skylights_count) { %><li>Люков: <%= caravan.skylights_count %></li><% } %>
@@ -192,9 +214,9 @@
 
           <% if (caravan.battery_type || caravan.solar_wattage) { %>
             <div class="column is-one-third">
-              <h4 class="subtitle is-6">Электричество</h4>
+                <h4 class="subtitle is-6 has-text-weight-bold">Электричество</h4>
               <ul>
-                <% if (caravan.battery_type) { %><li>Батарея: <%= caravan.battery_type %></li><% } %>
+                <% if (caravan.battery_type) { %><li>Батарея: <%= caravan.battery_type === 'lead-acid' ? 'Свинцово-кислотная' : (caravan.battery_type === 'lithium' ? 'Литиевая' : caravan.battery_type) %></li><% } %>
                 <% if (caravan.battery_capacity_ah) { %><li>Ёмкость: <%= caravan.battery_capacity_ah %> Ач</li><% } %>
                 <% if (caravan.solar_wattage) { %><li>Солнечные панели: <%= caravan.solar_wattage %> W</li><% } %>
               </ul>
@@ -203,11 +225,11 @@
 
           <% if (caravan.axles_count || caravan.brake_type || caravan.tow_vehicle_max_kg !== undefined && caravan.tow_vehicle_max_kg !== null) { %>
             <div class="column is-one-third">
-              <h4 class="subtitle is-6">Шасси и буксировка</h4>
+                <h4 class="subtitle is-6 has-text-weight-bold">Шасси и буксировка</h4>
               <ul>
                 <% if (caravan.axles_count) { %><li>Осей: <%= caravan.axles_count %></li><% } %>
                 <% if (caravan.brake_type) { %><li>Тормоза: <%= caravan.brake_type === 'hydraulic' ? 'Гидравлические' : (caravan.brake_type === 'electric' ? 'Электрические' : 'Барабанные') %></li><% } %>
-                <% if (caravan.suspension_type) { %><li>Подвеска: <%= caravan.suspension_type %></li><% } %>
+                <% if (caravan.suspension_type) { %><li>Подвеска: <%= caravan.suspension_type === 'leaf_spring' ? 'Рессоры' : (caravan.suspension_type === 'coil_spring' ? 'Пружины' : (caravan.suspension_type === 'air_suspension' ? 'Пневматическая' : (caravan.suspension_type === 'independent' ? 'Независимая' : caravan.suspension_type))) %></li><% } %>
                 <% if (caravan.wheel_size_inch) { %><li>Колеса: <%= caravan.wheel_size_inch %>"</li><% } %>
                 <% if (caravan.tow_vehicle_max_kg !== undefined && caravan.tow_vehicle_max_kg !== null) { %><li>Макс. масса авто: <%= caravan.tow_vehicle_max_kg %> кг</li><% } %>
                 <% if (caravan.braked) { %><li><i class="fas fa-check has-text-success"></i> С тормозами на оси</li><% } %>
@@ -218,7 +240,7 @@
 
           <% if (caravan.condition || caravan.last_service_date) { %>
             <div class="column is-one-third">
-              <h4 class="subtitle is-6">Состояние и история</h4>
+              <h4 class="subtitle is-6 has-text-weight-bold">Состояние и история</h4>
               <ul>
                 <% if (caravan.condition) { %><li>Состояние: <%= caravan.condition === 'excellent' ? 'Отличное' : (caravan.condition === 'good' ? 'Хорошее' : (caravan.condition === 'fair' ? 'Удовлетворительное' : 'Требует ремонта')) %></li><% } %>
                 <% if (caravan.last_service_date) { %><li>Последнее обслуживание: <%= new Date(caravan.last_service_date).toLocaleDateString('ru-RU') %></li><% } %>

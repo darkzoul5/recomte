@@ -30,7 +30,6 @@ const processFeatures = (data) => {
     features_tv_mount: 'tv_mount'
   };
 
-  const bedTypes = [];
   const bedTypeMap = {
     bed_type_bunk: 'bunk',
     bed_type_twin: 'twin',
@@ -45,15 +44,34 @@ const processFeatures = (data) => {
     delete data[key];
   }
 
-  for (const [formKey, bedValue] of Object.entries(bedTypeMap)) {
-    if (data[formKey]) {
-      bedTypes.push(bedValue);
+  // Handle new bed_types_json input
+  if (data.bed_types_json) {
+    try {
+      const bedTypes = JSON.parse(data.bed_types_json);
+      if (Array.isArray(bedTypes) && bedTypes.length > 0) {
+        features.bed_types = JSON.stringify(bedTypes);
+      }
+    } catch {
+      // If JSON parsing fails, ignore
     }
-    delete data[formKey];
+    delete data.bed_types_json;
+  } else {
+    // Fallback: check for old checkbox format for backward compatibility
+    const bedTypes = [];
+    for (const [formKey, bedValue] of Object.entries(bedTypeMap)) {
+      if (data[formKey]) {
+        bedTypes.push(bedValue);
+      }
+      delete data[formKey];
+    }
+    if (bedTypes.length > 0) {
+      features.bed_types = JSON.stringify(bedTypes);
+    }
   }
 
-  if (bedTypes.length > 0) {
-    features.bed_types = JSON.stringify(bedTypes);
+  // Clean up old bed type checkboxes
+  for (const formKey of Object.keys(bedTypeMap)) {
+    delete data[formKey];
   }
 
   const customFeaturesPayload = typeof data.custom_features_json === 'string'
