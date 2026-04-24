@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+  <% const MAIN_SITE_URL = 'https://recomte.ru/'; %>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %> | Recomte.ru Admin</title>
@@ -28,7 +29,7 @@
     <div class="navbar-end">
       <div class="navbar-item">
         <div class="buttons">
-          <a onclick="var hostname = window.location.hostname; var parts = hostname.split('.'); var mainDomain = parts.length > 2 ? parts.slice(-2).join('.') : hostname; var port = window.location.port ? ':' + window.location.port : ''; window.location.href = window.location.protocol + '//' + mainDomain + port + '/';" class="button is-info is-light" style="cursor: pointer;">
+          <a href="<%= MAIN_SITE_URL %>" class="button is-info is-light">
             <span class="icon"><i class="fas fa-home"></i></span>
             <span>На главную</span>
           </a>
