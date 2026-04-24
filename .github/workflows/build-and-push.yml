@@ -9,7 +9,6 @@ on:
       - "entrypoint.sh"
       - "docker-compose.yml"
       - ".dockerignore"
-      - "app.js"
       - "src/**"
       - "*.js"
       - "package*.json"
@@ -18,7 +17,6 @@ on:
       - "views/**"
       - "public/**"
       - "scripts/**"
-
       - ".github/workflows/build-and-push.yml"
 
   workflow_dispatch:
