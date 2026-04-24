@@ -76,6 +76,10 @@
                       <span class="icon"><i class="fas fa-edit"></i></span>
                       <span>Редактировать</span>
                     </a>
+                    <a onclick="var hostname = window.location.hostname; var parts = hostname.split('.'); var mainDomain = parts.length > 2 ? parts.slice(-2).join('.') : hostname; var port = window.location.port ? ':' + window.location.port : ''; window.open(window.location.protocol + '//' + mainDomain + port + '/caravans/<%= caravan.slug %>', '_blank');" class="button is-success is-light is-small" style="cursor: pointer;">
+                      <span class="icon"><i class="fas fa-external-link-alt"></i></span>
+                      <span>Просмотр на сайте</span>
+                    </a>
                     <form method="POST" action="/admin/delete/<%= caravan.id %>" style="display: inline;" onsubmit="return confirm('Вы уверены?');">
                       <button class="button is-danger is-light is-small">
                         <span class="icon"><i class="fas fa-trash"></i></span>
