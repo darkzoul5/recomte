@@ -720,6 +720,31 @@ fastify.get('/caravans/:slug', async (request, reply) => {
           }
         }
 
+        // Handle image reorder from drag-and-drop UI
+        if (typeof formData.image_order === 'string' && formData.image_order.trim()) {
+          const caravanId = parseInt(id);
+          const requestedOrder = formData.image_order
+            .split(',')
+            .map((value) => parseInt(value, 10))
+            .filter((value) => Number.isInteger(value) && value > 0);
+
+          const currentImages = images.getByCaravanId(caravanId);
+          const existingIds = new Set(currentImages.map((img) => img.id));
+          const usedIds = new Set();
+          let sortOrder = 0;
+
+          for (const imageId of requestedOrder) {
+            if (!existingIds.has(imageId) || usedIds.has(imageId)) continue;
+            images.reorder(imageId, sortOrder++);
+            usedIds.add(imageId);
+          }
+
+          for (const image of currentImages) {
+            if (usedIds.has(image.id)) continue;
+            images.reorder(image.id, sortOrder++);
+          }
+        }
+
         // Handle uploaded images
         if (uploadedFiles.length > 0) {
           fastify.log.info(`Processing ${uploadedFiles.length} uploaded files...`);
@@ -728,6 +753,8 @@ fastify.get('/caravans/:slug', async (request, reply) => {
             fastify.log.info(`Creating directory: ${imagesDir}`);
             fs.mkdirSync(imagesDir, { recursive: true });
           }
+
+          let nextSortOrder = images.getByCaravanId(parseInt(id)).length;
 
           for (const fileData of uploadedFiles) {
             try {
@@ -752,7 +779,8 @@ fastify.get('/caravans/:slug', async (request, reply) => {
 
               // Store image URL in database
               const imageUrl = `/public/images/caravans/${id}/${fileName}`;
-              images.create(parseInt(id), imageUrl, fileData.filename, 0);
+              images.create(parseInt(id), imageUrl, fileData.filename, nextSortOrder);
+              nextSortOrder += 1;
               fastify.log.info(`Image record created in database for: ${imageUrl}`);
             } catch (fileErr) {
               fastify.log.error(`Image upload failed for file ${fileData.filename}: ${fileErr.message}`);

@@ -424,9 +424,10 @@
     <% if (caravan?.images && caravan.images.length > 0) { %>
       <div style="margin-bottom: 2rem;">
         <p style="margin-bottom: 1rem;"><strong>Текущие изображения (<%= caravan.images.length %>/30)</strong></p>
+        <p style="margin-bottom: 0.75rem; color: #666; font-size: 0.9rem;">Перетаскивайте карточки мышью, чтобы изменить порядок изображений.</p>
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;" id="imagesGrid">
           <% caravan.images.forEach((img) => { %>
-            <div class="image-card" data-image-id="<%= img.id %>" style="border: 1px solid #ddd; border-radius: 4px; overflow: hidden; position: relative; transition: opacity 0.2s;">
+            <div class="image-card" data-image-id="<%= img.id %>" draggable="true" style="border: 1px solid #ddd; border-radius: 4px; overflow: hidden; position: relative; transition: opacity 0.2s; cursor: move;">
               <img src="<%= img.url %>" style="width: 100%; height: 120px; object-fit: cover; display: block;">
               <button type="button" class="delete-image-btn button is-danger is-light is-small" data-image-id="<%= img.id %>" style="width: 100%; padding: 0.5rem;">
                 <i class="fas fa-trash"></i>
@@ -438,6 +439,7 @@
             <input type="hidden" class="image-delete-input" name="images_to_delete" data-image-id="<%= img.id %>" value="<%= img.id %>" disabled>
           <% }); %>
         </div>
+        <input type="hidden" id="imageOrderInput" name="image_order" value="<%= caravan.images.map((img) => img.id).join(',') %>">
       </div>
     <% } %>
 

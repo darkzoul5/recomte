@@ -23,6 +23,43 @@ function toggleImageDelete(imageId) {
     deleteBtn.classList.add('is-danger');
     deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
   }
+
+  updateImageOrderInput();
+}
+
+function updateImageOrderInput() {
+  const orderInput = document.getElementById('imageOrderInput');
+  const grid = document.getElementById('imagesGrid');
+  if (!orderInput || !grid) return;
+
+  const ids = Array.from(grid.querySelectorAll('.image-card'))
+    .filter((card) => {
+      const imageId = card.getAttribute('data-image-id');
+      const deleteInput = document.querySelector(`.image-delete-input[data-image-id="${imageId}"]`);
+      return deleteInput ? deleteInput.disabled : true;
+    })
+    .map((card) => card.getAttribute('data-image-id'))
+    .filter(Boolean);
+
+  orderInput.value = ids.join(',');
+}
+
+async function persistImageOrderViaApi() {
+  const orderInput = document.getElementById('imageOrderInput');
+  if (!orderInput || !orderInput.value.trim()) return;
+
+  const ids = orderInput.value
+    .split(',')
+    .map((value) => parseInt(value, 10))
+    .filter((value) => Number.isInteger(value) && value > 0);
+
+  await Promise.all(ids.map((imageId, index) =>
+    fetch(`/admin/api/images/${imageId}/reorder`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sort_order: index })
+    }).catch(() => null)
+  ));
 }
 
 // Initialize event listeners when DOM is ready
@@ -37,8 +74,21 @@ document.addEventListener('DOMContentLoaded', function() {
   // Save scroll position before form submission
   const adminForm = document.querySelector('.admin-form');
   if (adminForm) {
-    adminForm.addEventListener('submit', function() {
+    let isSubmittingAfterReorder = false;
+
+    adminForm.addEventListener('submit', async function(event) {
+      if (isSubmittingAfterReorder) {
+        localStorage.setItem('adminEditScrollPosition', window.scrollY);
+        return;
+      }
+
+      event.preventDefault();
+      updateImageOrderInput();
+      await persistImageOrderViaApi();
       localStorage.setItem('adminEditScrollPosition', window.scrollY);
+
+      isSubmittingAfterReorder = true;
+      adminForm.requestSubmit();
     });
   }
 
@@ -50,6 +100,65 @@ document.addEventListener('DOMContentLoaded', function() {
       toggleImageDelete(imageId);
     });
   });
+
+  const imagesGrid = document.getElementById('imagesGrid');
+  if (imagesGrid) {
+    let draggedCard = null;
+
+    const cards = imagesGrid.querySelectorAll('.image-card');
+    cards.forEach((card) => {
+      card.addEventListener('dragstart', (event) => {
+        draggedCard = card;
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('text/plain', card.getAttribute('data-image-id') || '');
+        card.style.opacity = '0.4';
+      });
+
+      card.addEventListener('dragend', () => {
+        card.style.opacity = '';
+        updateImageOrderInput();
+        draggedCard = null;
+      });
+
+      card.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        if (!draggedCard || draggedCard === card) return;
+
+        const rect = card.getBoundingClientRect();
+        const shouldInsertAfter = event.clientY > rect.top + rect.height / 2;
+        if (shouldInsertAfter) {
+          if (card.nextSibling !== draggedCard) {
+            imagesGrid.insertBefore(draggedCard, card.nextSibling);
+          }
+        } else {
+          imagesGrid.insertBefore(draggedCard, card);
+        }
+      });
+
+      card.addEventListener('drop', (event) => {
+        event.preventDefault();
+        updateImageOrderInput();
+      });
+    });
+
+    imagesGrid.addEventListener('dragover', (event) => {
+      event.preventDefault();
+    });
+
+    imagesGrid.addEventListener('drop', (event) => {
+      event.preventDefault();
+      if (!draggedCard) return;
+
+      const targetCard = event.target.closest('.image-card');
+      if (!targetCard) {
+        imagesGrid.appendChild(draggedCard);
+      }
+
+      updateImageOrderInput();
+    });
+
+    updateImageOrderInput();
+  }
 
   // Update file label with selected file count
   const fileInput = document.getElementById('fileInput');
