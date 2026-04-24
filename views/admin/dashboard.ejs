@@ -80,8 +80,8 @@
                       <span class="icon"><i class="fas fa-external-link-alt"></i></span>
                       <span>Просмотр на сайте</span>
                     </a>
-                    <form method="POST" action="/admin/delete/<%= caravan.id %>" style="display: inline;" onsubmit="return confirm('Вы уверены?');">
-                      <button class="button is-danger is-light is-small">
+                    <form method="POST" action="/admin/delete/<%= caravan.id %>" style="display: inline;" class="delete-form">
+                      <button type="submit" class="button is-danger is-light is-small">
                         <span class="icon"><i class="fas fa-trash"></i></span>
                         <span>Удалить</span>
                       </button>
@@ -98,5 +98,7 @@
         <p><strong>Информация:</strong> Нет Прицеп-дач в базе. <a href="/admin/new" style="color: #0056b3; text-decoration: underline;">Добавьте первую страницу</a></p>
       </div>
     <% } %>
+
+<script src="/public/js/admin-dashboard.js"></script>
 
 <%- include('../layouts/admin-footer') %>
