@@ -1,6 +1,7 @@
 services:
   app:
     image: git.darkzoul.org/dark_zoul/campersite:latest
+    container_name: campersite_app
     environment:
       - DB_PATH=/app/data/app.db
       - NODE_ENV=production
@@ -47,6 +48,7 @@ services:
 
   app_test:
     image: git.darkzoul.org/dark_zoul/campersite:dev
+    container_name: campersite_app_test
     environment:
       - DB_PATH=/app/data/app.db
       - NODE_ENV=production

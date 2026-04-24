@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
+import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import { initDb, closeDb, caravans, images } from './db/db.js';
 import { createServer, registerCommonPlugins } from './src/server/setup.js';
@@ -11,6 +12,61 @@ dotenv.config({ override: false });
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const fastify = createServer();
+let deployInProgress = false;
+
+const triggerDeploy = () => {
+  deployInProgress = true;
+
+  const deployProcess = spawn('docker', ['compose', 'pull'], {
+    cwd: __dirname,
+    env: process.env,
+    stdio: ['ignore', 'pipe', 'pipe']
+  });
+
+  deployProcess.stdout.on('data', (chunk) => {
+    fastify.log.info({ deploy: chunk.toString().trim() }, 'docker compose pull');
+  });
+
+  deployProcess.stderr.on('data', (chunk) => {
+    fastify.log.error({ deploy: chunk.toString().trim() }, 'docker compose pull error');
+  });
+
+  deployProcess.on('close', (pullCode) => {
+    if (pullCode !== 0) {
+      fastify.log.error({ pullCode }, 'Deploy failed during docker compose pull');
+      deployInProgress = false;
+      return;
+    }
+
+    const upProcess = spawn('docker', ['compose', 'up', '-d'], {
+      cwd: __dirname,
+      env: process.env,
+      stdio: ['ignore', 'pipe', 'pipe']
+    });
+
+    upProcess.stdout.on('data', (chunk) => {
+      fastify.log.info({ deploy: chunk.toString().trim() }, 'docker compose up');
+    });
+
+    upProcess.stderr.on('data', (chunk) => {
+      fastify.log.error({ deploy: chunk.toString().trim() }, 'docker compose up error');
+    });
+
+    upProcess.on('close', (upCode) => {
+      if (upCode !== 0) {
+        fastify.log.error({ upCode }, 'Deploy failed during docker compose up -d');
+      } else {
+        fastify.log.info('Deploy completed successfully');
+      }
+      deployInProgress = false;
+    });
+  });
+
+  deployProcess.on('error', (error) => {
+    fastify.log.error(error, 'Unable to start docker compose pull process');
+    deployInProgress = false;
+  });
+};
 
 const processFeatures = (data) => {
   const features = {};
@@ -283,6 +339,30 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
     await registerCommonPlugins(fastify, { rootDir: __dirname });
 
     fastify.get('/healthcheck', { logLevel: 'silent' }, async () => ({ status: 'ok' }));
+
+    fastify.post('/deploy', async (request, reply) => {
+      const configuredSecret = process.env.WEBHOOK_SECRET;
+      const providedSecretHeader = request.headers['x-webhook-secret'];
+      const providedSecret = Array.isArray(providedSecretHeader)
+        ? providedSecretHeader[0]
+        : providedSecretHeader;
+
+      if (!configuredSecret) {
+        fastify.log.error('WEBHOOK_SECRET is not configured');
+        return reply.code(503).send({ error: 'Deploy webhook is not configured' });
+      }
+
+      if (!providedSecret || providedSecret !== configuredSecret) {
+        return reply.code(401).send({ error: 'Unauthorized' });
+      }
+
+      if (deployInProgress) {
+        return reply.code(409).send({ status: 'deploy_in_progress' });
+      }
+
+      triggerDeploy();
+      return reply.send({ status: 'deploying' });
+    });
 
     await fastify.register(adminRoutes);
 

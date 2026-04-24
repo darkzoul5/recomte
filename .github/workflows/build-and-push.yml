@@ -66,3 +66,22 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=git.darkzoul.org/dark_zoul/campersite:buildcache
           cache-to: type=registry,ref=git.darkzoul.org/dark_zoul/campersite:buildcache,mode=max
+
+      - name: Trigger deploy webhook
+        env:
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+        run: |
+          if [ -z "$WEBHOOK_SECRET" ]; then
+            echo "WEBHOOK_SECRET is not configured"
+            exit 1
+          fi
+
+          curl --fail --show-error --silent \
+            --retry 3 \
+            --retry-all-errors \
+            --connect-timeout 10 \
+            --max-time 60 \
+            -X POST "https://admin.recomte.ru/deploy" \
+            -H "x-webhook-secret: $WEBHOOK_SECRET" \
+            -H "Content-Type: application/json" \
+            -d '{"source":"github-actions","repository":"${{ github.repository }}","sha":"${{ github.sha }}"}'
