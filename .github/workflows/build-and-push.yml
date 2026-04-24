@@ -67,21 +67,15 @@ jobs:
           cache-from: type=registry,ref=git.darkzoul.org/dark_zoul/campersite:buildcache
           cache-to: type=registry,ref=git.darkzoul.org/dark_zoul/campersite:buildcache,mode=max
 
-      - name: Trigger deploy webhook
-        env:
-          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
-        run: |
-          if [ -z "$WEBHOOK_SECRET" ]; then
-            echo "WEBHOOK_SECRET is not configured"
-            exit 1
-          fi
+  deploy:
+    runs-on: ubuntu-latest
 
-          curl --fail --show-error --silent \
-            --retry 3 \
-            --retry-all-errors \
-            --connect-timeout 10 \
-            --max-time 60 \
-            -X POST "https://admin.recomte.ru/deploy" \
-            -H "x-webhook-secret: $WEBHOOK_SECRET" \
-            -H "Content-Type: application/json" \
-            -d '{"source":"github-actions","repository":"${{ github.repository }}","sha":"${{ github.sha }}"}'
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            /home/deploy/deploy.sh
