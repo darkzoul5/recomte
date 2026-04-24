@@ -6,12 +6,50 @@ import fastifyFormbody from '@fastify/formbody';
 import fastifyMultipart from '@fastify/multipart';
 import path from 'path';
 
+const SESSION_MAX_AGE = 60 * 60 * 1000; // 1 hour in milliseconds
+
 export const createServer = () => Fastify({
   logger: {
     level: process.env.LOG_LEVEL || 'info'
   },
   trustProxy: true
 });
+
+// Simple in-memory session store with proper TTL support
+class MemorySessionStore {
+  constructor(maxAge) {
+    this.sessions = {};
+    this.maxAge = maxAge;
+  }
+
+  async set(sessionId, session, callback) {
+    this.sessions[sessionId] = {
+      data: session,
+      expires: Date.now() + this.maxAge
+    };
+    if (callback) callback(null);
+  }
+
+  async get(sessionId, callback) {
+    const session = this.sessions[sessionId];
+    if (!session) {
+      if (callback) callback(null, null);
+      return null;
+    }
+    if (session.expires < Date.now()) {
+      delete this.sessions[sessionId];
+      if (callback) callback(null, null);
+      return null;
+    }
+    if (callback) callback(null, session.data);
+    return session.data;
+  }
+
+  async destroy(sessionId, callback) {
+    delete this.sessions[sessionId];
+    if (callback) callback(null);
+  }
+}
 
 export const registerCommonPlugins = async (fastify, { rootDir }) => {
   await fastify.register(fastifyCookie);
@@ -22,11 +60,14 @@ export const registerCommonPlugins = async (fastify, { rootDir }) => {
     }
   });
 
+  const store = new MemorySessionStore(SESSION_MAX_AGE);
+
   await fastify.register(fastifySession, {
+    store: store,
     secret: process.env.SESSION_SECRET || 'default_secret_change_in_production',
     saveUninitialized: true,
     cookie: {
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: SESSION_MAX_AGE,
       secure: false,
       httpOnly: true,
       sameSite: 'lax',
