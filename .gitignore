@@ -3,7 +3,7 @@ node_modules
 data
 data/app.db
 public/images/caravans
-
+campersite.code-workspace
 # Docker & Deployment
 letsencrypt/
 letsencrypt/acme.json

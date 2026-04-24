@@ -14,10 +14,11 @@ CREATE TABLE IF NOT EXISTS caravans (
   -- SLEEPING & BASIC
   beds_count INTEGER,
   shower_type TEXT,
+  has_toilet BOOLEAN DEFAULT 0,
   toilet_type TEXT,
-  bed_layout TEXT,
   windows_count INTEGER,
   door_position TEXT,
+  manufacturer_country TEXT,
   
   -- WATER SYSTEMS
   fresh_water_tank_l INTEGER,
@@ -32,38 +33,36 @@ CREATE TABLE IF NOT EXISTS caravans (
   sink_present BOOLEAN DEFAULT 0,
   cooktop_type TEXT,
   stove_burners_count INTEGER,
+  has_microwave BOOLEAN DEFAULT 0,
+  has_oven BOOLEAN DEFAULT 0,
   
   -- HEATING & CLIMATE
+  has_heating BOOLEAN DEFAULT 0,
   heating_type TEXT,
-  heating_source TEXT,
+  heating_distribution TEXT,
+  heater_brand TEXT,
   has_ac BOOLEAN DEFAULT 0,
   vent_fans_count INTEGER,
   skylights_count INTEGER,
+  camper_season TEXT,
   
-  -- INSULATION & COMFORT
-  has_insulation BOOLEAN DEFAULT 0,
+  -- COMFORT
   double_glazed_windows BOOLEAN DEFAULT 0,
-  winter_rated BOOLEAN DEFAULT 0,
   
   -- ELECTRICAL SYSTEM
   battery_type TEXT,
   battery_capacity_ah INTEGER,
   solar_wattage INTEGER,
   inverter_wattage INTEGER,
-  has_shore_power BOOLEAN DEFAULT 0,
   has_12v_system BOOLEAN DEFAULT 0,
-  
-  -- GAS SYSTEM
-  gas_system_present BOOLEAN DEFAULT 0,
-  gas_bottles_count INTEGER,
   
   -- DIMENSIONS & WEIGHT
   length_mm INTEGER,
   width_mm INTEGER,
   height_mm INTEGER,
   interior_height_mm INTEGER,
-  weight_empty_kg INTEGER,
-  max_weight_kg INTEGER,
+  curb_weight_kg INTEGER,
+  gross_weight_kg INTEGER,
   
   -- CHASSIS & TOWING
   axles_count INTEGER,
@@ -73,14 +72,11 @@ CREATE TABLE IF NOT EXISTS caravans (
   hitch_weight_kg INTEGER,
   braked BOOLEAN DEFAULT 0,
   stabilizer_present BOOLEAN DEFAULT 0,
-  recommended_tow_vehicle_min_kg INTEGER,
-  license_requirement TEXT,
+  tow_vehicle_max_kg INTEGER,
   
   -- CONDITION & HISTORY
   condition TEXT,
-  damp_detected BOOLEAN DEFAULT 0,
   last_service_date DATE,
-  ownership_count INTEGER,
   
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -114,9 +110,9 @@ CREATE INDEX IF NOT EXISTS idx_caravans_status ON caravans(status);
 CREATE INDEX IF NOT EXISTS idx_caravans_featured ON caravans(featured);
 CREATE INDEX IF NOT EXISTS idx_caravans_year ON caravans(year);
 CREATE INDEX IF NOT EXISTS idx_caravans_price ON caravans(price);
-CREATE INDEX IF NOT EXISTS idx_caravans_max_weight_kg ON caravans(max_weight_kg);
+CREATE INDEX IF NOT EXISTS idx_caravans_gross_weight_kg ON caravans(gross_weight_kg);
 CREATE INDEX IF NOT EXISTS idx_caravans_beds_count ON caravans(beds_count);
-CREATE INDEX IF NOT EXISTS idx_caravans_winter_rated ON caravans(winter_rated);
+CREATE INDEX IF NOT EXISTS idx_caravans_camper_season ON caravans(camper_season);
 CREATE INDEX IF NOT EXISTS idx_caravans_condition ON caravans(condition);
 CREATE INDEX IF NOT EXISTS idx_caravans_created_at ON caravans(created_at);
 CREATE INDEX IF NOT EXISTS idx_images_caravan_id ON images(caravan_id);

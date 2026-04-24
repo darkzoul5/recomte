@@ -5,36 +5,24 @@
 // Whitelist of allowed column names for caravans table
 const ALLOWED_CARAVAN_COLUMNS = new Set([
   'title', 'slug', 'description', 'year', 'price', 'status', 'featured',
-  // Sleeping & Basic (Phase 1 & 2)
-  'beds_count', 'shower_type', 'toilet_type', 'bed_layout', 'windows_count', 'door_position',
-  // Legacy fields (kept for backwards compatibility)
-  'has_shower', 'has_toilet',
+  // Sleeping & Basic
+  'beds_count', 'shower_type', 'has_toilet', 'toilet_type', 'windows_count', 'door_position', 'manufacturer_country',
   // Water systems
   'fresh_water_tank_l', 'grey_water_tank_l', 'has_hot_water', 'water_heater_type', 'boiler_volume_l',
-  // Kitchen (Phase 1 & 2)
-  'fridge_type', 'fridge_volume_l', 'sink_present', 'cooktop_type', 'stove_burners_count',
-  // Legacy kitchen (kept for backwards compatibility)
-  'has_cooktop', 'has_oven', 'kitchen_outlets_count',
-  // Heating & Climate (Phase 1 & 2)
-  'heating_type', 'heating_source', 'has_ac', 'vent_fans_count', 'skylights_count',
-  // Legacy heating (kept for backwards compatibility)
-  'has_heating', 'heater_brand', 'heating_distribution',
-  // Insulation & Comfort
-  'has_insulation', 'double_glazed_windows', 'winter_rated',
-  // Electrical System (Phase 1 & 2)
-  'battery_type', 'battery_capacity_ah', 'solar_wattage', 'inverter_wattage', 'has_shore_power', 'has_12v_system',
-  // Legacy electrical (kept for backwards compatibility)
-  'has_solar_panels',
-  // Gas System (Phase 1)
-  'gas_system_present', 'gas_bottles_count',
+  // Kitchen
+  'fridge_type', 'fridge_volume_l', 'sink_present', 'cooktop_type', 'stove_burners_count', 'has_microwave', 'has_oven',
+  // Heating & Climate
+  'has_heating', 'heating_type', 'heating_distribution', 'heater_brand', 'has_ac', 'vent_fans_count', 'skylights_count', 'camper_season',
+  // Comfort
+  'double_glazed_windows',
+  // Electrical System
+  'battery_type', 'battery_capacity_ah', 'solar_wattage', 'inverter_wattage', 'has_12v_system',
   // Dimensions & Weight
-  'length_mm', 'width_mm', 'height_mm', 'interior_height_mm', 'weight_empty_kg', 'max_weight_kg',
-  // Chassis & Towing (Phase 1)
-  'axles_count', 'brake_type', 'suspension_type', 'wheel_size_inch', 'hitch_weight_kg', 'braked', 'stabilizer_present', 'recommended_tow_vehicle_min_kg', 'license_requirement',
-  // Legacy chassis (kept for backwards compatibility)
-  'axle_type',
-  // Condition & History (Phase 1)
-  'condition', 'damp_detected', 'last_service_date', 'ownership_count',
+  'length_mm', 'width_mm', 'height_mm', 'interior_height_mm', 'curb_weight_kg', 'gross_weight_kg',
+  // Chassis & Towing
+  'axles_count', 'brake_type', 'suspension_type', 'wheel_size_inch', 'hitch_weight_kg', 'braked', 'stabilizer_present', 'tow_vehicle_max_kg',
+  // Condition & History
+  'condition', 'last_service_date',
   // Flexible features
   'features'
 ]);
@@ -184,10 +172,9 @@ export const validateCaravanData = (data, isUpdate = false) => {
 
   // Validate boolean fields
   const booleanFields = [
-    'featured', 'has_shower', 'has_toilet', 'has_hot_water', 'sink_present',
-    'has_cooktop', 'has_oven', 'has_heating', 'has_insulation', 'double_glazed_windows',
-    'winter_rated', 'has_solar_panels', 'has_shore_power', 'has_12v_system',
-    'has_ac', 'gas_system_present', 'braked', 'stabilizer_present', 'damp_detected'
+    'featured', 'has_toilet', 'has_hot_water', 'sink_present', 'has_heating', 'double_glazed_windows',
+    'has_12v_system',
+    'has_ac', 'has_microwave', 'has_oven', 'braked', 'stabilizer_present'
   ];
 
   for (const field of booleanFields) {
@@ -202,9 +189,9 @@ export const validateCaravanData = (data, isUpdate = false) => {
     'beds_count', 'fresh_water_tank_l', 'grey_water_tank_l', 'boiler_volume_l',
     'fridge_volume_l', 'stove_burners_count', 'battery_capacity_ah', 'solar_wattage',
     'inverter_wattage', 'length_mm', 'width_mm', 'height_mm', 'interior_height_mm',
-    'weight_empty_kg', 'max_weight_kg', 'windows_count', 'vent_fans_count',
-    'skylights_count', 'gas_bottles_count', 'axles_count', 'wheel_size_inch',
-    'hitch_weight_kg', 'recommended_tow_vehicle_min_kg', 'ownership_count'
+    'curb_weight_kg', 'gross_weight_kg', 'windows_count', 'vent_fans_count',
+    'skylights_count', 'axles_count', 'wheel_size_inch',
+    'hitch_weight_kg', 'tow_vehicle_max_kg'
   ];
 
   for (const field of integerFields) {
@@ -217,44 +204,81 @@ export const validateCaravanData = (data, isUpdate = false) => {
   }
 
   // Business rules and impossible state checks
-  const weightEmpty = data.weight_empty_kg !== undefined && data.weight_empty_kg !== null && data.weight_empty_kg !== ''
-    ? parseInt(data.weight_empty_kg, 10)
+  const curbWeight = data.curb_weight_kg !== undefined && data.curb_weight_kg !== null && data.curb_weight_kg !== ''
+    ? parseInt(data.curb_weight_kg, 10)
     : null;
-  const maxWeight = data.max_weight_kg !== undefined && data.max_weight_kg !== null && data.max_weight_kg !== ''
-    ? parseInt(data.max_weight_kg, 10)
-    : null;
-  const towMinWeight = data.recommended_tow_vehicle_min_kg !== undefined && data.recommended_tow_vehicle_min_kg !== null && data.recommended_tow_vehicle_min_kg !== ''
-    ? parseInt(data.recommended_tow_vehicle_min_kg, 10)
+  const grossWeight = data.gross_weight_kg !== undefined && data.gross_weight_kg !== null && data.gross_weight_kg !== ''
+    ? parseInt(data.gross_weight_kg, 10)
     : null;
 
-  if (weightEmpty !== null && maxWeight !== null && weightEmpty >= maxWeight) {
-    errors.push('weight_empty_kg must be less than max_weight_kg');
+  if (curbWeight !== null && grossWeight !== null && curbWeight >= grossWeight) {
+    errors.push('curb_weight_kg must be less than gross_weight_kg');
   }
 
-  if (towMinWeight !== null && maxWeight !== null && towMinWeight < maxWeight) {
-    errors.push('recommended_tow_vehicle_min_kg must be greater than or equal to max_weight_kg');
+  if (data.camper_season && !['winter', 'summer'].includes(String(data.camper_season))) {
+    errors.push('camper_season must be winter or summer');
   }
 
-  if ((data.gas_system_present === 0 || data.gas_system_present === '0' || data.gas_system_present === false) &&
-      data.gas_bottles_count !== undefined && data.gas_bottles_count !== null && data.gas_bottles_count !== '' && parseInt(data.gas_bottles_count, 10) > 0) {
-    errors.push('gas_bottles_count cannot be greater than 0 when gas_system_present is disabled');
+  if (data.heating_type) {
+    let heatingTypes = [];
+    if (Array.isArray(data.heating_type)) {
+      heatingTypes = data.heating_type;
+    } else if (typeof data.heating_type === 'string' && data.heating_type.trim().startsWith('[')) {
+      try {
+        const parsed = JSON.parse(data.heating_type);
+        heatingTypes = Array.isArray(parsed) ? parsed : [];
+      } catch {
+        heatingTypes = [];
+      }
+    } else {
+      heatingTypes = [data.heating_type];
+    }
+
+    const invalidHeatingType = heatingTypes.some((value) => !['diesel', 'gas', 'electric'].includes(String(value)));
+    if (invalidHeatingType) {
+      errors.push('heating_type must contain only diesel, gas, or electric');
+    }
+  }
+
+  if (data.fridge_type) {
+    let fridgeTypes = [];
+    if (Array.isArray(data.fridge_type)) {
+      fridgeTypes = data.fridge_type;
+    } else if (typeof data.fridge_type === 'string' && data.fridge_type.trim().startsWith('[')) {
+      try {
+        const parsed = JSON.parse(data.fridge_type);
+        fridgeTypes = Array.isArray(parsed) ? parsed : [];
+      } catch {
+        fridgeTypes = [];
+      }
+    } else {
+      fridgeTypes = [data.fridge_type];
+    }
+
+    const invalidFridgeType = fridgeTypes.some((value) => !['electric', 'gas'].includes(String(value)));
+    if (invalidFridgeType) {
+      errors.push('fridge_type must contain only electric or gas');
+    }
+  }
+  if (data.shower_type && !['none', 'separate', 'combined'].includes(String(data.shower_type))) {
+    errors.push('shower_type must be none, separate, or combined');
+  }
+
+  if (data.water_heater_type && !['electric', 'gas'].includes(String(data.water_heater_type))) {
+    errors.push('water_heater_type must be electric or gas');
+  }
+
+
+  if (data.heating_distribution && !['liquid', 'air'].includes(String(data.heating_distribution))) {
+    errors.push('heating_distribution must be liquid or air');
+  }
+
+  if (data.manufacturer_country && String(data.manufacturer_country).length > 100) {
+    errors.push('manufacturer_country must be 100 characters or less');
   }
 
   if ((data.braked === 1 || data.braked === '1' || data.braked === true) && data.brake_type === 'none') {
     errors.push('brake_type cannot be "none" when braked is enabled');
-  }
-
-  if (maxWeight !== null && data.license_requirement) {
-    const license = String(data.license_requirement).toUpperCase();
-    if (maxWeight <= 750 && license !== 'B') {
-      errors.push('license_requirement should be B when max_weight_kg is 750 or less');
-    }
-    if (maxWeight > 750 && maxWeight <= 3500 && !['B96', 'BE'].includes(license)) {
-      errors.push('license_requirement should be B96 or BE when max_weight_kg is between 751 and 3500');
-    }
-    if (maxWeight > 3500 && license !== 'BE') {
-      errors.push('license_requirement should be BE when max_weight_kg is above 3500');
-    }
   }
 
   return {
@@ -273,18 +297,26 @@ export const deriveCaravanFields = (data) => {
 
   const result = { ...data };
 
-  const maxWeight = result.max_weight_kg !== undefined && result.max_weight_kg !== null && result.max_weight_kg !== ''
-    ? parseInt(result.max_weight_kg, 10)
+  const grossWeight = result.gross_weight_kg !== undefined && result.gross_weight_kg !== null && result.gross_weight_kg !== ''
+    ? parseInt(result.gross_weight_kg, 10)
     : null;
 
-  if (!result.license_requirement && maxWeight !== null) {
-    if (maxWeight <= 750) {
-      result.license_requirement = 'B';
-    } else if (maxWeight <= 3500) {
-      result.license_requirement = 'B96';
-    } else {
-      result.license_requirement = 'BE';
-    }
+  if (grossWeight !== null) {
+    result.tow_vehicle_max_kg = Math.max(0, 3500 - grossWeight);
+  }
+
+  const hasHeatingSignals = [
+    result.heating_type,
+    result.heating_distribution,
+    result.heater_brand,
+    result.double_glazed_windows,
+    result.camper_season
+  ].some((value) => value !== undefined && value !== null && value !== '' && value !== 0 && value !== '0' && value !== false);
+
+  result.has_heating = hasHeatingSignals ? 1 : 0;
+
+  if (!result.camper_season) {
+    result.camper_season = 'summer';
   }
 
   return result;

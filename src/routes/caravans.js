@@ -10,9 +10,41 @@ const hydrateCaravan = (caravan) => {
     featureMap[row.feature_key] = row.feature_value;
   }
 
+  let bedTypes = [];
+  if (featureMap.bed_types) {
+    try {
+      const parsed = JSON.parse(featureMap.bed_types);
+      bedTypes = Array.isArray(parsed) ? parsed : [];
+    } catch {
+      bedTypes = [];
+    }
+  }
+
+  const parseMultiValueField = (value) => {
+    if (!value) return [];
+    if (Array.isArray(value)) return value;
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if (!trimmed) return [];
+      if (trimmed.startsWith('[')) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+      return [trimmed];
+    }
+    return [];
+  };
+
   return {
     ...caravan,
     ...featureMap,
+    fridge_type_values: parseMultiValueField(caravan.fridge_type),
+    heating_type_values: parseMultiValueField(caravan.heating_type),
+    bed_types: bedTypes,
     images: caravanImages,
     feature_map: featureMap,
     features: Object.keys(featureMap).filter((key) => featureMap[key] !== '0')
@@ -26,7 +58,10 @@ export default async function caravansRoutes(fastify) {
       const filters = {};
       
       if (request.query.winter_rated === 'true') {
-        filters.winter_rated = true;
+        filters.camper_season = 'winter';
+      }
+      if (request.query.camper_season) {
+        filters.camper_season = String(request.query.camper_season);
       }
 
       if (request.query.status) {

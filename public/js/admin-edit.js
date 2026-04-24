@@ -152,4 +152,24 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   renderCustomFeatures();
+
+  const grossWeightInput = document.getElementById('grossWeightInput');
+  const towVehicleMaxInput = document.getElementById('towVehicleMaxInput');
+
+  const updateTowVehicleMax = () => {
+    if (!grossWeightInput || !towVehicleMaxInput) return;
+    const grossWeight = parseInt(grossWeightInput.value, 10);
+    if (Number.isNaN(grossWeight)) {
+      towVehicleMaxInput.value = '';
+      return;
+    }
+    towVehicleMaxInput.value = Math.max(0, 3500 - grossWeight);
+  };
+
+  if (grossWeightInput && towVehicleMaxInput) {
+    grossWeightInput.addEventListener('input', updateTowVehicleMax);
+    if (!towVehicleMaxInput.value) {
+      updateTowVehicleMax();
+    }
+  }
 });

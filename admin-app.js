@@ -20,19 +20,22 @@ const processFeatures = (data) => {
     'bike_rack',
     'mosquito_nets',
     'tv_mount',
-    'storage_compartments',
-    'kitchen_outlets_count',
-    'heater_brand',
-    'heating_distribution',
-    'fuse_type'
+    'bed_types'
   ]);
   const featureMap = {
     features_air_conditioning: 'air_conditioning',
     features_awning: 'awning',
     features_bike_rack: 'bike_rack',
     features_mosquito_nets: 'mosquito_nets',
-    features_tv_mount: 'tv_mount',
-    features_storage_compartments: 'storage_compartments'
+    features_tv_mount: 'tv_mount'
+  };
+
+  const bedTypes = [];
+  const bedTypeMap = {
+    bed_type_bunk: 'bunk',
+    bed_type_twin: 'twin',
+    bed_type_dinette: 'dinette',
+    bed_type_double: 'double'
   };
 
   for (const [key, featureName] of Object.entries(featureMap)) {
@@ -42,13 +45,15 @@ const processFeatures = (data) => {
     delete data[key];
   }
 
-  // Fields moved out of caravans table are stored in caravan_features.
-  const movedFields = ['kitchen_outlets_count', 'heater_brand', 'heating_distribution', 'fuse_type'];
-  for (const movedKey of movedFields) {
-    if (data[movedKey] !== undefined && data[movedKey] !== null && String(data[movedKey]).trim() !== '') {
-      features[movedKey] = data[movedKey];
+  for (const [formKey, bedValue] of Object.entries(bedTypeMap)) {
+    if (data[formKey]) {
+      bedTypes.push(bedValue);
     }
-    delete data[movedKey];
+    delete data[formKey];
+  }
+
+  if (bedTypes.length > 0) {
+    features.bed_types = JSON.stringify(bedTypes);
   }
 
   const customFeaturesPayload = typeof data.custom_features_json === 'string'
@@ -107,7 +112,19 @@ const processFeatures = (data) => {
   return data;
 };
 
-const mapFormToCaravanData = (formData) => ({
+const mapFormToCaravanData = (formData) => {
+  const normalizeMultiSelect = (value, allowedValues) => {
+    const values = Array.isArray(value) ? value : (value ? [value] : []);
+    return values
+      .map((entry) => String(entry).trim())
+      .filter((entry) => allowedValues.includes(entry));
+  };
+
+  const fridgeTypes = normalizeMultiSelect(formData.fridge_type, ['electric', 'gas']);
+  const heatingTypes = normalizeMultiSelect(formData.heating_type, ['diesel', 'gas', 'electric']);
+  const kitchenAppliances = normalizeMultiSelect(formData.kitchen_appliances, ['microwave', 'oven']);
+
+  return {
   title: formData.title,
   slug: formData.slug,
   description: formData.description || '',
@@ -117,57 +134,55 @@ const mapFormToCaravanData = (formData) => ({
   featured: formData.featured ? 1 : 0,
   beds_count: formData.beds_count ? parseInt(formData.beds_count) : null,
   shower_type: formData.shower_type || null,
-  toilet_type: formData.toilet_type || null,
-  bed_layout: formData.bed_layout || null,
+  has_toilet: formData.has_toilet ? 1 : 0,
+  toilet_type: formData.has_toilet ? 'present' : null,
   windows_count: formData.windows_count ? parseInt(formData.windows_count) : null,
   door_position: formData.door_position || null,
+  manufacturer_country: formData.manufacturer_country || null,
   fresh_water_tank_l: formData.fresh_water_tank_l ? parseInt(formData.fresh_water_tank_l) : null,
   grey_water_tank_l: formData.grey_water_tank_l ? parseInt(formData.grey_water_tank_l) : null,
   has_hot_water: formData.has_hot_water ? 1 : 0,
   water_heater_type: formData.water_heater_type || null,
   boiler_volume_l: formData.boiler_volume_l ? parseInt(formData.boiler_volume_l) : null,
-  fridge_type: formData.fridge_type || null,
+  fridge_type: fridgeTypes.length > 0 ? JSON.stringify(fridgeTypes) : null,
   fridge_volume_l: formData.fridge_volume_l ? parseInt(formData.fridge_volume_l) : null,
   sink_present: formData.sink_present ? 1 : 0,
-  cooktop_type: formData.cooktop_type || null,
+  cooktop_type: null,
   stove_burners_count: formData.stove_burners_count ? parseInt(formData.stove_burners_count) : null,
-  heating_type: formData.heating_type || null,
-  heating_source: formData.heating_source || null,
+  has_microwave: kitchenAppliances.includes('microwave') ? 1 : 0,
+  has_oven: kitchenAppliances.includes('oven') ? 1 : 0,
+  heating_type: heatingTypes.length > 0 ? JSON.stringify(heatingTypes) : null,
+  heating_distribution: formData.heating_distribution || null,
+  heater_brand: formData.heater_brand || null,
   has_ac: formData.has_ac ? 1 : 0,
   vent_fans_count: formData.vent_fans_count ? parseInt(formData.vent_fans_count) : null,
   skylights_count: formData.skylights_count ? parseInt(formData.skylights_count) : null,
-  has_insulation: formData.has_insulation ? 1 : 0,
+  camper_season: formData.camper_season || 'summer',
   double_glazed_windows: formData.double_glazed_windows ? 1 : 0,
-  winter_rated: formData.winter_rated ? 1 : 0,
   battery_type: formData.battery_type || null,
   battery_capacity_ah: formData.battery_capacity_ah ? parseInt(formData.battery_capacity_ah) : null,
   solar_wattage: formData.solar_wattage ? parseInt(formData.solar_wattage) : null,
   inverter_wattage: formData.inverter_wattage ? parseInt(formData.inverter_wattage) : null,
-  has_shore_power: formData.has_shore_power ? 1 : 0,
   has_12v_system: formData.has_12v_system ? 1 : 0,
-  gas_system_present: formData.gas_system_present ? 1 : 0,
-  gas_bottles_count: formData.gas_bottles_count ? parseInt(formData.gas_bottles_count) : null,
   length_mm: formData.length_mm ? parseInt(formData.length_mm) : null,
   width_mm: formData.width_mm ? parseInt(formData.width_mm) : null,
   height_mm: formData.height_mm ? parseInt(formData.height_mm) : null,
   interior_height_mm: formData.interior_height_mm ? parseInt(formData.interior_height_mm) : null,
-  weight_empty_kg: formData.weight_empty_kg ? parseInt(formData.weight_empty_kg) : null,
-  max_weight_kg: formData.max_weight_kg ? parseInt(formData.max_weight_kg) : null,
+  curb_weight_kg: formData.curb_weight_kg ? parseInt(formData.curb_weight_kg) : null,
+  gross_weight_kg: formData.gross_weight_kg ? parseInt(formData.gross_weight_kg) : null,
   axles_count: formData.axles_count ? parseInt(formData.axles_count) : null,
   brake_type: formData.brake_type || null,
   suspension_type: formData.suspension_type || null,
   wheel_size_inch: formData.wheel_size_inch ? parseInt(formData.wheel_size_inch) : null,
-  hitch_weight_kg: formData.hitch_weight_kg ? parseInt(formData.hitch_weight_kg) : null,
+  hitch_weight_kg: null,
   braked: formData.braked ? 1 : 0,
   stabilizer_present: formData.stabilizer_present ? 1 : 0,
-  recommended_tow_vehicle_min_kg: formData.recommended_tow_vehicle_min_kg ? parseInt(formData.recommended_tow_vehicle_min_kg) : null,
-  license_requirement: formData.license_requirement || null,
+  tow_vehicle_max_kg: null,
   condition: formData.condition || null,
-  damp_detected: formData.damp_detected ? 1 : 0,
   last_service_date: formData.last_service_date || null,
-  ownership_count: formData.ownership_count ? parseInt(formData.ownership_count) : null,
-  features: formData.features || {}
-});
+    features: formData.features || {}
+  };
+};
 
 const parseMultipartForm = async (request) => {
   const formData = {};
@@ -176,7 +191,7 @@ const parseMultipartForm = async (request) => {
   const parts = request.parts();
   for await (const part of parts) {
     if (part.type === 'field') {
-      if (part.fieldname === 'features' && formData[part.fieldname]) {
+      if (formData[part.fieldname] !== undefined) {
         if (Array.isArray(formData[part.fieldname])) {
           formData[part.fieldname].push(part.value);
         } else {
@@ -361,7 +376,7 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
         return reply.redirect('/admin/login');
       }
 
-      return renderEditPage(request, reply, 'Добавить новый кемпер', {
+      return renderEditPage(request, reply, 'Добавить', {
         id: null,
         title: '',
         slug: '',
@@ -386,7 +401,7 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
         const { formData, uploadedFiles } = await parseMultipartForm(request);
 
         if (!formData.title || !formData.slug || !formData.price) {
-          return renderEditPage(request, reply, 'Добавить новый кемпер', {
+          return renderEditPage(request, reply, 'Добавить', {
             title: '',
             slug: '',
             price: 0,
@@ -404,14 +419,14 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
         return reply.redirect('/admin/dash');
       } catch (error) {
         fastify.log.error(error);
-        return renderEditPage(request, reply, 'Добавить новый кемпер', {
+        return renderEditPage(request, reply, 'Добавить', {
           title: '',
           slug: '',
           price: 0,
           status: 'available',
           featured: 0,
           images: []
-        }, true, 'Ошибка при создании кемпера: ' + error.message);
+        }, true, 'Ошибка при создании: ' + error.message);
       }
     });
 
@@ -464,7 +479,7 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
           title: `Редактировать: ${caravan.title}`,
           caravan,
           isNew: false,
-          error: 'Ошибка при обновлении кемпера: ' + error.message
+          error: 'Ошибка при обновлении: ' + error.message
         });
       }
     });

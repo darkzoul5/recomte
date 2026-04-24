@@ -17,7 +17,7 @@
 <!-- Catalogue Section -->
 <section class="section">
   <div class="container">
-    <h2 class="title has-text-centered">Каталог прицепов</h2>
+    <h2 class="title has-text-centered">Каталог Прицеп-дач</h2>
 
     <% if (caravans && caravans.length > 0) { %>
       <div class="columns is-multiline">
@@ -44,7 +44,7 @@
                   <h3 class="title is-5 mb-0"><%= caravan.title %></h3>
                   <span class="tag <%= getStatusClass(caravan.status) %> is-light"><%= getStatusLabel(caravan.status) %></span>
                 </div>
-                <p><%= caravan.description ? caravan.description.substring(0, 100) + '...' : 'Современный туристический кемпер для комфортных путешествий.' %></p>
+                <p><%= caravan.description ? caravan.description.substring(0, 100) + '...' : 'Современная Прицеп-дача для комфортных путешествий.' %></p>
                 <div class="is-flex is-align-items-center mt-2" style="gap: 0.75rem; flex-wrap: wrap;">
                   <a class="button is-success is-small" href="/caravans/<%= caravan.slug %>">Подробнее</a>
                 </div>
@@ -55,7 +55,7 @@
       </div>
     <% } else { %>
       <div class="notification is-info is-light">
-        <p>К сожалению, в данный момент в каталоге нет кемперов</p>
+        <p>К сожалению, в данный момент в каталоге нет Прицеп-дач</p>
       </div>
     <% } %>
   </div>

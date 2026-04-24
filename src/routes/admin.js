@@ -7,16 +7,12 @@ const FEATURE_FLAGS = new Set([
   'awning',
   'bike_rack',
   'mosquito_nets',
-  'tv_mount',
-  'storage_compartments'
+  'tv_mount'
 ]);
 
 const RESERVED_FEATURE_KEYS = new Set([
   ...FEATURE_FLAGS,
-  'kitchen_outlets_count',
-  'heater_brand',
-  'heating_distribution',
-  'fuse_type'
+  'bed_types'
 ]);
 
 const serializeCustomFeatures = (featureMap) => {
@@ -50,9 +46,45 @@ const hydrateCaravan = (caravan) => {
     }
   }
 
+  let bedTypes = [];
+  if (featureMap.bed_types) {
+    try {
+      const parsed = JSON.parse(featureMap.bed_types);
+      bedTypes = Array.isArray(parsed) ? parsed : [];
+    } catch {
+      bedTypes = [];
+    }
+  }
+
+  const parseMultiValueField = (value) => {
+    if (!value) return [];
+    if (Array.isArray(value)) return value;
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if (!trimmed) return [];
+      if (trimmed.startsWith('[')) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+      return [trimmed];
+    }
+    return [];
+  };
+
   return {
     ...caravan,
     ...featureMap,
+    fridge_type_values: parseMultiValueField(caravan.fridge_type),
+    heating_type_values: parseMultiValueField(caravan.heating_type),
+    kitchen_appliances_values: [
+      ...(caravan.has_microwave ? ['microwave'] : []),
+      ...(caravan.has_oven ? ['oven'] : [])
+    ],
+    bed_types: bedTypes,
     images: caravanImages,
     features: featureFlags,
     feature_map: featureMap,
@@ -69,8 +101,7 @@ const processFeatures = (data) => {
     'features_awning': 'awning',
     'features_bike_rack': 'bike_rack',
     'features_mosquito_nets': 'mosquito_nets',
-    'features_tv_mount': 'tv_mount',
-    'features_storage_compartments': 'storage_compartments'
+    'features_tv_mount': 'tv_mount'
   };
 
   for (const [key, featureName] of Object.entries(featureMap)) {
@@ -80,6 +111,25 @@ const processFeatures = (data) => {
       delete data[key];
     }
     delete data[key];
+  }
+
+  const bedTypes = [];
+  const bedTypeMap = {
+    bed_type_bunk: 'bunk',
+    bed_type_twin: 'twin',
+    bed_type_dinette: 'dinette',
+    bed_type_double: 'double'
+  };
+
+  for (const [formKey, bedValue] of Object.entries(bedTypeMap)) {
+    if (data[formKey]) {
+      bedTypes.push(bedValue);
+    }
+    delete data[formKey];
+  }
+
+  if (bedTypes.length > 0) {
+    features.bed_types = JSON.stringify(bedTypes);
   }
 
   const customFeaturesPayload = typeof data.custom_features_json === 'string'

@@ -17,6 +17,10 @@ const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../data/app.db');
 
 let db = null;
 
+
+
+
+
 export const initDb = () => {
   try {
     // Ensure directory exists
@@ -180,8 +184,12 @@ export const caravans = {
       params.push(filters.featured ? 1 : 0);
     }
     if (filters.winter_rated !== undefined) {
-      sql += ' AND winter_rated = ?';
-      params.push(filters.winter_rated ? 1 : 0);
+      sql += ' AND camper_season = ?';
+      params.push(filters.winter_rated ? 'winter' : 'summer');
+    }
+    if (filters.camper_season) {
+      sql += ' AND camper_season = ?';
+      params.push(filters.camper_season);
     }
     
     sql += ' ORDER BY created_at DESC';
