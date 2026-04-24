@@ -48,7 +48,6 @@
 
 .caravan-gallery__arrow:hover {
     background: rgba(0, 0, 0, 0.62);
-    transform: translateY(-50%) scale(1.05);
 }
 
 .caravan-gallery__arrow--prev { left: 0.75rem; }
@@ -160,7 +159,6 @@
 .caravan-lightbox__close:hover,
 .caravan-lightbox__nav:hover {
     background: rgba(255, 255, 255, 0.28);
-    transform: scale(1.04);
 }
 
 .caravan-lightbox__close {
