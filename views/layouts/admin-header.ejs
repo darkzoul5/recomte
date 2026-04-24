@@ -28,7 +28,7 @@
     <div class="navbar-end">
       <div class="navbar-item">
         <div class="buttons">
-          <a href="/" class="button is-info is-light">
+          <a onclick="var hostname = window.location.hostname; var parts = hostname.split('.'); var mainDomain = parts.length > 2 ? parts.slice(-2).join('.') : hostname; var port = window.location.port ? ':' + window.location.port : ''; window.location.href = window.location.protocol + '//' + mainDomain + port + '/';" class="button is-info is-light" style="cursor: pointer;">
             <span class="icon"><i class="fas fa-home"></i></span>
             <span>На главную</span>
           </a>
