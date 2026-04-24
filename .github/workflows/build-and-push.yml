@@ -7,14 +7,18 @@ on:
     paths:
       - "Dockerfile"
       - "entrypoint.sh"
+      - "docker-compose.yml"
+      - ".dockerignore"
       - "app.js"
+      - "src/**"
+      - "*.js"
       - "package*.json"
       - "db/**"
       - "src/**"
       - "views/**"
       - "public/**"
       - "scripts/**"
-      - ".dockerignore"
+
       - ".github/workflows/build-and-push.yml"
 
   workflow_dispatch:
