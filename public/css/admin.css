@@ -188,6 +188,10 @@
   max-width: 900px;
 }
 
+.admin-form--sticky-actions {
+  padding-bottom: 6rem;
+}
+
 .form-section {
   margin-bottom: 2rem;
   padding: 1.5rem;
@@ -334,6 +338,22 @@
   margin-top: 2rem;
   padding-top: 1.5rem;
   border-top: 1px solid #e8e8e8;
+}
+
+.form-actions--sticky {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  width: min(900px, calc(100vw - 2rem));
+  transform: translateX(-50%);
+  margin-top: 0;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(232, 232, 232, 0.9);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(10px);
+  z-index: 50;
 }
 
 .form-actions .button {
@@ -528,6 +548,15 @@
 
   .form-actions {
     flex-direction: column;
+  }
+
+  .form-actions--sticky {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    width: auto;
+    transform: none;
+    padding: 0.9rem;
   }
 
   .form-actions .button {

@@ -22,7 +22,7 @@
   </div>
 <% } %>
 
-<form method="POST" action="<%= isNew ? '/admin/new' : '/admin/edit/' + caravan.id %>" class="admin-form" enctype="multipart/form-data">
+<form method="POST" action="<%= isNew ? '/admin/new' : '/admin/edit/' + caravan.id %>" class="admin-form admin-form--sticky-actions" enctype="multipart/form-data">
   <div class="form-section">
     <h3><i class="fas fa-info-circle"></i> Основная информация</h3>
 
@@ -463,8 +463,8 @@
     </div>
   </div>
 
-  <div class="form-actions">
-    <button type="submit" class="button is-primary"><i class="fas fa-save"></i> <%= caravan ? 'Обновить' : 'Создать' %></button>
+  <div class="form-actions form-actions--sticky">
+    <button type="submit" class="button is-primary"><i class="fas fa-save mr-2"></i><%= caravan ? 'Обновить' : 'Создать' %></button>
     <a href="/admin/dash" class="button is-light">Отмена</a>
   </div>
 </form>
