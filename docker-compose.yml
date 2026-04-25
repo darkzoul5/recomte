@@ -6,6 +6,7 @@ services:
       - DB_PATH=/app/data/app.db
       - NODE_ENV=production
       - LOG_LEVEL=${LOG_LEVEL:-info}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - ADMIN_PORT=3001
       - SESSION_SECRET=${SESSION_SECRET}
@@ -53,6 +54,7 @@ services:
       - DB_PATH=/app/data/app.db
       - NODE_ENV=production
       - LOG_LEVEL=${LOG_LEVEL:-info}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - ADMIN_PORT=3001
       - SESSION_SECRET=${SESSION_SECRET}

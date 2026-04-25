@@ -20,11 +20,20 @@ export const isAdminLoggedIn = (request) => {
   return !!request.session.adminId;
 };
 
-export const verifyAdminPassword = (password) => {
+export const verifyAdminCredentials = (login, password) => {
+  const adminUsername = process.env.ADMIN_USERNAME;
   const adminPassword = process.env.ADMIN_PASSWORD;
+  if (!adminUsername) {
+    console.error('ADMIN_USERNAME environment variable is not set');
+    throw new Error('ADMIN_USERNAME not set in environment');
+  }
   if (!adminPassword) {
     console.error('ADMIN_PASSWORD environment variable is not set');
     throw new Error('ADMIN_PASSWORD not set in environment');
   }
-  return password === adminPassword;
+  return login === adminUsername && password === adminPassword;
+};
+
+export const verifyAdminPassword = (password) => {
+  return verifyAdminCredentials(process.env.ADMIN_USERNAME, password);
 };

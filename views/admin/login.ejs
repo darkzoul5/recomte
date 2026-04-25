@@ -205,6 +205,25 @@
       <form method="POST" action="/admin/login">
         <div class="field">
           <label class="label">
+            Username
+          </label>
+          <div class="control has-icons-left">
+            <input 
+              class="input" 
+              type="text" 
+              name="username" 
+              placeholder="Введите username" 
+              required 
+              autofocus
+            >
+            <span class="icon is-small is-left">
+              <i class="fas fa-user"></i>
+            </span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">
             Пароль
           </label>
           <div class="control has-icons-left">
@@ -214,7 +233,6 @@
               name="password" 
               placeholder="Введите пароль" 
               required 
-              autofocus
             >
             <span class="icon is-small is-left">
               <i class="fas fa-key"></i>

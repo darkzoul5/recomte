@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 import { initDb, closeDb, caravans, images } from './db/db.js';
 import { createServer, registerCommonPlugins } from './src/server/setup.js';
 import adminRoutes from './src/routes/admin.js';
-import { verifyAdminPassword, setAdminSession, clearAdminSession } from './src/middleware/auth.js';
+import { verifyAdminCredentials, setAdminSession, clearAdminSession } from './src/middleware/auth.js';
 
 dotenv.config({ override: false });
 
@@ -388,19 +388,19 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
     });
 
     fastify.post('/admin/login', async (request, reply) => {
-      const { password } = request.body;
+      const { username, password } = request.body;
 
-      if (!password) {
-        return reply.view('admin/login', { title: 'Админ Вход', error: 'Пароль требуется' });
+      if (!username || !password) {
+        return reply.view('admin/login', { title: 'Админ Вход', error: 'Логин и пароль требуются' });
       }
 
       try {
-        if (verifyAdminPassword(password)) {
-          setAdminSession(request, 'admin');
+        if (verifyAdminCredentials(username, password)) {
+          setAdminSession(request, username);
           return reply.redirect('/admin/dash');
         }
 
-        return reply.view('admin/login', { title: 'Админ Вход', error: 'Неверный пароль' });
+        return reply.view('admin/login', { title: 'Админ Вход', error: 'Неверный логин или пароль' });
       } catch (error) {
         fastify.log.error(error);
         return reply.view('admin/login', { title: 'Админ Вход', error: 'Ошибка сервера' });
