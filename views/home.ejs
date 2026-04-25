@@ -10,13 +10,15 @@
           <div class="column is-one-third">
             <div class="card">
               <div class="card-image">
-                <figure class="image is-4by3">
-                  <% if (caravan.images && caravan.images.length > 0) { %>
-                    <img src="<%= caravan.images[0].url %>" alt="<%= caravan.title %>" style="object-fit: cover;">
-                  <% } else { %>
-                    <img src="/public/no-image-available.png?text=<%= caravan.title %>" alt="<%= caravan.title %>" style="object-fit: contain;">
-                  <% } %>
-                </figure>
+                <a href="/caravans/<%= caravan.slug %>" aria-label="Открыть <%= caravan.title %>">
+                  <figure class="image is-4by3">
+                    <% if (caravan.images && caravan.images.length > 0) { %>
+                      <img src="<%= caravan.images[0].url %>" alt="<%= caravan.title %>" style="object-fit: cover;">
+                    <% } else { %>
+                      <img src="/public/no-image-available.png?text=<%= caravan.title %>" alt="<%= caravan.title %>" style="object-fit: contain;">
+                    <% } %>
+                  </figure>
+                </a>
               </div>
               <div class="card-content">
                 <h3 class="title is-5"><%= caravan.title %></h3>
