@@ -1,3 +1,6 @@
+import argon2 from 'argon2';
+import { adminUsers } from '../../db/db.js';
+
 export const isAdmin = async (request, reply) => {
   const session = request.session;
   
@@ -20,20 +23,45 @@ export const isAdminLoggedIn = (request) => {
   return !!request.session.adminId;
 };
 
-export const verifyAdminCredentials = (login, password) => {
-  const adminUsername = process.env.ADMIN_USERNAME;
-  const adminPassword = process.env.ADMIN_PASSWORD;
-  if (!adminUsername) {
-    console.error('ADMIN_USERNAME environment variable is not set');
-    throw new Error('ADMIN_USERNAME not set in environment');
+const normalize = (value) => {
+  if (typeof value !== 'string') {
+    return '';
   }
-  if (!adminPassword) {
-    console.error('ADMIN_PASSWORD environment variable is not set');
-    throw new Error('ADMIN_PASSWORD not set in environment');
-  }
-  return login === adminUsername && password === adminPassword;
+  return value.trim();
 };
 
-export const verifyAdminPassword = (password) => {
-  return verifyAdminCredentials(process.env.ADMIN_USERNAME, password);
+export const ensureInitialAdminUser = async () => {
+  if (adminUsers.exists()) {
+    return { created: false };
+  }
+
+  const username = normalize(process.env.ADMIN_USERNAME);
+  const password = process.env.ADMIN_PASSWORD;
+
+  if (!username) {
+    throw new Error('ADMIN_USERNAME is required when no admin users exist');
+  }
+
+  if (!password) {
+    throw new Error('No admin users exist. Set ADMIN_PASSWORD to create the initial admin user');
+  }
+
+  const passwordHash = await argon2.hash(password);
+  adminUsers.create(username, passwordHash);
+
+  return { created: true, username };
+};
+
+export const verifyAdminCredentials = async (username, password) => {
+  const login = normalize(username);
+  if (!login || typeof password !== 'string' || !password) {
+    return false;
+  }
+
+  const adminUser = adminUsers.getByUsername(login);
+  if (!adminUser?.password_hash) {
+    return false;
+  }
+
+  return argon2.verify(adminUser.password_hash, password);
 };

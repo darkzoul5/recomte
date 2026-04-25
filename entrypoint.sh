@@ -6,7 +6,6 @@ echo "Starting Recomte.ru application..."
 # Set default environment variables if not provided
 export NODE_ENV=${NODE_ENV:-production}
 export DB_PATH=${DB_PATH:-./data/app.db}
-export ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
 export SESSION_SECRET=${SESSION_SECRET:-default_secret_change_in_production}
 export WEBHOOK_SECRET=${WEBHOOK_SECRET:-}
 

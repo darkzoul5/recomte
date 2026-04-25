@@ -465,3 +465,68 @@ export const features = {
     }
   }
 };
+
+// Admin Users queries
+export const adminUsers = {
+  count: () => {
+    const result = query('SELECT COUNT(*) AS total FROM admin_users');
+    return Number(result[0]?.total || 0);
+  },
+
+  exists: () => {
+    return adminUsers.count() > 0;
+  },
+
+  getByUsername: (username) => {
+    if (typeof username !== 'string' || !username.trim()) {
+      return null;
+    }
+
+    const result = query(
+      'SELECT id, username, password_hash, created_at, updated_at FROM admin_users WHERE username = ? LIMIT 1',
+      [username.trim()]
+    );
+
+    return result[0] || null;
+  },
+
+  create: (username, passwordHash) => {
+    if (typeof username !== 'string' || !username.trim()) {
+      throw new Error('Username is required');
+    }
+
+    if (typeof passwordHash !== 'string' || !passwordHash.trim()) {
+      throw new Error('Password hash is required');
+    }
+
+    const cleanUsername = username.trim();
+    const cleanHash = passwordHash.trim();
+    const result = run(
+      'INSERT INTO admin_users (username, password_hash) VALUES (?, ?)',
+      [cleanUsername, cleanHash]
+    );
+
+    return {
+      id: result.lastInsertRowid,
+      username: cleanUsername,
+      password_hash: cleanHash
+    };
+  },
+
+  updatePasswordHash: (username, passwordHash) => {
+    if (typeof username !== 'string' || !username.trim()) {
+      throw new Error('Username is required');
+    }
+
+    if (typeof passwordHash !== 'string' || !passwordHash.trim()) {
+      throw new Error('Password hash is required');
+    }
+
+    const result = run(
+      'UPDATE admin_users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE username = ?',
+      [passwordHash.trim(), username.trim()]
+    );
+
+    return result.changes > 0;
+  }
+};

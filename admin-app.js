@@ -6,7 +6,12 @@ import { fileURLToPath } from 'url';
 import { initDb, closeDb, caravans, images } from './db/db.js';
 import { createServer, registerCommonPlugins } from './src/server/setup.js';
 import adminRoutes from './src/routes/admin.js';
-import { verifyAdminCredentials, setAdminSession, clearAdminSession } from './src/middleware/auth.js';
+import {
+  verifyAdminCredentials,
+  setAdminSession,
+  clearAdminSession,
+  ensureInitialAdminUser
+} from './src/middleware/auth.js';
 
 dotenv.config({ override: false });
 
@@ -336,6 +341,11 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
   try {
     initDb();
 
+    const bootstrapResult = await ensureInitialAdminUser();
+    if (bootstrapResult.created) {
+      fastify.log.warn(`Bootstrap admin user created: ${bootstrapResult.username}`);
+    }
+
     await registerCommonPlugins(fastify, { rootDir: __dirname });
 
     fastify.get('/healthcheck', { logLevel: 'silent' }, async () => ({ status: 'ok' }));
@@ -395,7 +405,7 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
       }
 
       try {
-        if (verifyAdminCredentials(username, password)) {
+        if (await verifyAdminCredentials(username, password)) {
           setAdminSession(request, username);
           return reply.redirect('/admin/dash');
         }

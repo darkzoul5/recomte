@@ -295,24 +295,24 @@ fastify.get('/caravans/:slug', async (request, reply) => {
 
     // Admin login form handler
     fastify.post('/admin/login', async (request, reply) => {
-      const { password } = request.body;
+      const { username, password } = request.body;
 
-      if (!password) {
+      if (!username || !password) {
         fastify.log.info('Login request with invalid credentials');
-        return reply.view('admin/login', { title: 'Админ Вход', error: 'Пароль требуется' });
+        return reply.view('admin/login', { title: 'Админ Вход', error: 'Логин и пароль требуются' });
       }
 
       try {
-        const { verifyAdminPassword, setAdminSession } = await import('./src/middleware/auth.js');
+        const { verifyAdminCredentials, setAdminSession } = await import('./src/middleware/auth.js');
         
-        if (verifyAdminPassword(password)) {
+        if (await verifyAdminCredentials(username, password)) {
           fastify.log.info('Login successful, setting session');
-          setAdminSession(request, 'admin');
+          setAdminSession(request, username);
           fastify.log.info('Session after login:', { adminId: request.session.adminId, sessionID: request.sessionID });
           return reply.redirect('/admin/dash');
         } else {
           fastify.log.info('Login request with invalid credentials');
-          return reply.view('admin/login', { title: 'Админ Вход', error: 'Неверный пароль' });
+          return reply.view('admin/login', { title: 'Админ Вход', error: 'Неверный логин или пароль' });
         }
       } catch (err) {
         fastify.log.error(err);
