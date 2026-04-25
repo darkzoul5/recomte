@@ -4,6 +4,17 @@
   <h1><i class="fas fa-edit"></i> <%= isNew ? 'Новая Прицеп-дача' : 'Редактировать: ' + caravan.title %></h1>
 </div>
 
+<% if (caravan && (caravan.created_at || caravan.updated_at)) { %>
+  <div style="margin: -0.75rem 0 1.25rem; font-size: 0.85rem; color: #6b7280; line-height: 1.4;">
+    <div>
+      <strong>Создано:</strong> <%= caravan.created_at ? new Date(caravan.created_at).toLocaleString('ru-RU') : '-' %>
+    </div>
+    <div>
+      <strong>Обновлено:</strong> <%= caravan.updated_at ? new Date(caravan.updated_at).toLocaleString('ru-RU') : '-' %>
+    </div>
+  </div>
+<% } %>
+
 <% if (error && typeof error !== 'undefined') { %>
   <div class="admin-error">
     <button class="delete"></button>
