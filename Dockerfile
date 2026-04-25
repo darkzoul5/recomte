@@ -1,6 +1,6 @@
 FROM node:lts-alpine
 
-RUN apk add --no-cache wget
+RUN apk add --no-cache curl
 
 WORKDIR /app
 
@@ -18,14 +18,11 @@ COPY src/ ./src
 COPY views/ ./views
 COPY public/ ./public
 COPY scripts/ ./scripts
-COPY entrypoint.sh .
-
-# Make entrypoint executable
-RUN chmod +x entrypoint.sh
+COPY --chmod=755 entrypoint.sh .
 
 EXPOSE 3000 3001
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/healthcheck || exit 1
+  CMD curl --fail --silent --show-error http://localhost:3000/healthcheck > /dev/null || exit 1
 
 ENTRYPOINT ["/app/entrypoint.sh"]
