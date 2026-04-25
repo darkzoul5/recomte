@@ -25,13 +25,15 @@
           <div class="column is-one-third">
             <div class="card">
               <div class="card-image" style="position: relative;">
-                <figure class="image is-4by3">
-                  <% if (caravan.images && caravan.images.length > 0) { %>
-                    <img src="<%= caravan.images[0].url %>" alt="<%= caravan.title %>" style="object-fit: cover;">
-                  <% } else { %>
-                    <img src="/public/no-image-available.png" alt="<%= caravan.title %>" style="object-fit: contain;">
-                  <% } %>
-                </figure>
+                <a href="/caravans/<%= caravan.slug %>" aria-label="Открыть <%= caravan.title %>">
+                  <figure class="image is-4by3">
+                    <% if (caravan.images && caravan.images.length > 0) { %>
+                      <img src="<%= caravan.images[0].url %>" alt="<%= caravan.title %>" style="object-fit: cover;">
+                    <% } else { %>
+                      <img src="/public/no-image-available.png" alt="<%= caravan.title %>" style="object-fit: contain;">
+                    <% } %>
+                  </figure>
+                </a>
 
                 <% if (caravan.status === 'sold') { %>
                   <div style="position: absolute; inset: 0; background: rgba(0, 0, 0, 0.55); display: flex; align-items: center; justify-content: center; z-index: 2;">
