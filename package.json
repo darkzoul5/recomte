@@ -17,6 +17,7 @@
   ],
   "author": "dark_zoul",
   "license": "UNLICENSED",
+  "private": true,
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
     "@fastify/formbody": "^8.0.2",
