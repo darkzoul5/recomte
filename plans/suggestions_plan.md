@@ -10,11 +10,11 @@ Goal: Move the project from functional to professional production quality.
 2. Remove insecure session fallback and replace in-memory session store for production.DONE
 3. Add CSRF protection to all admin forms and sensitive POST endpoints. DONE
 4. Add login brute-force protection and rate limiting for admin auth routes. DONE
-5. Standardize status values across backend and UI (reserved vs pending mismatch).
+5. Standardize status values across backend and UI (reserved vs pending mismatch). DONE
 
 ## 2. Admin UI Improvements
 
-1. Split large admin-app.js into smaller modules (auth routes, page routes, upload service, deploy webhook).
+1. Split large admin-app.js into smaller modules (auth routes, page routes, upload service).
 2. Add field-level validation messages on admin edit/create forms.
 3. Add unsaved changes warning and draft autosave for long edit forms.
 4. Add admin audit log (who changed what, when).

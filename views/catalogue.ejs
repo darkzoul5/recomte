@@ -3,13 +3,13 @@
 <%
   const getStatusLabel = (status) => {
     if (status === 'sold') return 'Продан';
-    if (status === 'pending') return 'Зарезервирован';
+    if (status === 'reserved') return 'Зарезервирован';
     return 'В наличии';
   };
 
   const getStatusClass = (status) => {
     if (status === 'sold') return 'is-danger';
-    if (status === 'pending') return 'is-warning';
+    if (status === 'reserved') return 'is-warning';
     return 'is-success';
   };
 %>
