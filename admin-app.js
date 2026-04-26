@@ -22,7 +22,7 @@ const fastify = createServer();
       fastify.log.warn(`Bootstrap admin user created: ${bootstrapResult.username}`);
     }
 
-    await registerCommonPlugins(fastify, { rootDir: __dirname });
+    await registerCommonPlugins(fastify, { rootDir: __dirname, isAdminServer: true });
 
     fastify.get('/healthcheck', { logLevel: 'silent' }, async () => ({ status: 'ok' }));
 

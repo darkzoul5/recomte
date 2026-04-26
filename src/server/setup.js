@@ -101,7 +101,7 @@ const getSessionSecret = () => {
   return secret;
 };
 
-export const registerCommonPlugins = async (fastify, { rootDir }) => {
+export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = false }) => {
   await fastify.register(fastifyCookie);
   await fastify.register(fastifyFormbody);
   await fastify.register(fastifyMultipart, {
@@ -152,6 +152,8 @@ export const registerCommonPlugins = async (fastify, { rootDir }) => {
     'fullscreen=(self)'
   ].join(', ');
 
+  const shouldSetNoIndex = isAdminServer || process.env.NODE_ENV !== 'production';
+
   fastify.addHook('onRequest', async (request, reply) => {
     const forwardedProto = request.headers['x-forwarded-proto'];
     const protocol = Array.isArray(forwardedProto)
@@ -169,7 +171,9 @@ export const registerCommonPlugins = async (fastify, { rootDir }) => {
     reply.header('X-Frame-Options', 'SAMEORIGIN');
     reply.header('Referrer-Policy', 'strict-origin-when-cross-origin');
     reply.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-    reply.header('X-Robots-Tag', 'noindex, nofollow');
+    if (shouldSetNoIndex) {
+      reply.header('X-Robots-Tag', 'noindex, nofollow');
+    }
     reply.header('Content-Security-Policy', cspHeader);
     reply.header('Permissions-Policy', permissionsPolicyHeader);
     return payload;

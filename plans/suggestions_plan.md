@@ -16,14 +16,14 @@ Goal: Move the project from functional to professional production quality.
 
 1. DONE Split large admin-app.js into smaller modules (auth routes, page routes, upload service,CSRF and session).
 2. Add field-level validation messages on admin edit/create forms.
-3. DONE Add unsaved changes warning and draft autosave for long edit forms. add a button to hide/delist caravans on edit page
+3. DONE Add unsaved changes warning for long edit forms. add a button to hide/delist caravans on edit page
 4. Add admin audit log (who changed what, when).
 
 ## 3. User UI Improvements
 
 1. Improve branding consistency (typography, spacing, visual hierarchy, consistent component style).
 2. Add SEO metadata per page (description, OpenGraph, canonical, structured data).
-3. Remove global noindex behavior from public pages in production.
+3. DONE Remove global noindex behavior from public pages in production.
 4. Add trust-building sections (reviews, warranty, delivery, financing, inspection process).
 5. Add catalogue filtering, sorting, and pagination UX.
 

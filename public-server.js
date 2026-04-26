@@ -15,7 +15,7 @@ const fastify = createServer();
   try {
     initDb();
 
-    await registerCommonPlugins(fastify, { rootDir: __dirname });
+    await registerCommonPlugins(fastify, { rootDir: __dirname, isAdminServer: false });
 
     fastify.get('/healthcheck', { logLevel: 'silent' }, async () => ({ status: 'ok' }));
 
