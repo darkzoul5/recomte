@@ -33,7 +33,6 @@ Goal: Move the project from functional to professional production quality.
 2. Store numeric admin ID in session instead of username.
 3. Add stronger password policy and optional 2FA support for admin.
 4. Harden file upload validation (mime, extension, dimensions, limits, sanitization).
-5. Improve deploy webhook security (signature verification + optional allowlist).
 
 ## 5. Database and Data Layer
 
@@ -56,8 +55,7 @@ Goal: Move the project from functional to professional production quality.
 1. Caravan-specific lead capture forms with UTM/source tracking.
 2. Caravan comparison mode for side-by-side specs.
 3. Reservation workflow with expiration and reminders.
-4. Price history and promotional badges.
-5. Favorites and shareable short links.
+4. Promotional badges.
 
 ## 8. Suggested Implementation Phases
 
