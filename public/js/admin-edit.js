@@ -80,20 +80,98 @@ document.addEventListener('DOMContentLoaded', function() {
   const adminForm = document.querySelector('.admin-form');
   if (adminForm) {
     let isSubmittingAfterReorder = false;
+    let isSubmitting = false;
+    let hasUnsavedChanges = false;
+    let pendingSubmitter = null;
+
+    const getFormSnapshot = () => {
+      const state = {};
+
+      for (const element of adminForm.elements) {
+        if (!element || !element.name || element.disabled) continue;
+        if (element.type === 'file') continue;
+        if (element.name === '_csrf' || element.name === 'images' || element.name === 'images_to_delete' || element.name === 'image_order') {
+          continue;
+        }
+
+        if (element.type === 'checkbox') {
+          state[element.name] = element.checked;
+          continue;
+        }
+
+        if (element.type === 'radio') {
+          if (element.checked) {
+            state[element.name] = element.value;
+          }
+          continue;
+        }
+
+        if (element.tagName === 'SELECT' && element.multiple) {
+          state[element.name] = Array.from(element.selectedOptions).map((option) => option.value);
+          continue;
+        }
+
+        state[element.name] = element.value;
+      }
+
+      return JSON.stringify(state);
+    };
+
+    const serverSnapshot = getFormSnapshot();
+
+    const evaluateUnsavedState = () => {
+      hasUnsavedChanges = getFormSnapshot() !== serverSnapshot;
+    };
+
+    adminForm.addEventListener('input', evaluateUnsavedState);
+    adminForm.addEventListener('change', evaluateUnsavedState);
+
+    window.addEventListener('beforeunload', (event) => {
+      evaluateUnsavedState();
+      if (!isSubmitting && hasUnsavedChanges) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    });
+
+    // Some browsers limit beforeunload dialogs; this confirms navigation for in-page links too.
+    document.addEventListener('click', (event) => {
+      const link = event.target.closest('a[href]');
+      if (!link) return;
+      if (link.target === '_blank' || link.hasAttribute('download')) return;
+
+      const href = link.getAttribute('href') || '';
+      if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+
+      evaluateUnsavedState();
+      if (isSubmitting || !hasUnsavedChanges) return;
+
+      const shouldLeave = window.confirm('Есть несохраненные изменения. Покинуть страницу без сохранения?');
+      if (!shouldLeave) {
+        event.preventDefault();
+      }
+    }, true);
 
     adminForm.addEventListener('submit', async function(event) {
       if (isSubmittingAfterReorder) {
         localStorage.setItem('adminEditScrollPosition', window.scrollY);
+        isSubmitting = true;
         return;
       }
 
+      pendingSubmitter = event.submitter || document.activeElement;
       event.preventDefault();
       updateImageOrderInput();
       await persistImageOrderViaApi();
       localStorage.setItem('adminEditScrollPosition', window.scrollY);
+      isSubmitting = true;
 
       isSubmittingAfterReorder = true;
-      adminForm.requestSubmit();
+      if (pendingSubmitter && pendingSubmitter.form === adminForm && pendingSubmitter.type === 'submit') {
+        adminForm.requestSubmit(pendingSubmitter);
+      } else {
+        adminForm.requestSubmit();
+      }
     });
   }
 
@@ -267,23 +345,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
   renderCustomFeatures();
 
-  const grossWeightInput = document.getElementById('grossWeightInput');
-  const towVehicleMaxInput = document.getElementById('towVehicleMaxInput');
-
-  const updateTowVehicleMax = () => {
-    if (!grossWeightInput || !towVehicleMaxInput) return;
-    const grossWeight = parseInt(grossWeightInput.value, 10);
-    if (Number.isNaN(grossWeight)) {
-      towVehicleMaxInput.value = '';
-      return;
-    }
-    towVehicleMaxInput.value = Math.max(0, 3500 - grossWeight);
-  };
-
-  if (grossWeightInput && towVehicleMaxInput) {
-    grossWeightInput.addEventListener('input', updateTowVehicleMax);
-    if (!towVehicleMaxInput.value) {
-      updateTowVehicleMax();
-    }
-  }
 });

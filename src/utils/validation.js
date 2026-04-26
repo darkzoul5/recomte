@@ -33,7 +33,7 @@ const ALLOWED_IMAGE_COLUMNS = new Set([
 ]);
 
 // Whitelist of allowed caravan statuses
-const ALLOWED_STATUSES = new Set(['available', 'sold', 'reserved']);
+const ALLOWED_STATUSES = new Set(['available', 'sold', 'reserved', 'hidden']);
 
 /**
  * Validate column name against whitelist

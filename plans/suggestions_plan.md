@@ -6,17 +6,17 @@ Goal: Move the project from functional to professional production quality.
 
 ## 1. Critical Fixes (Do First)
 
-1. Fix corrupted public entry file in app.js. DONE
-2. Remove insecure session fallback and replace in-memory session store for production.DONE
-3. Add CSRF protection to all admin forms and sensitive POST endpoints. DONE
-4. Add login brute-force protection and rate limiting for admin auth routes. DONE
-5. Standardize status values across backend and UI (reserved vs pending mismatch). DONE
+1. DONE Fix corrupted public entry file in app.js.
+2. DONE Remove insecure session fallback and replace in-memory session store for production.
+3. DONE Add CSRF protection to all admin forms and sensitive POST endpoints.
+4. DONE Add login brute-force protection and rate limiting for admin auth routes.
+5. DONE Standardize status values across backend and UI (reserved vs pending mismatch).
 
 ## 2. Admin UI Improvements
 
-1. Split large admin-app.js into smaller modules (auth routes, page routes, upload service,CSRF and session).DONE
+1. DONE Split large admin-app.js into smaller modules (auth routes, page routes, upload service,CSRF and session).
 2. Add field-level validation messages on admin edit/create forms.
-3. Add unsaved changes warning and draft autosave for long edit forms. add a button to hide/delist caravans on edit page
+3. DONE Add unsaved changes warning and draft autosave for long edit forms. add a button to hide/delist caravans on edit page
 4. Add admin audit log (who changed what, when).
 
 ## 3. User UI Improvements

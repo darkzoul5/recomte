@@ -417,6 +417,63 @@ export default async function registerAdminPageRoutes(fastify, options = {}) {
     }
   });
 
+  fastify.post('/admin/edit/:id/delist', async (request, reply) => {
+    if (!requireAdminSession(request, reply)) {
+      return;
+    }
+
+    if (rejectInvalidCsrf(request, reply, { _csrf: request.query?._csrf })) {
+      return reply.code(403).send({ message: 'Invalid CSRF token' });
+    }
+
+    try {
+      const { id } = request.params;
+      const caravan = caravans.getById(parseInt(id, 10));
+
+      if (!caravan) {
+        return reply.code(404).send({ message: 'Caravan not found' });
+      }
+
+      caravans.update(parseInt(id, 10), {
+        status: 'hidden',
+        featured: 0
+      });
+
+      return reply.redirect(`/admin/edit/${id}`);
+    } catch (error) {
+      fastify.log.error(error);
+      return reply.code(500).send({ message: `Error delisting caravan: ${error.message}` });
+    }
+  });
+
+  fastify.post('/admin/edit/:id/relist', async (request, reply) => {
+    if (!requireAdminSession(request, reply)) {
+      return;
+    }
+
+    if (rejectInvalidCsrf(request, reply, { _csrf: request.query?._csrf })) {
+      return reply.code(403).send({ message: 'Invalid CSRF token' });
+    }
+
+    try {
+      const { id } = request.params;
+      const caravan = caravans.getById(parseInt(id, 10));
+
+      if (!caravan) {
+        return reply.code(404).send({ message: 'Caravan not found' });
+      }
+
+      caravans.update(parseInt(id, 10), {
+        status: 'available'
+      });
+
+      return reply.redirect(`/admin/edit/${id}`);
+    } catch (error) {
+      fastify.log.error(error);
+      return reply.code(500).send({ message: `Error relisting caravan: ${error.message}` });
+    }
+  });
+
   fastify.post('/admin/delete/:id', async (request, reply) => {
     if (!requireAdminSession(request, reply)) {
       return;

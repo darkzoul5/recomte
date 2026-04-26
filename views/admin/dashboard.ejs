@@ -23,6 +23,10 @@
         <div class="stat-label">Продано</div>
         <div class="stat-value"><%= caravans.filter(c => c.status === 'sold').length %></div>
       </div>
+      <div class="admin-stat-box">
+        <div class="stat-label">Скрыто</div>
+        <div class="stat-value"><%= caravans.filter(c => c.status === 'hidden').length %></div>
+      </div>
     </div>
 
     <!-- Add Button -->
@@ -60,6 +64,8 @@
                 <td>
                   <% if (caravan.status === 'sold') { %>
                     <span class="status-badge status-sold">ПРОДАНО</span>
+                  <% } else if (caravan.status === 'hidden') { %>
+                    <span class="status-badge">СКРЫТО</span>
                   <% } else if (caravan.status === 'reserved') { %>
                     <span class="status-badge status-reserved">ЗАРЕЗЕРВИРОВАНО</span>
                   <% } else { %>

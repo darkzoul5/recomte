@@ -63,6 +63,7 @@
           <option value="available" <%= caravan?.status === 'available' ? 'selected' : '' %>>В наличии</option>
           <option value="reserved" <%= caravan?.status === 'reserved' ? 'selected' : '' %>>Зарезервировано</option>
           <option value="sold" <%= caravan?.status === 'sold' ? 'selected' : '' %>>Продано</option>
+          <option value="hidden" <%= caravan?.status === 'hidden' ? 'selected' : '' %>>Скрыто (delisted)</option>
         </select>
       </div>
       <div class="form-group">
@@ -466,6 +467,16 @@
 
   <div class="form-actions form-actions--sticky">
     <button type="submit" class="button is-primary"><i class="fas fa-save mr-2"></i><%= isNew ? 'Создать' : 'Обновить' %></button>
+    <% if (!isNew) { %>
+      <button
+        type="submit"
+        formaction="<%= caravan?.status === 'hidden' ? ('/admin/edit/' + caravan.id + '/relist?_csrf=' + encodeURIComponent(csrfToken || '')) : ('/admin/edit/' + caravan.id + '/delist?_csrf=' + encodeURIComponent(csrfToken || '')) %>"
+        class="button <%= caravan?.status === 'hidden' ? 'is-success' : 'is-warning' %>"
+        onclick="return confirm('<%= caravan?.status === 'hidden' ? 'Показать прицеп-дачу в листинге?' : 'Снять прицеп-дачу с публикации?' %>');"
+      >
+        <i class="fas <%= caravan?.status === 'hidden' ? 'fa-eye' : 'fa-eye-slash' %> mr-2"></i><%= caravan?.status === 'hidden' ? 'Показать в листинге' : 'Снять с публикации' %>
+      </button>
+    <% } %>
     <a href="/admin/dash" class="button is-light">Отмена</a>
   </div>
 </form>

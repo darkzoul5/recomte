@@ -70,7 +70,7 @@ export default async function caravansRoutes(fastify) {
 
       const allCaravans = caravans.getAll(filters);
 
-      let filteredCaravans = allCaravans;
+      let filteredCaravans = allCaravans.filter((caravan) => caravan.status !== 'hidden');
       if (request.query.feature_key) {
         const featureKey = String(request.query.feature_key).trim();
         const featureValue = request.query.feature_value !== undefined
@@ -79,7 +79,7 @@ export default async function caravansRoutes(fastify) {
 
         if (featureKey.length > 0) {
           const ids = new Set(features.getByKeyValue(featureKey, featureValue).map((row) => row.caravan_id));
-          filteredCaravans = allCaravans.filter((caravan) => ids.has(caravan.id));
+          filteredCaravans = filteredCaravans.filter((caravan) => ids.has(caravan.id));
         }
       }
       
@@ -104,7 +104,7 @@ export default async function caravansRoutes(fastify) {
 
       const caravan = caravans.getBySlug(slug);
 
-      if (!caravan) {
+      if (!caravan || caravan.status === 'hidden') {
         return reply.status(404).send({ error: 'Caravan not found' });
       }
 
@@ -128,7 +128,9 @@ export default async function caravansRoutes(fastify) {
         }
       }
 
-      const featuredCaravans = caravans.getFeatured(limit);
+      const featuredCaravans = caravans
+        .getFeatured(limit)
+        .filter((caravan) => caravan.status !== 'hidden');
 
       const caravansWithImages = featuredCaravans.map(hydrateCaravan);
 
