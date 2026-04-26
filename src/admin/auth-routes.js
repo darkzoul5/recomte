@@ -2,10 +2,9 @@ import {
   verifyAdminCredentials,
   setAdminSession,
   clearAdminSession,
-  ensureCsrfToken,
-  getCsrfTokenFromRequest,
-  verifyCsrfToken
+  ensureCsrfToken
 } from '../middleware/auth.js';
+import { rejectInvalidCsrf } from './route-helpers.js';
 
 const MINUTE_MS = 60 * 1000;
 const AUTH_RATE_LIMIT_WINDOW_MS = parseInt(process.env.AUTH_RATE_LIMIT_WINDOW_MS || `${MINUTE_MS}`, 10);
@@ -140,16 +139,6 @@ const renderLoginPage = (request, reply, error = null) => reply.view('admin/logi
   error,
   csrfToken: ensureCsrfToken(request)
 });
-
-const rejectInvalidCsrf = (request, reply, bodyOverride = null) => {
-  const candidateToken = getCsrfTokenFromRequest(request, bodyOverride);
-  if (verifyCsrfToken(request, candidateToken)) {
-    return false;
-  }
-
-  reply.code(403);
-  return true;
-};
 
 const regenerateSession = (request) => new Promise((resolve, reject) => {
   if (!request.session || typeof request.session.regenerate !== 'function') {

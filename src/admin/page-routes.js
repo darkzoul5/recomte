@@ -1,10 +1,7 @@
 import { caravans, images } from '../../db/db.js';
-import {
-  ensureCsrfToken,
-  getCsrfTokenFromRequest,
-  verifyCsrfToken
-} from '../middleware/auth.js';
+import { ensureCsrfToken } from '../middleware/auth.js';
 import { parseMultipartForm, handleImageUploads } from './upload-service.js';
+import { rejectInvalidCsrf, requireAdminSession } from './route-helpers.js';
 
 const processFeatures = (data) => {
   const features = {};
@@ -196,16 +193,6 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
   csrfToken: ensureCsrfToken(request)
 });
 
-const rejectInvalidCsrf = (request, reply, bodyOverride = null) => {
-  const candidateToken = getCsrfTokenFromRequest(request, bodyOverride);
-  if (verifyCsrfToken(request, candidateToken)) {
-    return false;
-  }
-
-  reply.code(403);
-  return true;
-};
-
 export default async function registerAdminPageRoutes(fastify, options = {}) {
   const { rootDir } = options;
 
@@ -224,8 +211,8 @@ export default async function registerAdminPageRoutes(fastify, options = {}) {
   });
 
   fastify.get('/admin/dash', async (request, reply) => {
-    if (!request.session.adminId) {
-      return reply.redirect('/admin/login');
+    if (!requireAdminSession(request, reply)) {
+      return;
     }
 
     try {
@@ -254,8 +241,8 @@ export default async function registerAdminPageRoutes(fastify, options = {}) {
   });
 
   fastify.get('/admin/edit/:id', async (request, reply) => {
-    if (!request.session.adminId) {
-      return reply.redirect('/admin/login');
+    if (!requireAdminSession(request, reply)) {
+      return;
     }
 
     try {
@@ -287,8 +274,8 @@ export default async function registerAdminPageRoutes(fastify, options = {}) {
   });
 
   fastify.get('/admin/new', async (request, reply) => {
-    if (!request.session.adminId) {
-      return reply.redirect('/admin/login');
+    if (!requireAdminSession(request, reply)) {
+      return;
     }
 
     return renderEditPage(request, reply, 'Добавить', {
@@ -308,8 +295,8 @@ export default async function registerAdminPageRoutes(fastify, options = {}) {
   });
 
   fastify.post('/admin/new', async (request, reply) => {
-    if (!request.session.adminId) {
-      return reply.redirect('/admin/login');
+    if (!requireAdminSession(request, reply)) {
+      return;
     }
 
     if (rejectInvalidCsrf(request, reply, { _csrf: request.query?._csrf })) {
@@ -368,8 +355,8 @@ export default async function registerAdminPageRoutes(fastify, options = {}) {
   });
 
   fastify.post('/admin/edit/:id', async (request, reply) => {
-    if (!request.session.adminId) {
-      return reply.redirect('/admin/login');
+    if (!requireAdminSession(request, reply)) {
+      return;
     }
 
     if (rejectInvalidCsrf(request, reply, { _csrf: request.query?._csrf })) {
@@ -438,8 +425,8 @@ export default async function registerAdminPageRoutes(fastify, options = {}) {
   });
 
   fastify.post('/admin/delete/:id', async (request, reply) => {
-    if (!request.session.adminId) {
-      return reply.redirect('/admin/login');
+    if (!requireAdminSession(request, reply)) {
+      return;
     }
 
     if (rejectInvalidCsrf(request, reply)) {
