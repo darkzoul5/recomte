@@ -5,9 +5,11 @@ import fastifyStatic from '@fastify/static';
 import fastifyFormbody from '@fastify/formbody';
 import fastifyMultipart from '@fastify/multipart';
 import path from 'path';
+import { getDb } from '../../db/db.js';
 
 const SESSION_MAX_AGE = 60 * 60 * 1000; // 1 hour in milliseconds
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+const SESSION_CLEANUP_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes
 
 export const createServer = () => Fastify({
   logger: {
@@ -16,41 +18,88 @@ export const createServer = () => Fastify({
   trustProxy: true
 });
 
-// Simple in-memory session store with proper TTL support
-class MemorySessionStore {
+class SqliteSessionStore {
   constructor(maxAge) {
-    this.sessions = {};
     this.maxAge = maxAge;
+    this.db = getDb();
+
+    this.upsertStmt = this.db.prepare(
+      `INSERT INTO sessions (session_id, data, expires_at, updated_at)
+       VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+       ON CONFLICT(session_id)
+       DO UPDATE SET data = excluded.data, expires_at = excluded.expires_at, updated_at = CURRENT_TIMESTAMP`
+    );
+    this.selectStmt = this.db.prepare(
+      'SELECT data, expires_at FROM sessions WHERE session_id = ? LIMIT 1'
+    );
+    this.deleteStmt = this.db.prepare('DELETE FROM sessions WHERE session_id = ?');
+    this.cleanupStmt = this.db.prepare('DELETE FROM sessions WHERE expires_at <= ?');
+
+    this.cleanupTimer = setInterval(() => {
+      try {
+        this.cleanupExpired();
+      } catch {
+        // Cleanup failures should not break request handling.
+      }
+    }, SESSION_CLEANUP_INTERVAL_MS);
+    this.cleanupTimer.unref();
+  }
+
+  cleanupExpired() {
+    this.cleanupStmt.run(Date.now());
   }
 
   async set(sessionId, session, callback) {
-    this.sessions[sessionId] = {
-      data: session,
-      expires: Date.now() + this.maxAge
-    };
-    if (callback) callback(null);
+    try {
+      this.upsertStmt.run(sessionId, JSON.stringify(session), Date.now() + this.maxAge);
+      if (callback) callback(null);
+    } catch (error) {
+      if (callback) callback(error);
+      throw error;
+    }
   }
 
   async get(sessionId, callback) {
-    const session = this.sessions[sessionId];
-    if (!session) {
-      if (callback) callback(null, null);
-      return null;
+    try {
+      const row = this.selectStmt.get(sessionId);
+      if (!row) {
+        if (callback) callback(null, null);
+        return null;
+      }
+
+      if (row.expires_at <= Date.now()) {
+        this.deleteStmt.run(sessionId);
+        if (callback) callback(null, null);
+        return null;
+      }
+
+      const sessionData = JSON.parse(row.data);
+      if (callback) callback(null, sessionData);
+      return sessionData;
+    } catch (error) {
+      if (callback) callback(error, null);
+      throw error;
     }
-    if (session.expires < Date.now()) {
-      delete this.sessions[sessionId];
-      if (callback) callback(null, null);
-      return null;
-    }
-    if (callback) callback(null, session.data);
-    return session.data;
   }
 
   async destroy(sessionId, callback) {
-    delete this.sessions[sessionId];
-    if (callback) callback(null);
+    try {
+      this.deleteStmt.run(sessionId);
+      if (callback) callback(null);
+    } catch (error) {
+      if (callback) callback(error);
+      throw error;
+    }
   }
 }
+
+const getSessionSecret = () => {
+  const secret = process.env.SESSION_SECRET;
+  if (typeof secret !== 'string' || secret.trim().length < 32) {
+    throw new Error('SESSION_SECRET is required and must be at least 32 characters long');
+  }
+  return secret;
+};
 
 export const registerCommonPlugins = async (fastify, { rootDir }) => {
   await fastify.register(fastifyCookie);
@@ -61,12 +110,13 @@ export const registerCommonPlugins = async (fastify, { rootDir }) => {
     }
   });
 
-  const store = new MemorySessionStore(SESSION_MAX_AGE);
+  const store = new SqliteSessionStore(SESSION_MAX_AGE);
+  const sessionSecret = getSessionSecret();
 
   await fastify.register(fastifySession, {
     store: store,
-    secret: process.env.SESSION_SECRET || 'default_secret_change_in_production',
-    saveUninitialized: true,
+    secret: sessionSecret,
+    saveUninitialized: false,
     cookie: {
       maxAge: SESSION_MAX_AGE,
       secure: process.env.NODE_ENV !== 'development',

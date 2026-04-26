@@ -113,6 +113,15 @@ CREATE TABLE IF NOT EXISTS admin_users (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- sessions table (persistent session storage)
+CREATE TABLE IF NOT EXISTS sessions (
+  session_id TEXT PRIMARY KEY,
+  data TEXT NOT NULL,
+  expires_at INTEGER NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Performance indexes (Phase 6)
 CREATE INDEX IF NOT EXISTS idx_caravans_slug ON caravans(slug);
 CREATE INDEX IF NOT EXISTS idx_caravans_status ON caravans(status);
@@ -129,6 +138,7 @@ CREATE INDEX IF NOT EXISTS idx_images_sort_order ON images(caravan_id, sort_orde
 CREATE INDEX IF NOT EXISTS idx_features_caravan_id ON caravan_features(caravan_id);
 CREATE INDEX IF NOT EXISTS idx_features_key_value ON caravan_features(feature_key, feature_value);
 CREATE INDEX IF NOT EXISTS idx_admin_users_username ON admin_users(username);
+CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at);
   `;
 
   return schema;

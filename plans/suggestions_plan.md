@@ -6,10 +6,10 @@ Goal: Move the project from functional to professional production quality.
 
 ## 1. Critical Fixes (Do First)
 
-1. Fix corrupted public entry file in app.js.
-2. Remove insecure session fallback and replace in-memory session store for production.
+1. Fix corrupted public entry file in app.js. DONE
+2. Remove insecure session fallback and replace in-memory session store for production.DONE
 3. Add CSRF protection to all admin forms and sensitive POST endpoints.
-4. Add login brute-force protection and rate limiting for admin auth routes.
+4. Add login brute-force protection and rate limiting for admin auth routes. DONE
 5. Standardize status values across backend and UI (reserved vs pending mismatch).
 
 ## 2. Admin UI Improvements
