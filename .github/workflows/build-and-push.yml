@@ -26,6 +26,10 @@ on:
         required: true
         type: string
 
+concurrency:
+  group: campersite-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -80,4 +84,4 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            /home/deploy/deploy.sh
+            /home/deploy/docker/campersite/deploy.sh
