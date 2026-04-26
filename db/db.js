@@ -54,9 +54,6 @@ export const initDb = () => {
       }
     });
 
-    // Data normalization migration: legacy pending -> reserved.
-    db.exec("UPDATE caravans SET status = 'reserved' WHERE status = 'pending'");
-
 
     console.log(`✓ Database initialized at ${DB_PATH}`);
     return db;

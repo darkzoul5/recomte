@@ -1,6 +1,20 @@
 <%- include('layouts/header', { title }) %>
 <link rel="stylesheet" href="/public/css/caravan-gallery.css">
 
+<%
+  const getStatusLabel = (status) => {
+    if (status === 'sold') return 'ПРОДАНО';
+    if (status === 'reserved') return 'ЗАРЕЗЕРВИРОВАНО';
+    return 'В НАЛИЧИИ';
+  };
+
+  const getStatusClass = (status) => {
+    if (status === 'sold') return 'is-danger';
+    if (status === 'reserved') return 'is-warning';
+    return 'is-success';
+  };
+%>
+
 <!-- Caravan Detail Section -->
 <section class="section">
   <div class="container">
@@ -51,11 +65,7 @@
             <p class="is-size-5 has-text-weight-bold has-text-primary">
               <strong><%= caravan.price.toLocaleString('ru-RU') %> ₽</strong>
             </p>
-            <% if (caravan.status === 'sold') { %>
-              <p class="tag is-danger is-medium">ПРОДАНО</p>
-            <% } else { %>
-              <p class="tag is-success is-medium">В НАЛИЧИИ</p>
-            <% } %>
+            <p class="tag <%= getStatusClass(caravan.status) %> is-medium"><%= getStatusLabel(caravan.status) %></p>
           </div>
 
           <!-- Key specs -->
