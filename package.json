@@ -9,7 +9,8 @@
     "dev": "NODE_ENV=development node scripts/start-all.js",
     "db:init": "node scripts/init-db.js",
     "db:seed": "node scripts/seed-db.js",
-    "admin:passwd": "node scripts/admin-password-reset.js"
+    "admin:passwd": "node scripts/admin-password-reset.js",
+    "test:auth-protection": "node scripts/tests/test-auth-protection.js"
   },
   "keywords": [
     "caravans",
