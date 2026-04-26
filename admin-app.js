@@ -23,7 +23,7 @@ const MINUTE_MS = 60 * 1000;
 const AUTH_RATE_LIMIT_WINDOW_MS = parseInt(process.env.AUTH_RATE_LIMIT_WINDOW_MS || `${MINUTE_MS}`, 10);
 const AUTH_RATE_LIMIT_MAX_REQUESTS = parseInt(process.env.AUTH_RATE_LIMIT_MAX_REQUESTS || '30', 10);
 const LOGIN_ATTEMPT_WINDOW_MS = parseInt(process.env.LOGIN_ATTEMPT_WINDOW_MS || `${10 * MINUTE_MS}`, 10);
-const LOGIN_MAX_FAILED_ATTEMPTS = parseInt(process.env.LOGIN_MAX_FAILED_ATTEMPTS || '6', 10);
+const LOGIN_MAX_FAILED_ATTEMPTS = parseInt(process.env.LOGIN_MAX_FAILED_ATTEMPTS || '10', 10);
 const LOGIN_LOCKOUT_MS = parseInt(process.env.LOGIN_LOCKOUT_MS || `${15 * MINUTE_MS}`, 10);
 
 const authRateLimitStore = new Map();
