@@ -7,7 +7,6 @@ echo "Starting Recomte.ru application..."
 export NODE_ENV=${NODE_ENV:-production}
 export DB_PATH=${DB_PATH:-./data/app.db}
 export SESSION_SECRET=${SESSION_SECRET:-default_secret_change_in_production}
-export WEBHOOK_SECRET=${WEBHOOK_SECRET:-}
 
 # Create data directory if it doesn't exist
 mkdir -p /app/data

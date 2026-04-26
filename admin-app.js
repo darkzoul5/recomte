@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
-import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import { initDb, closeDb, caravans, images } from './db/db.js';
 import { createServer, registerCommonPlugins } from './src/server/setup.js';
@@ -20,7 +19,6 @@ dotenv.config({ override: false });
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const fastify = createServer();
-let deployInProgress = false;
 
 const MINUTE_MS = 60 * 1000;
 const AUTH_RATE_LIMIT_WINDOW_MS = parseInt(process.env.AUTH_RATE_LIMIT_WINDOW_MS || `${MINUTE_MS}`, 10);
@@ -28,7 +26,6 @@ const AUTH_RATE_LIMIT_MAX_REQUESTS = parseInt(process.env.AUTH_RATE_LIMIT_MAX_RE
 const LOGIN_ATTEMPT_WINDOW_MS = parseInt(process.env.LOGIN_ATTEMPT_WINDOW_MS || `${10 * MINUTE_MS}`, 10);
 const LOGIN_MAX_FAILED_ATTEMPTS = parseInt(process.env.LOGIN_MAX_FAILED_ATTEMPTS || '10', 10);
 const LOGIN_LOCKOUT_MS = parseInt(process.env.LOGIN_LOCKOUT_MS || `${15 * MINUTE_MS}`, 10);
-const ENABLE_DEPLOY_WEBHOOK = process.env.ENABLE_DEPLOY_WEBHOOK === 'true';
 
 const authRateLimitStore = new Map();
 const loginAttemptStore = new Map();
@@ -150,60 +147,6 @@ const ensureLoginNotLocked = (request, reply, username) => {
 };
 
 const authRouteRateLimit = createAuthRateLimiter('admin-auth');
-
-const triggerDeploy = () => {
-  deployInProgress = true;
-
-  const deployProcess = spawn('docker', ['compose', 'pull'], {
-    cwd: __dirname,
-    env: process.env,
-    stdio: ['ignore', 'pipe', 'pipe']
-  });
-
-  deployProcess.stdout.on('data', (chunk) => {
-    fastify.log.info({ deploy: chunk.toString().trim() }, 'docker compose pull');
-  });
-
-  deployProcess.stderr.on('data', (chunk) => {
-    fastify.log.error({ deploy: chunk.toString().trim() }, 'docker compose pull error');
-  });
-
-  deployProcess.on('close', (pullCode) => {
-    if (pullCode !== 0) {
-      fastify.log.error({ pullCode }, 'Deploy failed during docker compose pull');
-      deployInProgress = false;
-      return;
-    }
-
-    const upProcess = spawn('docker', ['compose', 'up', '-d'], {
-      cwd: __dirname,
-      env: process.env,
-      stdio: ['ignore', 'pipe', 'pipe']
-    });
-
-    upProcess.stdout.on('data', (chunk) => {
-      fastify.log.info({ deploy: chunk.toString().trim() }, 'docker compose up');
-    });
-
-    upProcess.stderr.on('data', (chunk) => {
-      fastify.log.error({ deploy: chunk.toString().trim() }, 'docker compose up error');
-    });
-
-    upProcess.on('close', (upCode) => {
-      if (upCode !== 0) {
-        fastify.log.error({ upCode }, 'Deploy failed during docker compose up -d');
-      } else {
-        fastify.log.info('Deploy completed successfully');
-      }
-      deployInProgress = false;
-    });
-  });
-
-  deployProcess.on('error', (error) => {
-    fastify.log.error(error, 'Unable to start docker compose pull process');
-    deployInProgress = false;
-  });
-};
 
 const processFeatures = (data) => {
   const features = {};
@@ -529,34 +472,6 @@ const destroySession = (request) => new Promise((resolve, reject) => {
     await registerCommonPlugins(fastify, { rootDir: __dirname });
 
     fastify.get('/healthcheck', { logLevel: 'silent' }, async () => ({ status: 'ok' }));
-
-    fastify.post('/deploy', async (request, reply) => {
-      if (!ENABLE_DEPLOY_WEBHOOK) {
-        return reply.code(410).send({ error: 'Deploy webhook disabled. Use CI/SSH deployment flow.' });
-      }
-
-      const configuredSecret = process.env.WEBHOOK_SECRET;
-      const providedSecretHeader = request.headers['x-webhook-secret'];
-      const providedSecret = Array.isArray(providedSecretHeader)
-        ? providedSecretHeader[0]
-        : providedSecretHeader;
-
-      if (!configuredSecret) {
-        fastify.log.error('WEBHOOK_SECRET is not configured');
-        return reply.code(503).send({ error: 'Deploy webhook is not configured' });
-      }
-
-      if (!providedSecret || providedSecret !== configuredSecret) {
-        return reply.code(401).send({ error: 'Unauthorized' });
-      }
-
-      if (deployInProgress) {
-        return reply.code(409).send({ status: 'deploy_in_progress' });
-      }
-
-      triggerDeploy();
-      return reply.send({ status: 'deploying' });
-    });
 
     await fastify.register(adminRoutes);
 

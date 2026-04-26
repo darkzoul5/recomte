@@ -10,7 +10,6 @@ services:
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - ADMIN_PORT=3001
       - SESSION_SECRET=${SESSION_SECRET}
-      - WEBHOOK_SECRET=${WEBHOOK_SECRET}
     volumes:
       - ./data:/app/data
       - ./public/images:/app/public/images
@@ -58,7 +57,6 @@ services:
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - ADMIN_PORT=3001
       - SESSION_SECRET=${SESSION_SECRET}
-      - WEBHOOK_SECRET=${WEBHOOK_SECRET}
     volumes:
       - ./data:/app/data
       - ./public/images:/app/public/images
