@@ -10,7 +10,10 @@ import {
   verifyAdminCredentials,
   setAdminSession,
   clearAdminSession,
-  ensureInitialAdminUser
+  ensureInitialAdminUser,
+  ensureCsrfToken,
+  getCsrfTokenFromRequest,
+  verifyCsrfToken
 } from './src/middleware/auth.js';
 
 dotenv.config({ override: false });
@@ -25,6 +28,7 @@ const AUTH_RATE_LIMIT_MAX_REQUESTS = parseInt(process.env.AUTH_RATE_LIMIT_MAX_RE
 const LOGIN_ATTEMPT_WINDOW_MS = parseInt(process.env.LOGIN_ATTEMPT_WINDOW_MS || `${10 * MINUTE_MS}`, 10);
 const LOGIN_MAX_FAILED_ATTEMPTS = parseInt(process.env.LOGIN_MAX_FAILED_ATTEMPTS || '10', 10);
 const LOGIN_LOCKOUT_MS = parseInt(process.env.LOGIN_LOCKOUT_MS || `${15 * MINUTE_MS}`, 10);
+const ENABLE_DEPLOY_WEBHOOK = process.env.ENABLE_DEPLOY_WEBHOOK === 'true';
 
 const authRateLimitStore = new Map();
 const loginAttemptStore = new Map();
@@ -140,7 +144,8 @@ const ensureLoginNotLocked = (request, reply, username) => {
   reply.code(429);
   return reply.view('admin/login', {
     title: 'Админ Вход',
-    error: 'Слишком много неудачных попыток входа. Повторите позже.'
+    error: 'Слишком много неудачных попыток входа. Повторите позже.',
+    csrfToken: ensureCsrfToken(request)
   });
 };
 
@@ -457,11 +462,59 @@ const handleImageUploads = (caravanId, uploadedFiles) => {
   }
 };
 
+const renderLoginPage = (request, reply, error = null) => reply.view('admin/login', {
+  title: 'Админ Вход',
+  error,
+  csrfToken: ensureCsrfToken(request)
+});
+
 const renderEditPage = async (request, reply, title, caravan, isNew, error) => reply.view('admin/edit', {
   title,
   caravan,
   isNew,
-  error
+  error,
+  csrfToken: ensureCsrfToken(request)
+});
+
+const rejectInvalidCsrf = (request, reply, bodyOverride = null) => {
+  const candidateToken = getCsrfTokenFromRequest(request, bodyOverride);
+  if (verifyCsrfToken(request, candidateToken)) {
+    return false;
+  }
+
+  reply.code(403);
+  return true;
+};
+
+const regenerateSession = (request) => new Promise((resolve, reject) => {
+  if (!request.session || typeof request.session.regenerate !== 'function') {
+    resolve();
+    return;
+  }
+
+  request.session.regenerate((error) => {
+    if (error) {
+      reject(error);
+      return;
+    }
+    resolve();
+  });
+});
+
+const destroySession = (request) => new Promise((resolve, reject) => {
+  if (!request.session || typeof request.session.destroy !== 'function') {
+    clearAdminSession(request);
+    resolve();
+    return;
+  }
+
+  request.session.destroy((error) => {
+    if (error) {
+      reject(error);
+      return;
+    }
+    resolve();
+  });
 });
 
 (async () => {
@@ -478,6 +531,10 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
     fastify.get('/healthcheck', { logLevel: 'silent' }, async () => ({ status: 'ok' }));
 
     fastify.post('/deploy', async (request, reply) => {
+      if (!ENABLE_DEPLOY_WEBHOOK) {
+        return reply.code(410).send({ error: 'Deploy webhook disabled. Use CI/SSH deployment flow.' });
+      }
+
       const configuredSecret = process.env.WEBHOOK_SECRET;
       const providedSecretHeader = request.headers['x-webhook-secret'];
       const providedSecret = Array.isArray(providedSecretHeader)
@@ -521,11 +578,15 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
       if (request.session.adminId) {
         return reply.redirect('/admin/dash');
       }
-      return reply.view('admin/login', { title: 'Админ Вход', error: null });
+      return renderLoginPage(request, reply, null);
     });
 
     fastify.post('/admin/login', { onRequest: [authRouteRateLimit] }, async (request, reply) => {
       const { username, password } = request.body;
+
+      if (rejectInvalidCsrf(request, reply)) {
+        return renderLoginPage(request, reply, 'Недействительный токен безопасности. Обновите страницу и попробуйте снова.');
+      }
 
       const lockResult = ensureLoginNotLocked(request, reply, username);
       if (lockResult !== true) {
@@ -533,28 +594,33 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
       }
 
       if (!username || !password) {
-        return reply.view('admin/login', { title: 'Админ Вход', error: 'Логин и пароль требуются' });
+        return renderLoginPage(request, reply, 'Логин и пароль требуются');
       }
 
       try {
         if (await verifyAdminCredentials(username, password)) {
           resetLoginAttempts(username, getClientIp(request));
+          await regenerateSession(request);
           setAdminSession(request, username);
           return reply.redirect('/admin/dash');
         }
 
         registerFailedLogin(username, getClientIp(request));
 
-        return reply.view('admin/login', { title: 'Админ Вход', error: 'Неверный логин или пароль' });
+        return renderLoginPage(request, reply, 'Неверный логин или пароль');
       } catch (error) {
         fastify.log.error(error);
         registerFailedLogin(username, getClientIp(request));
-        return reply.view('admin/login', { title: 'Админ Вход', error: 'Ошибка сервера' });
+        return renderLoginPage(request, reply, 'Ошибка сервера');
       }
     });
 
     fastify.post('/admin/logout', { onRequest: [authRouteRateLimit] }, async (request, reply) => {
-      clearAdminSession(request);
+      if (rejectInvalidCsrf(request, reply)) {
+        return reply.send({ error: 'Invalid CSRF token' });
+      }
+
+      await destroySession(request);
       return reply.redirect('/admin/login');
     });
 
@@ -575,11 +641,16 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
         const data = JSON.parse(response.body);
         return reply.view('admin/dashboard', {
           title: 'Панель управления',
-          caravans: data.caravans || []
+          caravans: data.caravans || [],
+          csrfToken: ensureCsrfToken(request)
         });
       } catch (error) {
         fastify.log.error(error);
-        return reply.view('admin/dashboard', { title: 'Панель управления', caravans: [] });
+        return reply.view('admin/dashboard', {
+          title: 'Панель управления',
+          caravans: [],
+          csrfToken: ensureCsrfToken(request)
+        });
       }
     });
 
@@ -607,7 +678,8 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
           title: `Редактировать: ${caravan.title}`,
           caravan,
           isNew: false,
-          error: null
+          error: null,
+          csrfToken: ensureCsrfToken(request)
         });
       } catch (error) {
         fastify.log.error(error);
@@ -641,8 +713,30 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
         return reply.redirect('/admin/login');
       }
 
+      if (rejectInvalidCsrf(request, reply, { _csrf: request.query?._csrf })) {
+        return renderEditPage(request, reply, 'Добавить', {
+          title: '',
+          slug: '',
+          price: 0,
+          status: 'available',
+          featured: 0,
+          images: []
+        }, true, 'Недействительный токен безопасности. Обновите страницу и попробуйте снова.');
+      }
+
       try {
         const { formData, uploadedFiles } = await parseMultipartForm(request);
+
+        if (rejectInvalidCsrf(request, reply, formData)) {
+          return renderEditPage(request, reply, 'Добавить', {
+            title: '',
+            slug: '',
+            price: 0,
+            status: 'available',
+            featured: 0,
+            images: []
+          }, true, 'Недействительный токен безопасности. Обновите страницу и попробуйте снова.');
+        }
 
         if (!formData.title || !formData.slug || !formData.price) {
           return renderEditPage(request, reply, 'Добавить', {
@@ -679,6 +773,10 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
         return reply.redirect('/admin/login');
       }
 
+      if (rejectInvalidCsrf(request, reply, { _csrf: request.query?._csrf })) {
+        return reply.code(403).send({ message: 'Invalid CSRF token' });
+      }
+
       try {
         const { id } = request.params;
         const caravan = caravans.getById(parseInt(id));
@@ -688,6 +786,17 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
         }
 
         const { formData, uploadedFiles } = await parseMultipartForm(request);
+
+        if (rejectInvalidCsrf(request, reply, formData)) {
+          return reply.view('admin/edit', {
+            title: `Редактировать: ${caravan.title}`,
+            caravan,
+            isNew: false,
+            error: 'Недействительный токен безопасности. Обновите страницу и попробуйте снова.',
+            csrfToken: ensureCsrfToken(request)
+          });
+        }
+
         const processedForm = processFeatures({ ...formData });
 
         const updatedCaravan = caravans.update(parseInt(id), mapFormToCaravanData(processedForm));
@@ -723,7 +832,8 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
           title: `Редактировать: ${caravan.title}`,
           caravan,
           isNew: false,
-          error: 'Ошибка при обновлении: ' + error.message
+          error: 'Ошибка при обновлении: ' + error.message,
+          csrfToken: ensureCsrfToken(request)
         });
       }
     });
@@ -731,6 +841,10 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
     fastify.post('/admin/delete/:id', async (request, reply) => {
       if (!request.session.adminId) {
         return reply.redirect('/admin/login');
+      }
+
+      if (rejectInvalidCsrf(request, reply)) {
+        return reply.send({ message: 'Invalid CSRF token' });
       }
 
       try {

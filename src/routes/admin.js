@@ -1,5 +1,5 @@
 import { caravans, images, features } from '../../db/db.js';
-import { isAdmin } from '../middleware/auth.js';
+import { isAdmin, requireCsrfToken } from '../middleware/auth.js';
 import { validateCaravanData, validateImageData, validateInteger } from '../utils/validation.js';
 
 const FEATURE_FLAGS = new Set([
@@ -224,7 +224,7 @@ export default async function adminRoutes(fastify) {
   });
 
   // POST /admin/api/caravans - create new caravan
-  fastify.post('/admin/api/caravans', { onRequest: [isAdmin] }, async (request, reply) => {
+  fastify.post('/admin/api/caravans', { onRequest: [isAdmin], preHandler: [requireCsrfToken] }, async (request, reply) => {
     try {
       let data = request.body;
 
@@ -251,7 +251,7 @@ export default async function adminRoutes(fastify) {
   });
 
   // PUT /admin/api/caravans/:id - update caravan
-  fastify.put('/admin/api/caravans/:id', { onRequest: [isAdmin] }, async (request, reply) => {
+  fastify.put('/admin/api/caravans/:id', { onRequest: [isAdmin], preHandler: [requireCsrfToken] }, async (request, reply) => {
     try {
       const { id } = request.params;
       let data = request.body;
@@ -273,7 +273,7 @@ export default async function adminRoutes(fastify) {
   });
 
   // DELETE /admin/api/caravans/:id - delete caravan
-  fastify.delete('/admin/api/caravans/:id', { onRequest: [isAdmin] }, async (request, reply) => {
+  fastify.delete('/admin/api/caravans/:id', { onRequest: [isAdmin], preHandler: [requireCsrfToken] }, async (request, reply) => {
     try {
       const { id } = request.params;
 
@@ -291,7 +291,7 @@ export default async function adminRoutes(fastify) {
   });
 
   // POST /admin/api/caravans/:id/images - add image to caravan
-  fastify.post('/admin/api/caravans/:id/images', { onRequest: [isAdmin] }, async (request, reply) => {
+  fastify.post('/admin/api/caravans/:id/images', { onRequest: [isAdmin], preHandler: [requireCsrfToken] }, async (request, reply) => {
     try {
       const { id } = request.params;
       const { url, alt_text, sort_order } = request.body;
@@ -325,7 +325,7 @@ export default async function adminRoutes(fastify) {
   });
 
   // DELETE /admin/api/images/:id - delete image
-  fastify.delete('/admin/api/images/:id', { onRequest: [isAdmin] }, async (request, reply) => {
+  fastify.delete('/admin/api/images/:id', { onRequest: [isAdmin], preHandler: [requireCsrfToken] }, async (request, reply) => {
     try {
       const { id } = request.params;
 
@@ -343,7 +343,7 @@ export default async function adminRoutes(fastify) {
   });
 
   // PUT /admin/api/images/:id/reorder - reorder image
-  fastify.put('/admin/api/images/:id/reorder', { onRequest: [isAdmin] }, async (request, reply) => {
+  fastify.put('/admin/api/images/:id/reorder', { onRequest: [isAdmin], preHandler: [requireCsrfToken] }, async (request, reply) => {
     try {
       const { id } = request.params;
       const { sort_order } = request.body;

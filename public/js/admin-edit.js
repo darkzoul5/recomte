@@ -48,6 +48,8 @@ async function persistImageOrderViaApi() {
   const orderInput = document.getElementById('imageOrderInput');
   if (!orderInput || !orderInput.value.trim()) return;
 
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
   const ids = orderInput.value
     .split(',')
     .map((value) => parseInt(value, 10))
@@ -56,7 +58,10 @@ async function persistImageOrderViaApi() {
   await Promise.all(ids.map((imageId, index) =>
     fetch(`/admin/api/images/${imageId}/reorder`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken
+      },
       body: JSON.stringify({ sort_order: index })
     }).catch(() => null)
   ));

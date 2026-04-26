@@ -81,6 +81,7 @@
                       <span>Просмотр на сайте</span>
                     </a>
                     <form method="POST" action="/admin/delete/<%= caravan.id %>" style="display: inline;" class="delete-form">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken || '' %>">
                       <button type="submit" class="button is-danger is-light is-small">
                         <span class="icon"><i class="fas fa-trash"></i></span>
                         <span>Удалить</span>

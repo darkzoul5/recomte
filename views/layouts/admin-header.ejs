@@ -4,6 +4,7 @@
   <% const MAIN_SITE_URL = 'https://recomte.ru/'; %>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<%= csrfToken || '' %>">
   <title><%= title %> | Recomte.ru Admin</title>
   
   <link rel="stylesheet" href="/public/css/bulma.css">
@@ -34,6 +35,7 @@
             <span>На главную</span>
           </a>
           <form method="POST" action="/admin/logout" style="display: inline;">
+            <input type="hidden" name="_csrf" value="<%= csrfToken || '' %>">
             <button class="button is-ghost">
               <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
               <span>Выход</span>
