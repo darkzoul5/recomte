@@ -91,12 +91,6 @@
                     <td><%= caravan.manufacturer_country %></td>
                   </tr>
                 <% } %>
-                <% if (caravan.length_mm) { %>
-                  <tr>
-                    <td><strong>Длина:</strong></td>
-                    <td><%= (caravan.length_mm / 1000).toFixed(2) %> м</td>
-                  </tr>
-                <% } %>
                 <% if (caravan.camper_season) { %>
                   <tr>
                     <td><strong>Тип Прицеп-дачи:</strong></td>
@@ -127,7 +121,7 @@
     <% } %>
 
     <!-- Detailed specs if available -->
-    <% if (caravan.shower_type || caravan.has_toilet || caravan.sink_present || caravan.fridge_volume_l || caravan.fresh_water_tank_l || caravan.has_hot_water || caravan.water_heater_type || caravan.boiler_volume_l || caravan.condition) { %>
+    <% if (caravan.shower_type || caravan.has_toilet || caravan.sink_present || caravan.fridge_volume_l || caravan.fresh_water_tank_l || caravan.has_hot_water || caravan.water_heater_type || caravan.boiler_volume_l || caravan.length_mm || caravan.width_mm || caravan.height_mm || caravan.interior_height_mm || caravan.curb_weight_kg || caravan.gross_weight_kg || caravan.condition) { %>
       <div class="box mt-5">
         <h2 class="subtitle is-4">Детальные характеристики</h2>
         
@@ -232,7 +226,7 @@
             </div>
           <% } %>
 
-          <% if (caravan.axles_count || caravan.brake_type || caravan.tow_vehicle_max_kg !== undefined && caravan.tow_vehicle_max_kg !== null) { %>
+          <% if (caravan.axles_count || caravan.brake_type) { %>
             <div class="column is-one-third">
                 <h4 class="subtitle is-6 has-text-weight-bold">Шасси и буксировка</h4>
               <ul>
@@ -241,20 +235,22 @@
                 <% if (caravan.suspension_type) { %><li>Подвеска: <%= caravan.suspension_type === 'leaf_spring' ? 'Рессоры' : (caravan.suspension_type === 'coil_spring' ? 'Пружины' : (caravan.suspension_type === 'air_suspension' ? 'Пневматическая' : (caravan.suspension_type === 'independent' ? 'Независимая' : caravan.suspension_type))) %></li><% } %>
                 <% if (caravan.wheel_size_inch) { %><li>Колеса: <%= caravan.wheel_size_inch %>"</li><% } %>
                 <% if (caravan.hitch_weight_kg) { %><li>Нагрузка на сцепку: <%= caravan.hitch_weight_kg %> кг</li><% } %>
-                <% if (caravan.tow_vehicle_max_kg !== undefined && caravan.tow_vehicle_max_kg !== null) { %><li>Макс. масса авто: <%= caravan.tow_vehicle_max_kg %> кг</li><% } %>
                 <% if (caravan.braked) { %><li><i class="fas fa-check has-text-success"></i> С тормозами на оси</li><% } %>
                 <% if (caravan.stabilizer_present) { %><li><i class="fas fa-check has-text-success"></i> Стабилизатор</li><% } %>
               </ul>
             </div>
           <% } %>
 
-          <% if (caravan.width_mm || caravan.height_mm || caravan.interior_height_mm) { %>
+          <% if (caravan.length_mm || caravan.width_mm || caravan.height_mm || caravan.interior_height_mm || caravan.curb_weight_kg || caravan.gross_weight_kg) { %>
             <div class="column is-one-third">
-              <h4 class="subtitle is-6 has-text-weight-bold">Размеры</h4>
+              <h4 class="subtitle is-6 has-text-weight-bold">Размеры и масса</h4>
               <ul>
+                <% if (caravan.length_mm) { %><li>Длина: <%= (caravan.length_mm / 1000).toFixed(2) %> м</li><% } %>
                 <% if (caravan.width_mm) { %><li>Ширина: <%= caravan.width_mm %> мм</li><% } %>
                 <% if (caravan.height_mm) { %><li>Высота: <%= caravan.height_mm %> мм</li><% } %>
                 <% if (caravan.interior_height_mm) { %><li>Внутренняя высота: <%= caravan.interior_height_mm %> мм</li><% } %>
+                <% if (caravan.curb_weight_kg) { %><li>Снаряженная масса: <%= caravan.curb_weight_kg %> кг</li><% } %>
+                <% if (caravan.gross_weight_kg) { %><li>Полная масса: <%= caravan.gross_weight_kg %> кг</li><% } %>
               </ul>
             </div>
           <% } %>

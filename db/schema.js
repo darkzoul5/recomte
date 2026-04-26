@@ -72,7 +72,6 @@ CREATE TABLE IF NOT EXISTS caravans (
   hitch_weight_kg INTEGER,
   braked BOOLEAN DEFAULT 0,
   stabilizer_present BOOLEAN DEFAULT 0,
-  tow_vehicle_max_kg INTEGER,
   
   -- CONDITION & HISTORY
   condition TEXT,

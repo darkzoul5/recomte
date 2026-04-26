@@ -47,6 +47,19 @@
                   <span class="tag <%= getStatusClass(caravan.status) %> is-light"><%= getStatusLabel(caravan.status) %></span>
                 </div>
                 <p><%= caravan.description ? caravan.description.substring(0, 100) + '...' : 'Современная Прицеп-дача для комфортных путешествий.' %></p>
+                <% if (caravan.curb_weight_kg || caravan.gross_weight_kg) { %>
+                  <p class="is-size-7 has-text-grey mt-2">
+                    <% if (caravan.curb_weight_kg) { %>
+                      Снаряженная: <strong><%= caravan.curb_weight_kg %> кг</strong>
+                    <% } %>
+                    <% if (caravan.curb_weight_kg && caravan.gross_weight_kg) { %>
+                      ·
+                    <% } %>
+                    <% if (caravan.gross_weight_kg) { %>
+                      Полная: <strong><%= caravan.gross_weight_kg %> кг</strong>
+                    <% } %>
+                  </p>
+                <% } %>
                 <div class="is-flex is-align-items-center mt-2" style="gap: 0.75rem; flex-wrap: wrap;">
                   <a class="button is-success is-small" href="/caravans/<%= caravan.slug %>">Подробнее</a>
                 </div>

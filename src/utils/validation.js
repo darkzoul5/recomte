@@ -20,7 +20,7 @@ const ALLOWED_CARAVAN_COLUMNS = new Set([
   // Dimensions & Weight
   'length_mm', 'width_mm', 'height_mm', 'interior_height_mm', 'curb_weight_kg', 'gross_weight_kg',
   // Chassis & Towing
-  'axles_count', 'brake_type', 'suspension_type', 'wheel_size_inch', 'hitch_weight_kg', 'braked', 'stabilizer_present', 'tow_vehicle_max_kg',
+  'axles_count', 'brake_type', 'suspension_type', 'wheel_size_inch', 'hitch_weight_kg', 'braked', 'stabilizer_present',
   // Condition & History
   'condition', 'last_service_date',
   // Flexible features
@@ -191,7 +191,7 @@ export const validateCaravanData = (data, isUpdate = false) => {
     'inverter_wattage', 'length_mm', 'width_mm', 'height_mm', 'interior_height_mm',
     'curb_weight_kg', 'gross_weight_kg', 'windows_count', 'vent_fans_count',
     'skylights_count', 'axles_count', 'wheel_size_inch',
-    'hitch_weight_kg', 'tow_vehicle_max_kg'
+    'hitch_weight_kg'
   ];
 
   for (const field of integerFields) {
@@ -296,14 +296,6 @@ export const deriveCaravanFields = (data) => {
   if (!data || typeof data !== 'object') return {};
 
   const result = { ...data };
-
-  const grossWeight = result.gross_weight_kg !== undefined && result.gross_weight_kg !== null && result.gross_weight_kg !== ''
-    ? parseInt(result.gross_weight_kg, 10)
-    : null;
-
-  if (grossWeight !== null) {
-    result.tow_vehicle_max_kg = Math.max(0, 3500 - grossWeight);
-  }
 
   const hasHeatingSignals = [
     result.heating_type,

@@ -4,7 +4,7 @@ import {
   clearAdminSession,
   ensureCsrfToken
 } from '../middleware/auth.js';
-import { rejectInvalidCsrf } from './route-helpers.js';
+import { rejectInvalidCsrf, redirectByAdminSession } from './route-helpers.js';
 
 const MINUTE_MS = 60 * 1000;
 const AUTH_RATE_LIMIT_WINDOW_MS = parseInt(process.env.AUTH_RATE_LIMIT_WINDOW_MS || `${MINUTE_MS}`, 10);
@@ -174,7 +174,7 @@ const destroySession = (request) => new Promise((resolve, reject) => {
 export default async function registerAdminAuthRoutes(fastify) {
   fastify.get('/admin/login', { onRequest: [authRouteRateLimit] }, async (request, reply) => {
     if (request.session.adminId) {
-      return reply.redirect('/admin/dash');
+      return redirectByAdminSession(request, reply);
     }
     return renderLoginPage(request, reply, null);
   });

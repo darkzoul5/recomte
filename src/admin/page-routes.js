@@ -1,7 +1,7 @@
 import { caravans, images } from '../../db/db.js';
 import { ensureCsrfToken } from '../middleware/auth.js';
 import { parseMultipartForm, handleImageUploads } from './upload-service.js';
-import { rejectInvalidCsrf, requireAdminSession } from './route-helpers.js';
+import { rejectInvalidCsrf, requireAdminSession, redirectByAdminSession } from './route-helpers.js';
 
 const processFeatures = (data) => {
   const features = {};
@@ -178,7 +178,6 @@ const mapFormToCaravanData = (formData) => {
     hitch_weight_kg: null,
     braked: formData.braked ? 1 : 0,
     stabilizer_present: formData.stabilizer_present ? 1 : 0,
-    tow_vehicle_max_kg: null,
     condition: formData.condition || null,
     last_service_date: formData.last_service_date || null,
     features: formData.features || {}
@@ -197,17 +196,11 @@ export default async function registerAdminPageRoutes(fastify, options = {}) {
   const { rootDir } = options;
 
   fastify.get('/', async (request, reply) => {
-    if (request.session.adminId) {
-      return reply.redirect('/admin/dash');
-    }
-    return reply.redirect('/admin/login');
+    return redirectByAdminSession(request, reply);
   });
 
   fastify.get('/admin', async (request, reply) => {
-    if (request.session.adminId) {
-      return reply.redirect('/admin/dash');
-    }
-    return reply.redirect('/admin/login');
+    return redirectByAdminSession(request, reply);
   });
 
   fastify.get('/admin/dash', async (request, reply) => {

@@ -18,3 +18,11 @@ export const requireAdminSession = (request, reply) => {
   reply.redirect('/admin/login');
   return false;
 };
+
+export const redirectByAdminSession = (request, reply) => {
+  if (request.session && request.session.adminId) {
+    return reply.redirect('/admin/dash');
+  }
+
+  return reply.redirect('/admin/login');
+};
