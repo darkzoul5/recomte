@@ -264,11 +264,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  const customFeatureKey = document.getElementById('customFeatureKey');
-  const customFeatureValue = document.getElementById('customFeatureValue');
+  const customFeatureLabel = document.getElementById('customFeatureLabel');
   const addCustomFeatureBtn = document.getElementById('addCustomFeatureBtn');
   const customFeaturesJson = document.getElementById('customFeaturesJson');
-  const customFeaturesList = document.getElementById('customFeaturesList');
+  const customFeatureCheckboxes = document.getElementById('customFeatureCheckboxes');
 
   const readCustomFeatures = () => {
     if (!customFeaturesJson || !customFeaturesJson.value) return [];
@@ -285,64 +284,73 @@ document.addEventListener('DOMContentLoaded', function() {
     customFeaturesJson.value = JSON.stringify(items);
   };
 
-  const renderCustomFeatures = () => {
-    if (!customFeaturesList) return;
-
+  const renderCustomCheckboxes = () => {
+    if (!customFeatureCheckboxes) return;
     const items = readCustomFeatures();
-    customFeaturesList.innerHTML = '';
+    customFeatureCheckboxes.innerHTML = '';
 
     items.forEach((item) => {
-      const row = document.createElement('div');
-      row.className = 'custom-feature-item';
-      row.dataset.key = item.key;
-      row.innerHTML = `
-        <span><strong>${item.key}</strong>: ${item.value}</span>
-        <button type="button" class="button is-small is-danger is-light custom-feature-remove">Удалить</button>
-      `;
-      customFeaturesList.appendChild(row);
-    });
+      const key = item.key;
+      const checked = item.value !== undefined && item.value !== null && String(item.value) !== '0';
 
-    customFeaturesList.querySelectorAll('.custom-feature-remove').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const key = btn.closest('.custom-feature-item')?.dataset.key;
-        if (!key) return;
-        const nextItems = readCustomFeatures().filter((item) => item.key !== key);
-        writeCustomFeatures(nextItems);
-        renderCustomFeatures();
+      const row = document.createElement('label');
+      row.className = 'custom-feature-checkbox-row';
+      row.dataset.key = key;
+      row.innerHTML = `
+        <input type="checkbox" class="custom-feature-checkbox" data-key="${key}" ${checked ? 'checked' : ''}>
+        <span style="margin-left:0.5rem;">${key}</span>
+        <button type="button" class="button is-small is-danger is-light custom-feature-remove" style="margin-left:0.75rem;">Удалить</button>
+      `;
+
+      customFeatureCheckboxes.appendChild(row);
+
+      const checkbox = row.querySelector('.custom-feature-checkbox');
+      const removeBtn = row.querySelector('.custom-feature-remove');
+
+      checkbox.addEventListener('change', () => {
+        const current = readCustomFeatures().filter((it) => it.key !== key);
+        if (checkbox.checked) {
+          current.push({ key, value: '1' });
+        }
+        writeCustomFeatures(current);
+      });
+
+      removeBtn.addEventListener('click', () => {
+        const next = readCustomFeatures().filter((it) => it.key !== key);
+        writeCustomFeatures(next);
+        renderCustomCheckboxes();
       });
     });
   };
 
-  if (addCustomFeatureBtn && customFeatureKey && customFeatureValue) {
+  if (addCustomFeatureBtn && customFeatureLabel) {
     addCustomFeatureBtn.addEventListener('click', () => {
-      const key = customFeatureKey.value.trim();
-      const value = customFeatureValue.value.trim();
-
-      if (!key) {
-        customFeatureKey.focus();
+      const label = customFeatureLabel.value.trim();
+      if (!label) {
+        customFeatureLabel.focus();
         return;
       }
 
-      const currentItems = readCustomFeatures().filter((item) => item.key !== key);
-      currentItems.push({ key, value: value || '1' });
-      writeCustomFeatures(currentItems);
-      renderCustomFeatures();
+      // sanitize a simple key representation
+      const key = label.replace(/[\n\r=:\/]+/g, ' ').trim();
 
-      customFeatureKey.value = '';
-      customFeatureValue.value = '';
-      customFeatureKey.focus();
+      const existing = readCustomFeatures().filter((it) => it.key !== key);
+      existing.push({ key, value: '1' });
+      writeCustomFeatures(existing);
+      renderCustomCheckboxes();
+
+      customFeatureLabel.value = '';
+      customFeatureLabel.focus();
     });
 
-    [customFeatureKey, customFeatureValue].forEach((input) => {
-      input.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          addCustomFeatureBtn.click();
-        }
-      });
+    customFeatureLabel.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        addCustomFeatureBtn.click();
+      }
     });
   }
 
-  renderCustomFeatures();
+  renderCustomCheckboxes();
 
 });

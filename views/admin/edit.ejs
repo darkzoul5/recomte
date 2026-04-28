@@ -415,17 +415,17 @@
       <div class="form-group" style="grid-column: 1 / -1;">
         <label>Пользовательская опция</label>
         <div class="custom-feature-inputs">
-          <input type="text" id="customFeatureKey" placeholder="feature_name" autocomplete="off">
-          <input type="text" id="customFeatureValue" placeholder="value">
+          <input type="text" id="customFeatureLabel" placeholder="Новая метка (напр. Отопление)" autocomplete="off">
           <button type="button" class="button is-light" id="addCustomFeatureBtn">Добавить</button>
         </div>
         <input type="hidden" name="custom_features_json" id="customFeaturesJson" value='<%= JSON.stringify(caravan?.custom_features_items || []) %>'>
-        <div id="customFeaturesList" class="custom-features-list">
+        <div id="customFeatureCheckboxes" class="custom-features-list" style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.75rem;">
           <% (caravan?.custom_features_items || []).forEach((feature) => { %>
-            <div class="custom-feature-item" data-key="<%= feature.key %>">
-              <span><strong><%= feature.key %></strong>: <%= feature.value %></span>
-              <button type="button" class="button is-small is-danger is-light custom-feature-remove">Удалить</button>
-            </div>
+            <label class="custom-feature-checkbox-row" data-key="<%= feature.key %>">
+              <input type="checkbox" class="custom-feature-checkbox" data-key="<%= feature.key %>" <%= caravan && caravan[feature.key] && caravan[feature.key] !== '0' ? 'checked' : '' %> >
+              <span style="margin-left:0.5rem;"><%= feature.key %></span>
+              <button type="button" class="button is-small is-danger is-light custom-feature-remove" style="margin-left:0.75rem;">Удалить</button>
+            </label>
           <% }); %>
         </div>
       </div>
