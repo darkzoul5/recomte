@@ -6,6 +6,8 @@ import fastifyFormbody from '@fastify/formbody';
 import fastifyMultipart from '@fastify/multipart';
 import fastifyCompress from '@fastify/compress';
 import path from 'path';
+import fs from 'fs';
+import sharp from 'sharp';
 import { getDb } from '../../db/db.js';
 
 const SESSION_MAX_AGE = 60 * 60 * 1000; // 1 hour in milliseconds
@@ -184,22 +186,69 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     return payload;
   });
 
+  // WebP conversion middleware for images
+  fastify.get('/public/images/caravans/*', async (request, reply) => {
+    const acceptHeader = request.headers.accept || '';
+    const supportsWebP = acceptHeader.includes('image/webp');
+
+    if (!supportsWebP) {
+      return; // Fall through to static file serving
+    }
+
+    const imagePath = path.join(rootDir, 'public', 'images', 'caravans', request.params['*']);
+    const webpCachePath = `${imagePath}.webp`;
+
+    // Check if file exists
+    if (!fs.existsSync(imagePath)) {
+      return; // Fall through; static handler will return 404
+    }
+
+    try {
+      // Check if WebP cache already exists
+      if (fs.existsSync(webpCachePath)) {
+        reply.type('image/webp');
+        reply.header('Cache-Control', 'public, max-age=604800');
+        return reply.sendFile(webpCachePath);
+      }
+
+      // Convert and cache
+      const webpBuffer = await sharp(imagePath)
+        .webp({ quality: 80 })
+        .toBuffer();
+
+      // Write to cache (fire-and-forget, don't block response)
+      fs.writeFile(webpCachePath, webpBuffer, (err) => {
+        if (err) {
+          fastify.log.warn(`Failed to cache WebP for ${imagePath}: ${err.message}`);
+        }
+      });
+
+      // Serve the converted image
+      reply.type('image/webp');
+      reply.header('Cache-Control', 'public, max-age=604800');
+      return reply.send(webpBuffer);
+    } catch (error) {
+      fastify.log.warn(`WebP conversion failed for ${imagePath}: ${error.message}`);
+      return; // Fall through to original image
+    }
+  });
+
   await fastify.register(fastifyStatic, {
     root: path.join(rootDir, 'public'),
     prefix: '/public/',
-    setHeaders: (reply, pathName) => {
+    setHeaders: (res, pathName) => {
       // Cache images for 7 days (can be updated by changing file)
       if (/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(pathName)) {
-        reply.header('Cache-Control', 'public, max-age=604800');
+        res.setHeader('Cache-Control', 'public, max-age=604800');
       } else if (/\.(woff|woff2|ttf|eot)$/i.test(pathName)) {
         // Fonts: 1 year (rarely change)
-        reply.header('Cache-Control', 'public, max-age=31536000, immutable');
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
       } else if (/\.(css|js)$/i.test(pathName)) {
         // Cache CSS/JS for 1 hour (not versioned, changes should deploy quickly)
-        reply.header('Cache-Control', 'public, max-age=3600, must-revalidate');
+        res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
       } else {
         // HTML and other files: shorter cache with revalidation
-        reply.header('Cache-Control', 'public, max-age=3600, must-revalidate');
+        res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
       }
     }
   });
