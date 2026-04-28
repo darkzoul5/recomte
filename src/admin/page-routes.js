@@ -331,7 +331,7 @@ export default async function registerAdminPageRoutes(fastify, options = {}) {
       const processedForm = processFeatures({ ...formData });
       const newCaravan = caravans.create(mapFormToCaravanData(processedForm));
 
-      handleImageUploads(newCaravan.id, uploadedFiles, rootDir, fastify.log);
+      await handleImageUploads(newCaravan.id, uploadedFiles, rootDir, fastify.log);
 
       return reply.redirect('/admin/dash');
     } catch (error) {
@@ -392,7 +392,7 @@ export default async function registerAdminPageRoutes(fastify, options = {}) {
         }
       }
 
-      handleImageUploads(parseInt(id), uploadedFiles, rootDir, fastify.log);
+      await handleImageUploads(parseInt(id), uploadedFiles, rootDir, fastify.log);
 
       return reply.redirect(`/admin/edit/${id}`);
     } catch (error) {

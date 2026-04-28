@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+import sharp from 'sharp';
 import { images, caravans } from '../../db/db.js';
 
 export const parseMultipartForm = async (request) => {
@@ -37,7 +38,7 @@ export const parseMultipartForm = async (request) => {
   return { formData, uploadedFiles };
 };
 
-export const handleImageUploads = (caravanId, uploadedFiles, rootDir, logger) => {
+export const handleImageUploads = async (caravanId, uploadedFiles, rootDir, logger) => {
   if (uploadedFiles.length === 0) {
     return;
   }
@@ -72,16 +73,20 @@ export const handleImageUploads = (caravanId, uploadedFiles, rootDir, logger) =>
       }
 
       counter += 1;
-      const ext = path.extname(fileData.filename).toLowerCase();
-      const fileName = `${slug}-image-${counter}${ext}`;
-      const filePath = path.join(imagesDir, fileName);
+      const webpFileName = `${slug}-image-${counter}.webp`;
+      const webpFilePath = path.join(imagesDir, webpFileName);
 
-      fs.writeFileSync(filePath, fileData.buffer);
+      // Convert to WebP using sharp with quality optimization
+      await sharp(fileData.buffer)
+        .webp({ quality: 80 })
+        .toFile(webpFilePath);
 
-      const imageUrl = `/public/images/caravans/${slug}/${fileName}`;
+      const imageUrl = `/public/images/caravans/${slug}/${webpFileName}`;
       images.create(caravanId, imageUrl, fileData.filename, 0);
+      
+      logger.debug(`Converted and saved image: ${webpFileName}`);
     } catch (error) {
-      logger.error(`Image upload failed for file ${fileData.filename}: ${error.message}`);
+      logger.error(`Image upload/conversion failed for file ${fileData.filename}: ${error.message}`);
     }
   }
 };

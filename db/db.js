@@ -328,6 +328,10 @@ export const images = {
     return results[0] || null;
   },
 
+  getAll: () => {
+    return query('SELECT * FROM images ORDER BY caravan_id ASC, sort_order ASC');
+  },
+
   create: (caravanId, url, altText = '', sortOrder = 0) => {
     // Validate inputs
     if (!Number.isInteger(caravanId) || caravanId <= 0) {
@@ -392,6 +396,33 @@ export const images = {
       throw new Error('Invalid sort order');
     }
     run('UPDATE images SET sort_order = ? WHERE id = ?', [sortOrder, imageId]);
+  },
+
+  update: (imageId, updates) => {
+    // Validate image ID
+    if (!Number.isInteger(imageId) || imageId <= 0) {
+      throw new Error('Invalid image ID');
+    }
+    if (!updates || typeof updates !== 'object') {
+      throw new Error('Updates must be an object');
+    }
+
+    // Only allow updating specific fields
+    const allowedFields = ['url', 'alt_text', 'sort_order'];
+    const updateFields = {};
+
+    for (const [key, value] of Object.entries(updates)) {
+      if (allowedFields.includes(key)) {
+        updateFields[key] = value;
+      }
+    }
+
+    if (Object.keys(updateFields).length === 0) {
+      return;
+    }
+
+    const { sql, values } = buildUpdate('images', updateFields, 'id = ?', [imageId]);
+    run(sql, values);
   }
 };
 
