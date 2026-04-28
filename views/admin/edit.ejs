@@ -1,5 +1,8 @@
 <%- include('../layouts/admin-header', { title: isNew ? 'Новая Прицеп-дача' : 'Редактировать' }) %>
 
+<link rel="stylesheet" href="/public/vendor/filepond/filepond.min.css">
+<link rel="stylesheet" href="/public/vendor/filepond-plugin-image-preview/filepond-plugin-image-preview.min.css">
+
 <div class="admin-header">
   <h1><i class="fas fa-edit"></i> <%= isNew ? 'Новая Прицеп-дача' : 'Редактировать: ' + caravan.title %></h1>
 </div>
@@ -459,8 +462,7 @@
     <div class="form-row">
       <div class="form-group" style="grid-column: 1 / -1;">
         <label>Добавить изображения</label>
-        <input type="file" id="fileInput" name="images" multiple accept="image/*" style="display: none;">
-        <label for="fileInput" class="file-input-label"><i class="fas fa-cloud-upload-alt"></i> Выбрать файлы</label>
+        <input type="file" id="fileInput" name="images" multiple accept="image/*">
       </div>
     </div>
   </div>
@@ -483,6 +485,9 @@
 
 <script src="/public/js/bed-types.js"></script>
 <script src="/public/js/multi-select.js"></script>
+<script src="/public/vendor/filepond/filepond.min.js"></script>
+<script src="/public/vendor/filepond-plugin-image-preview/filepond-plugin-image-preview.min.js"></script>
+<script src="/public/vendor/sortablejs/Sortable.min.js"></script>
 <script src="/public/js/admin-edit.js"></script>
 
 <%- include('../layouts/admin-footer') %>

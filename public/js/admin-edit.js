@@ -44,6 +44,24 @@ function updateImageOrderInput() {
   orderInput.value = ids.join(',');
 }
 
+function initializeImageSortable(grid) {
+  if (!grid || !window.Sortable) return;
+
+  window.Sortable.create(grid, {
+    animation: 150,
+    ghostClass: 'sortable-ghost',
+    chosenClass: 'sortable-chosen',
+    dragClass: 'sortable-drag',
+    dataIdAttr: 'data-image-id',
+    draggable: '.image-card[data-image-id]',
+    filter: '.delete-image-btn, .delete-marker',
+    preventOnFilter: true,
+    onEnd: () => {
+      updateImageOrderInput();
+    }
+  });
+}
+
 async function persistImageOrderViaApi() {
   const orderInput = document.getElementById('imageOrderInput');
   if (!orderInput || !orderInput.value.trim()) return;
@@ -160,6 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       pendingSubmitter = event.submitter || document.activeElement;
+
       event.preventDefault();
       updateImageOrderInput();
       await persistImageOrderViaApi();
@@ -186,74 +205,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const imagesGrid = document.getElementById('imagesGrid');
   if (imagesGrid) {
-    let draggedCard = null;
-
-    const cards = imagesGrid.querySelectorAll('.image-card');
-    cards.forEach((card) => {
-      card.addEventListener('dragstart', (event) => {
-        draggedCard = card;
-        event.dataTransfer.effectAllowed = 'move';
-        event.dataTransfer.setData('text/plain', card.getAttribute('data-image-id') || '');
-        card.style.opacity = '0.4';
-      });
-
-      card.addEventListener('dragend', () => {
-        card.style.opacity = '';
-        updateImageOrderInput();
-        draggedCard = null;
-      });
-
-      card.addEventListener('dragover', (event) => {
-        event.preventDefault();
-        if (!draggedCard || draggedCard === card) return;
-
-        const rect = card.getBoundingClientRect();
-        const shouldInsertAfter = event.clientY > rect.top + rect.height / 2;
-        if (shouldInsertAfter) {
-          if (card.nextSibling !== draggedCard) {
-            imagesGrid.insertBefore(draggedCard, card.nextSibling);
-          }
-        } else {
-          imagesGrid.insertBefore(draggedCard, card);
-        }
-      });
-
-      card.addEventListener('drop', (event) => {
-        event.preventDefault();
-        updateImageOrderInput();
-      });
-    });
-
-    imagesGrid.addEventListener('dragover', (event) => {
-      event.preventDefault();
-    });
-
-    imagesGrid.addEventListener('drop', (event) => {
-      event.preventDefault();
-      if (!draggedCard) return;
-
-      const targetCard = event.target.closest('.image-card');
-      if (!targetCard) {
-        imagesGrid.appendChild(draggedCard);
-      }
-
-      updateImageOrderInput();
-    });
-
+    initializeImageSortable(imagesGrid);
     updateImageOrderInput();
   }
 
-  // Update file label with selected file count
+  // FilePond upload queue
   const fileInput = document.getElementById('fileInput');
-  const fileLabel = document.querySelector('.file-input-label');
-  if (fileInput && fileLabel) {
-    fileInput.addEventListener('change', function(e) {
-      const count = this.files.length;
-      if (count > 0) {
-        fileLabel.innerHTML = `<i class="fas fa-check"></i> Выбрано ${count} файл(ов)`;
-      } else {
-        fileLabel.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Выбрать файлы';
-      }
+  let filePondInstance = null;
+
+  if (fileInput && window.FilePond) {
+    if (window.FilePondPluginImagePreview) {
+      window.FilePond.registerPlugin(window.FilePondPluginImagePreview);
+    }
+
+    filePondInstance = window.FilePond.create(fileInput, {
+      allowMultiple: true,
+      allowReorder: true,
+      instantUpload: false,
+      storeAsFile: true,
+      credits: false,
+      imagePreviewMaxHeight: 180,
+      labelIdle: 'Перетащите изображения сюда или нажмите, чтобы выбрать',
+      labelFileLoading: 'Загрузка...',
+      labelFileLoadError: 'Ошибка загрузки',
+      labelTapToCancel: 'Отменить',
+      labelTapToRetry: 'Повторить'
     });
   }
 

@@ -39,6 +39,7 @@
     "filepond": "^4.32.12",
     "filepond-plugin-image-preview": "^4.6.12",
     "sharp": "^0.34.5",
-    "slugify": "^1.6.9"
+    "slugify": "^1.6.9",
+    "sortablejs": "^1.15.7"
   }
 }
