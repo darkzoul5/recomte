@@ -470,11 +470,11 @@
     <% if (!isNew) { %>
       <button
         type="submit"
-        formaction="<%= caravan?.status === 'hidden' ? ('/admin/edit/' + caravan.id + '/relist?_csrf=' + encodeURIComponent(csrfToken || '')) : ('/admin/edit/' + caravan.id + '/delist?_csrf=' + encodeURIComponent(csrfToken || '')) %>"
-        class="button <%= caravan?.status === 'hidden' ? 'is-success' : 'is-warning' %>"
-        onclick="return confirm('<%= caravan?.status === 'hidden' ? 'Показать прицеп-дачу в листинге?' : 'Снять прицеп-дачу с публикации?' %>');"
+        formaction="<%= caravan && caravan.status === 'hidden' ? ('/admin/edit/' + caravan.id + '/relist?_csrf=' + encodeURIComponent(csrfToken || '')) : ('/admin/edit/' + caravan.id + '/delist?_csrf=' + encodeURIComponent(csrfToken || '')) %>"
+        class="button <%= caravan && caravan.status === 'hidden' ? 'is-success' : 'is-warning' %>"
+        onclick="return confirm('<%= caravan && caravan.status === 'hidden' ? 'Показать прицеп-дачу в листинге?' : 'Скрыть прицеп-дачу с публикации?' %>');"
       >
-        <i class="fas <%= caravan?.status === 'hidden' ? 'fa-eye' : 'fa-eye-slash' %> mr-2"></i><%= caravan?.status === 'hidden' ? 'Показать в листинге' : 'Снять с публикации' %>
+        <i class="fas <%= caravan?.status === 'hidden' ? 'fa-eye' : 'fa-eye-slash' %> mr-2"></i><%= caravan?.status === 'hidden' ? 'Показать' : 'Скрыть' %>
       </button>
     <% } %>
     <a href="/admin/dash" class="button is-light">Отмена</a>

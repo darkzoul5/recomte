@@ -9,6 +9,7 @@
     "dev": "NODE_ENV=development node scripts/start-all.js",
     "db:init": "node scripts/init-db.js",
     "db:seed": "node scripts/seed-db.js",
+    "migrate:images": "node scripts/migrate-images-backfill.js",
     "db:migrate:remove-car-max-mass": "node scripts/migrate-remove-tow-vehicle-max-mass.js",
     "admin:passwd": "node scripts/admin-password-reset.js",
     "test:auth-protection": "node scripts/tests/test-auth-protection.js",

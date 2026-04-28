@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { images } from '../../db/db.js';
+import { images, caravans } from '../../db/db.js';
 
 export const parseMultipartForm = async (request) => {
   const formData = {};
@@ -42,10 +42,28 @@ export const handleImageUploads = (caravanId, uploadedFiles, rootDir, logger) =>
     return;
   }
 
-  const imagesDir = path.join(rootDir, 'public', 'images', 'caravans', String(caravanId));
+  // Resolve caravan slug (fallback to id if missing)
+  let slug = `caravan-${caravanId}`;
+  try {
+    const caravan = caravans.getById(caravanId);
+    if (caravan && caravan.slug) slug = String(caravan.slug);
+  } catch (e) {
+    // ignore and fallback to id-based slug
+  }
+
+  const imagesDir = path.join(rootDir, 'public', 'images', 'caravans', slug);
   if (!fs.existsSync(imagesDir)) {
     fs.mkdirSync(imagesDir, { recursive: true });
   }
+
+  // Start numbering from existing images count + 1
+  let existing = [];
+  try {
+    existing = images.getByCaravanId(caravanId) || [];
+  } catch (_) {
+    existing = [];
+  }
+  let counter = existing.length;
 
   for (const fileData of uploadedFiles) {
     try {
@@ -53,15 +71,14 @@ export const handleImageUploads = (caravanId, uploadedFiles, rootDir, logger) =>
         continue;
       }
 
-      const ext = path.extname(fileData.filename);
-      const baseName = path.basename(fileData.filename, ext);
-      const sanitized = baseName.replace(/[^a-zA-Z0-9_-]/g, '-').replace(/-+/g, '-');
-      const fileName = `caravan-${caravanId}-${sanitized}-${Date.now()}${ext}`;
+      counter += 1;
+      const ext = path.extname(fileData.filename).toLowerCase();
+      const fileName = `${slug}-image-${counter}${ext}`;
       const filePath = path.join(imagesDir, fileName);
 
       fs.writeFileSync(filePath, fileData.buffer);
 
-      const imageUrl = `/public/images/caravans/${caravanId}/${fileName}`;
+      const imageUrl = `/public/images/caravans/${slug}/${fileName}`;
       images.create(caravanId, imageUrl, fileData.filename, 0);
     } catch (error) {
       logger.error(`Image upload failed for file ${fileData.filename}: ${error.message}`);
