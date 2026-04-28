@@ -4,6 +4,7 @@ import fastifySession from '@fastify/session';
 import fastifyStatic from '@fastify/static';
 import fastifyFormbody from '@fastify/formbody';
 import fastifyMultipart from '@fastify/multipart';
+import fastifyCompress from '@fastify/compress';
 import path from 'path';
 import { getDb } from '../../db/db.js';
 
@@ -102,6 +103,10 @@ const getSessionSecret = () => {
 };
 
 export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = false }) => {
+  await fastify.register(fastifyCompress, {
+    threshold: 1024,
+    encodings: ['gzip', 'deflate']
+  });
   await fastify.register(fastifyCookie);
   await fastify.register(fastifyFormbody);
   await fastify.register(fastifyMultipart, {
@@ -181,7 +186,19 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
 
   await fastify.register(fastifyStatic, {
     root: path.join(rootDir, 'public'),
-    prefix: '/public/'
+    prefix: '/public/',
+    setHeaders: (reply, pathName) => {
+      // Long-lived cache for images, fonts, and other versioned assets
+      if (/\.(jpg|jpeg|png|gif|webp|woff|woff2|ttf|eot|svg)$/i.test(pathName)) {
+        reply.header('Cache-Control', 'public, max-age=31536000, immutable');
+      } else if (/\.(css|js)$/i.test(pathName)) {
+        // Cache CSS/JS for 1 year (assumes they're versioned)
+        reply.header('Cache-Control', 'public, max-age=31536000, immutable');
+      } else {
+        // HTML and other files: shorter cache with revalidation
+        reply.header('Cache-Control', 'public, max-age=3600, must-revalidate');
+      }
+    }
   });
 
   const fastifyView = (await import('@fastify/view')).default;
