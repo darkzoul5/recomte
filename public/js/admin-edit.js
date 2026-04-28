@@ -203,6 +203,19 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
+  document.addEventListener('click', (event) => {
+    const confirmButton = event.target.closest('[data-confirm]');
+    if (!confirmButton) return;
+
+    const message = confirmButton.getAttribute('data-confirm') || '';
+    if (!message) return;
+
+    if (!window.confirm(message)) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }, true);
+
   const imagesGrid = document.getElementById('imagesGrid');
   if (imagesGrid) {
     initializeImageSortable(imagesGrid);

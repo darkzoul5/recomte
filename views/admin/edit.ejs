@@ -474,7 +474,7 @@
         type="submit"
         formaction="<%= caravan && caravan.status === 'hidden' ? ('/admin/edit/' + caravan.id + '/relist?_csrf=' + encodeURIComponent(csrfToken || '')) : ('/admin/edit/' + caravan.id + '/delist?_csrf=' + encodeURIComponent(csrfToken || '')) %>"
         class="button <%= caravan && caravan.status === 'hidden' ? 'is-success' : 'is-warning' %>"
-        onclick="return confirm('<%= caravan && caravan.status === 'hidden' ? 'Показать прицеп-дачу в листинге?' : 'Скрыть прицеп-дачу с публикации?' %>');"
+        data-confirm="<%= caravan && caravan.status === 'hidden' ? 'Показать прицеп-дачу в листинге?' : 'Скрыть прицеп-дачу с публикации?' %>"
       >
         <i class="fas <%= caravan?.status === 'hidden' ? 'fa-eye' : 'fa-eye-slash' %> mr-2"></i><%= caravan?.status === 'hidden' ? 'Показать' : 'Скрыть' %>
       </button>

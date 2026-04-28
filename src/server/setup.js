@@ -133,12 +133,13 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
 
   const cspHeader = [
     "default-src 'self'",
-    "img-src 'self' https: data:",
+    "img-src 'self' https: data: blob:",
     "style-src 'self' 'unsafe-inline' https:",
     "script-src 'self' https:",
+    "worker-src 'self' blob: https:",
     "font-src 'self' https: data:",
     "frame-src 'self' https://www.openstreetmap.org https://*.openstreetmap.org",
-    "child-src 'self' https://www.openstreetmap.org https://*.openstreetmap.org",
+    "child-src 'self' blob: https://www.openstreetmap.org https://*.openstreetmap.org",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
