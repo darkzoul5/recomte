@@ -188,12 +188,15 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     root: path.join(rootDir, 'public'),
     prefix: '/public/',
     setHeaders: (reply, pathName) => {
-      // Long-lived cache for images, fonts, and other versioned assets
-      if (/\.(jpg|jpeg|png|gif|webp|woff|woff2|ttf|eot|svg)$/i.test(pathName)) {
+      // Cache images for 7 days (can be updated by changing file)
+      if (/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(pathName)) {
+        reply.header('Cache-Control', 'public, max-age=604800');
+      } else if (/\.(woff|woff2|ttf|eot)$/i.test(pathName)) {
+        // Fonts: 1 year (rarely change)
         reply.header('Cache-Control', 'public, max-age=31536000, immutable');
       } else if (/\.(css|js)$/i.test(pathName)) {
-        // Cache CSS/JS for 1 year (assumes they're versioned)
-        reply.header('Cache-Control', 'public, max-age=31536000, immutable');
+        // Cache CSS/JS for 1 hour (not versioned, changes should deploy quickly)
+        reply.header('Cache-Control', 'public, max-age=3600, must-revalidate');
       } else {
         // HTML and other files: shorter cache with revalidation
         reply.header('Cache-Control', 'public, max-age=3600, must-revalidate');
