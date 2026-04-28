@@ -24,7 +24,7 @@ Goal: Move the project from functional to professional production quality.
 1. Improve branding consistency (typography, spacing, visual hierarchy, consistent component style).
 2. Add SEO metadata per page (description, OpenGraph, canonical, structured data).
 3. DONE Remove global noindex behavior from public pages in production.
-4. Add trust-building sections (reviews, warranty, delivery, financing, inspection process).
+4. Add trust-building sections (warranty, delivery, financing, inspection process).
 5. Add catalogue filtering, sorting, and pagination UX.
 
 ## 4. Auth and Security Hardening
