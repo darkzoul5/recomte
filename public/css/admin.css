@@ -129,6 +129,45 @@
   pointer-events: none;
 }
 
+/* Image grid cards */
+.image-card {
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  overflow: hidden;
+  display: block;
+  border-radius: 6px;
+}
+
+/* Drag handle - small grip icon overlay */
+.image-card .drag-handle {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  border: none;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: grab;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-card .drag-handle:active {
+  cursor: grabbing;
+}
+
+/* SortableJS classes */
+.sortable-ghost {
+  opacity: 0.6;
+  transform: scale(0.98);
+}
+.sortable-chosen {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+}
+
 .admin-table td {
   padding: 1rem !important;
   vertical-align: middle;

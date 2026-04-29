@@ -54,6 +54,7 @@ function initializeImageSortable(grid) {
     dragClass: 'sortable-drag',
     dataIdAttr: 'data-image-id',
     draggable: '.image-card[data-image-id]',
+    handle: '.drag-handle',
     filter: '.delete-image-btn, .delete-marker',
     preventOnFilter: true,
     onEnd: () => {

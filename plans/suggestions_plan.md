@@ -14,7 +14,7 @@ Goal: Move the project from functional to professional production quality.
 
 ## 2. Admin UI Improvements
 
-1. DONE Split large admin-app.js into smaller modules (auth routes, page routes, upload service,CSRF and session).
+1. DONE Split large admin-app.js into smaller modules (auth routes, page routes, upload service, CSRF and session).
 2. Add field-level validation messages on admin edit/create forms.
 3. DONE Add unsaved changes warning for long edit forms. add a button to hide/delist caravans on edit page
 4. Add admin audit log (who changed what, when).
