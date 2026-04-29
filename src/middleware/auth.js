@@ -118,13 +118,18 @@ export const ensureInitialAdminUser = async () => {
 export const verifyAdminCredentials = async (username, password) => {
   const login = normalize(username);
   if (!login || typeof password !== 'string' || !password) {
-    return false;
+    return null;
   }
 
   const adminUser = adminUsers.getByUsername(login);
   if (!adminUser?.password_hash) {
-    return false;
+    return null;
   }
 
-  return argon2.verify(adminUser.password_hash, password);
+  try {
+    const ok = await argon2.verify(adminUser.password_hash, password);
+    return ok ? adminUser : null;
+  } catch {
+    return null;
+  }
 };

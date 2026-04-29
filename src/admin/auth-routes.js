@@ -156,13 +156,16 @@ const regenerateSession = (request) => new Promise((resolve, reject) => {
 });
 
 const destroySession = (request) => new Promise((resolve, reject) => {
+  // Clear admin markers in case session methods are not available or before destroying
+  try { clearAdminSession(request); } catch (e) {}
+
   if (!request.session || typeof request.session.destroy !== 'function') {
-    clearAdminSession(request);
     resolve();
     return;
   }
 
   request.session.destroy((error) => {
+    try { clearAdminSession(request); } catch (e) {}
     if (error) {
       reject(error);
       return;
@@ -196,10 +199,12 @@ export default async function registerAdminAuthRoutes(fastify) {
     }
 
     try {
-      if (await verifyAdminCredentials(username, password)) {
+      const adminUser = await verifyAdminCredentials(username, password);
+      if (adminUser) {
         resetLoginAttempts(username, getClientIp(request));
         await regenerateSession(request);
-        setAdminSession(request, username);
+        // store numeric admin id in session for better security
+        setAdminSession(request, adminUser.id);
         return reply.redirect('/admin/dash');
       }
 
@@ -218,7 +223,18 @@ export default async function registerAdminAuthRoutes(fastify) {
       return reply.send({ error: 'Invalid CSRF token' });
     }
 
-    await destroySession(request);
+    try {
+      // clear any admin markers on the session and remove persisted session
+      await destroySession(request);
+
+      // attempt to clear common session cookie names to remove client cookie
+      try { reply.clearCookie('session'); } catch (e) {}
+      try { reply.clearCookie('sessionId'); } catch (e) {}
+      try { reply.clearCookie('connect.sid'); } catch (e) {}
+    } catch (err) {
+      fastify.log.error('Error destroying session during logout', err);
+    }
+
     return reply.redirect('/admin/login');
   });
 }
