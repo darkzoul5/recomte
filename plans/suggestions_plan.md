@@ -29,8 +29,8 @@ Goal: Move the project from functional to professional production quality.
 
 ## 4. Auth and Security Hardening
 
-1. Regenerate session after login and fully destroy on logout.
-2. Store numeric admin ID in session instead of username.
+1. DONE Regenerate session after login and fully destroy on logout.
+2. DONE Store numeric admin ID in session instead of username.
 3. Add stronger password policy and optional 2FA support for admin.
 4. Harden file upload validation (mime, extension, dimensions, limits, sanitization).
 
@@ -48,7 +48,7 @@ Goal: Move the project from functional to professional production quality.
 2. Add linting and formatting standards with pre-commit hooks.
 3. Add CI pipeline for lint, test, and build checks.
 4. Add structured logging and error monitoring.
-5. Add env validation at startup and fail-fast on missing required variables.
+5. DONE Add env validation at startup and fail-fast on missing required variables.
 
 ## 7. High-Value New Features
 
