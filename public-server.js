@@ -6,6 +6,7 @@ import { initDb, closeDb } from './db/db.js';
 import { createServer, registerCommonPlugins } from './src/server/setup.js';
 import publicPagesRoutes from './src/routes/public-pages.js';
 import caravansRoutes from './src/routes/caravans.js';
+import sitemapRoutes from './src/routes/sitemap.js';
 
 dotenv.config({ override: false });
 
@@ -30,6 +31,7 @@ const fastify = createServer();
 
     await fastify.register(caravansRoutes);
     await fastify.register(publicPagesRoutes);
+    await fastify.register(sitemapRoutes);
 
     fastify.get('*', async (request, reply) => {
       return reply.code(404).view('404');
