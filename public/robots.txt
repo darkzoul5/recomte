@@ -1,0 +1,58 @@
+# Robots.txt - recomte.ru
+# Allows search engines to crawl public content
+# Disallows admin, API, and sensitive paths
+
+# Allow all good bots
+User-agent: *
+Allow: /
+
+# Disallow admin and API endpoints
+Disallow: /admin/
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /healthcheck
+
+# Disallow common sensitive paths
+Disallow: /private/
+Disallow: /uploads/
+Disallow: /.env
+Disallow: /config/
+
+# Crawl-delay to be respectful
+Crawl-delay: 1
+
+# Sitemap reference
+Sitemap: https://recomte.ru/sitemap.xml
+
+# Specific directives for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0.5
+Disallow: /admin/
+Disallow: /api/
+Disallow: /healthcheck
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+Disallow: /admin/
+Disallow: /api/
+Disallow: /healthcheck
+
+# Yandex - primary search engine for Russian market
+User-agent: Yandex
+Allow: /
+Crawl-delay: 0.5
+Disallow: /admin/
+Disallow: /api/
+Disallow: /healthcheck
+
+# Block bad bots
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /

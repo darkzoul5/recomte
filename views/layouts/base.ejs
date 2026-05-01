@@ -3,9 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/svg+xml" href="/public/favicon.svg">
-  <title>recomte.ru | <%= title %></title>
   
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="<%= description || 'Recomte - Европейские прицепы-дачи. Продажа качественных караванов из Европы. Большой выбор моделей с доставкой.' %>">
+  <meta name="keywords" content="<%= keywords || 'караван, прицеп-дача, европейские караваны, кемпер, дачный прицеп' %>">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="robots" content="<%= noindex ? 'noindex' : 'index' %>, follow">
+  
+  <!-- Language -->
+  <meta http-equiv="content-language" content="ru-RU">
+  <link rel="alternate" hreflang="ru" href="https://recomte.ru<%= currentPath || '/' %>">
+  
+  <!-- Yandex Verification (add your verification code) -->
+  <!-- <meta name="yandex-verification" content="YOUR_YANDEX_CODE"> -->
+  
+  <!-- Google Verification (if needed) -->
+  <!-- <meta name="google-site-verification" content="YOUR_GOOGLE_CODE"> -->
+  
+  <!-- Canonical URL -->
+  <meta property="og:url" content="https://recomte.ru<%= currentPath || '/' %>">
+  <link rel="canonical" href="https://recomte.ru<%= currentPath || '/' %>">
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="<%= title %> - Recomte">
+  <meta property="og:description" content="<%= description || 'Европейские караваны и прицепы-дачи' %>">
+  <meta property="og:image" content="<%= ogImage || 'https://recomte.ru/public/og-image.jpg' %>">
+  <meta property="og:site_name" content="Recomte">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= title %> - Recomte">
+  <meta name="twitter:description" content="<%= description || 'Европейские караваны' %>">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/public/favicon.svg">
+  <title>Recomte | <%= title %></title>
+  
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="/public/css/bulma.css">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
