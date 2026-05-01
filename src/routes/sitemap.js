@@ -14,7 +14,7 @@ export default async function sitemapRoutes(fastify) {
     try {
       const robotsPath = path.join(__dirname, '../../public/robots.txt');
       const robotsContent = fs.readFileSync(robotsPath, 'utf-8');
-      reply.type('text/plain');
+      reply.type('text/plain; charset=utf-8');
       reply.header('Cache-Control', 'public, max-age=604800'); // 7 days
       return reply.send(robotsContent);
     } catch (error) {
