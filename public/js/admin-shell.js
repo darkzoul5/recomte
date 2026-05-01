@@ -14,4 +14,19 @@ document.addEventListener('DOMContentLoaded', () => {
       event.target.closest('.error-message, .admin-error')?.remove();
     });
   });
+
+  const passwordInput = document.getElementById('admin-password');
+  const capsLockHint = document.getElementById('caps-lock-hint');
+  if (passwordInput && capsLockHint) {
+    const updateCapsLockHint = (event) => {
+      const isCapsLockOn = event.getModifierState?.('CapsLock') || false;
+      capsLockHint.hidden = !isCapsLockOn;
+    };
+
+    passwordInput.addEventListener('keydown', updateCapsLockHint);
+    passwordInput.addEventListener('keyup', updateCapsLockHint);
+    passwordInput.addEventListener('blur', () => {
+      capsLockHint.hidden = true;
+    });
+  }
 });

@@ -62,8 +62,10 @@
             <input 
               class="input" 
               type="password" 
+              id="admin-password"
               name="password" 
               placeholder="Введите пароль" 
+              aria-describedby="caps-lock-hint"
               required 
               <%= username ? 'autofocus' : '' %>
             >
@@ -71,6 +73,10 @@
               <i class="fas fa-key"></i>
             </span>
           </div>
+          <p id="caps-lock-hint" class="caps-lock-hint" hidden>
+            <i class="fas fa-triangle-exclamation"></i>
+            <span>Caps Lock включен</span>
+          </p>
         </div>
 
         <button type="submit" class="login-button">

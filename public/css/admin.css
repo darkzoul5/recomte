@@ -530,6 +530,20 @@ body {
   color: #b5b5b5;
 }
 
+.caps-lock-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  color: #8a5a00;
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+.caps-lock-hint[hidden] {
+  display: none;
+}
+
 .control.has-icons-left .icon {
   left: 1rem;
   color: #667eea;

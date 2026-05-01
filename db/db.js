@@ -521,6 +521,19 @@ export const adminUsers = {
     return result[0] || null;
   },
 
+  getById: (id) => {
+    if (!Number.isInteger(id) || id <= 0) {
+      return null;
+    }
+
+    const result = query(
+      'SELECT id, username, password_hash, created_at, updated_at FROM admin_users WHERE id = ? LIMIT 1',
+      [id]
+    );
+
+    return result[0] || null;
+  },
+
   create: (username, passwordHash) => {
     if (typeof username !== 'string' || !username.trim()) {
       throw new Error('Username is required');

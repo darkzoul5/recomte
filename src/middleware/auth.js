@@ -7,25 +7,44 @@ const CSRF_FORM_FIELD = '_csrf';
 const CSRF_HEADER_NAME = 'x-csrf-token';
 
 export const isAdmin = async (request, reply) => {
-  const session = request.session;
-  
-  if (!session.adminId) {
+  if (!isAdminSessionValid(request)) {
+    clearAdminSession(request);
     return reply.status(401).send({ error: 'Unauthorized' });
   }
 };
 
-export const setAdminSession = (request, adminId) => {
-  request.session.adminId = adminId;
+export const setAdminSession = (request, adminUser) => {
+  request.session.adminId = adminUser.id;
   request.session.adminLoginTime = Date.now();
+  request.session.adminPasswordUpdatedAt = adminUser.updated_at || null;
 };
 
 export const clearAdminSession = (request) => {
+  if (!request.session) {
+    return;
+  }
+
   delete request.session.adminId;
   delete request.session.adminLoginTime;
+  delete request.session.adminPasswordUpdatedAt;
 };
 
 export const isAdminLoggedIn = (request) => {
-  return !!request.session.adminId;
+  return isAdminSessionValid(request);
+};
+
+export const isAdminSessionValid = (request) => {
+  const adminId = request.session?.adminId;
+  if (!Number.isInteger(adminId) || adminId <= 0) {
+    return false;
+  }
+
+  const adminUser = adminUsers.getById(adminId);
+  if (!adminUser) {
+    return false;
+  }
+
+  return request.session.adminPasswordUpdatedAt === (adminUser.updated_at || null);
 };
 
 const normalizeToken = (token) => {

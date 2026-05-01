@@ -214,7 +214,7 @@ export default async function registerAdminAuthRoutes(fastify) {
         resetLoginAttempts(username, getClientIp(request));
         await regenerateSession(request);
         // store numeric admin id in session for better security
-        setAdminSession(request, adminUser.id);
+        setAdminSession(request, adminUser);
         return reply.redirect('/admin/dash');
       }
 

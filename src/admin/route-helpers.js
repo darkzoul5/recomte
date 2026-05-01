@@ -1,4 +1,9 @@
-import { getCsrfTokenFromRequest, verifyCsrfToken } from '../middleware/auth.js';
+import {
+  clearAdminSession,
+  getCsrfTokenFromRequest,
+  isAdminSessionValid,
+  verifyCsrfToken
+} from '../middleware/auth.js';
 
 export const rejectInvalidCsrf = (request, reply, bodyOverride = null) => {
   const candidateToken = getCsrfTokenFromRequest(request, bodyOverride);
@@ -11,18 +16,20 @@ export const rejectInvalidCsrf = (request, reply, bodyOverride = null) => {
 };
 
 export const requireAdminSession = (request, reply) => {
-  if (request.session && request.session.adminId) {
+  if (isAdminSessionValid(request)) {
     return true;
   }
 
+  clearAdminSession(request);
   reply.redirect('/admin/login');
   return false;
 };
 
 export const redirectByAdminSession = (request, reply) => {
-  if (request.session && request.session.adminId) {
+  if (isAdminSessionValid(request)) {
     return reply.redirect('/admin/dash');
   }
 
+  clearAdminSession(request);
   return reply.redirect('/admin/login');
 };
