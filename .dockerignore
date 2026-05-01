@@ -12,6 +12,7 @@ old/
 *.md
 .gitea/
 data/
+public/images/caravans
 .github/
 .eslintrc*
 .prettierrc*
