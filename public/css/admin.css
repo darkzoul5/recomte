@@ -2,7 +2,7 @@
 
 /* Admin page background */
 .admin-page {
-  background: url('/public/top-image.jpg') center/cover fixed;
+  background: url('/public/images/top-image.jpg') center/cover fixed;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -12,7 +12,7 @@
 .admin-section {
   flex: 1;
   padding: 2rem 0;
-  background: url('/public/top-image.jpg') center/cover no-repeat fixed;
+  background: url('/public/images/top-image.jpg') center/cover no-repeat fixed;
 }
 
 .admin-section .container {
@@ -446,7 +446,7 @@ html, body {
 body {
   display: flex;
   flex-direction: column;
-  background: url('/public/top-image.jpg') center/cover fixed;
+  background: url('/public/images/top-image.jpg') center/cover fixed;
 }
 
 .admin-login-container {
