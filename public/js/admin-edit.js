@@ -63,29 +63,6 @@ function initializeImageSortable(grid) {
   });
 }
 
-async function persistImageOrderViaApi() {
-  const orderInput = document.getElementById('imageOrderInput');
-  if (!orderInput || !orderInput.value.trim()) return;
-
-  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-
-  const ids = orderInput.value
-    .split(',')
-    .map((value) => parseInt(value, 10))
-    .filter((value) => Number.isInteger(value) && value > 0);
-
-  await Promise.all(ids.map((imageId, index) =>
-    fetch(`/admin/api/images/${imageId}/reorder`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken
-      },
-      body: JSON.stringify({ sort_order: index })
-    }).catch(() => null)
-  ));
-}
-
 // Initialize event listeners when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
   // Restore scroll position from localStorage
@@ -98,10 +75,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // Save scroll position before form submission
   const adminForm = document.querySelector('.admin-form');
   if (adminForm) {
-    let isSubmittingAfterReorder = false;
     let isSubmitting = false;
     let hasUnsavedChanges = false;
-    let pendingSubmitter = null;
 
     const getFormSnapshot = () => {
       const state = {};
@@ -171,27 +146,10 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }, true);
 
-    adminForm.addEventListener('submit', async function(event) {
-      if (isSubmittingAfterReorder) {
-        localStorage.setItem('adminEditScrollPosition', window.scrollY);
-        isSubmitting = true;
-        return;
-      }
-
-      pendingSubmitter = event.submitter || document.activeElement;
-
-      event.preventDefault();
+    adminForm.addEventListener('submit', function() {
       updateImageOrderInput();
-      await persistImageOrderViaApi();
       localStorage.setItem('adminEditScrollPosition', window.scrollY);
       isSubmitting = true;
-
-      isSubmittingAfterReorder = true;
-      if (pendingSubmitter && pendingSubmitter.form === adminForm && pendingSubmitter.type === 'submit') {
-        adminForm.requestSubmit(pendingSubmitter);
-      } else {
-        adminForm.requestSubmit();
-      }
     });
   }
 

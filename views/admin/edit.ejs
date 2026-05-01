@@ -25,7 +25,7 @@
   </div>
 <% } %>
 
-<form method="POST" action="<%= (isNew ? '/admin/new' : '/admin/edit/' + caravan.id) + '?_csrf=' + encodeURIComponent(csrfToken || '') %>" class="admin-form admin-form--sticky-actions" enctype="multipart/form-data">
+<form method="POST" action="<%= isNew ? '/admin/new' : '/admin/edit/' + caravan.id %>" class="admin-form admin-form--sticky-actions" enctype="multipart/form-data">
   <input type="hidden" name="_csrf" value="<%= csrfToken || '' %>">
   <div class="form-section">
     <h3><i class="fas fa-info-circle"></i> Основная информация</h3>
@@ -465,7 +465,7 @@
     <div class="form-row">
       <div class="form-group" style="grid-column: 1 / -1;">
         <label>Добавить изображения</label>
-        <input type="file" id="fileInput" name="images" multiple accept="image/*">
+        <input type="file" id="fileInput" name="images" multiple accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
       </div>
     </div>
   </div>
@@ -475,7 +475,7 @@
     <% if (!isNew) { %>
       <button
         type="submit"
-        formaction="<%= caravan && caravan.status === 'hidden' ? ('/admin/edit/' + caravan.id + '/relist?_csrf=' + encodeURIComponent(csrfToken || '')) : ('/admin/edit/' + caravan.id + '/delist?_csrf=' + encodeURIComponent(csrfToken || '')) %>"
+        form="listingActionForm"
         class="button <%= caravan && caravan.status === 'hidden' ? 'is-success' : 'is-warning' %>"
         data-confirm="<%= caravan && caravan.status === 'hidden' ? 'Показать прицеп-дачу в листинге?' : 'Скрыть прицеп-дачу с публикации?' %>"
       >
@@ -485,6 +485,17 @@
     <a href="/admin/dash" class="button is-light">Отмена</a>
   </div>
 </form>
+
+<% if (!isNew) { %>
+  <form
+    id="listingActionForm"
+    method="POST"
+    action="<%= caravan && caravan.status === 'hidden' ? ('/admin/edit/' + caravan.id + '/relist') : ('/admin/edit/' + caravan.id + '/delist') %>"
+    hidden
+  >
+    <input type="hidden" name="_csrf" value="<%= csrfToken || '' %>">
+  </form>
+<% } %>
 
 <script src="/public/js/bed-types.js"></script>
 <script src="/public/js/multi-select.js"></script>

@@ -3,6 +3,17 @@ import fs from 'fs';
 import sharp from 'sharp';
 import { images, caravans } from '../../db/db.js';
 
+const ALLOWED_IMAGE_MIME_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp'
+]);
+
+const isAllowedImageMimeType = (mimetype) => {
+  if (typeof mimetype !== 'string') return false;
+  return ALLOWED_IMAGE_MIME_TYPES.has(mimetype.toLowerCase());
+};
+
 const resolveCaravanSlug = (caravanId) => {
   let slug = `caravan-${caravanId}`;
   try {
@@ -23,9 +34,13 @@ const ensureImagesDir = (rootDir, slug) => {
   return imagesDir;
 };
 
-export const saveCaravanImageAsWebp = async ({ caravanId, fileBuffer, originalFilename, rootDir, logger }) => {
+export const saveCaravanImageAsWebp = async ({ caravanId, fileBuffer, originalFilename, mimetype, rootDir, logger }) => {
   if (!Number.isInteger(caravanId) || caravanId <= 0) {
     throw new Error('Invalid caravan ID');
+  }
+
+  if (!isAllowedImageMimeType(mimetype)) {
+    throw new Error('Unsupported image type');
   }
 
   if (!fileBuffer || fileBuffer.length === 0) {
@@ -72,6 +87,11 @@ export const parseMultipartForm = async (request) => {
       }
     } else if (part.type === 'file') {
       if (part.fieldname === 'images') {
+        if (!isAllowedImageMimeType(part.mimetype)) {
+          part.file.resume();
+          continue;
+        }
+
         const buffer = await part.toBuffer();
         if (buffer && buffer.length > 0) {
           uploadedFiles.push({
@@ -100,6 +120,7 @@ export const handleImageUploads = async (caravanId, uploadedFiles, rootDir, logg
         caravanId,
         fileBuffer: fileData.buffer,
         originalFilename: fileData.filename,
+        mimetype: fileData.mimetype,
         rootDir,
         logger
       });

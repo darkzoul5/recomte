@@ -192,6 +192,25 @@ const renderEditPage = async (request, reply, title, caravan, isNew, error) => r
   csrfToken: ensureCsrfToken(request)
 });
 
+const applyImageOrder = (caravanId, imageOrder) => {
+  if (!imageOrder) return;
+
+  const requestedIds = String(imageOrder)
+    .split(',')
+    .map((value) => parseInt(value, 10))
+    .filter((value) => Number.isInteger(value) && value > 0);
+
+  if (requestedIds.length === 0) return;
+
+  const validImageIds = new Set(images.getByCaravanId(caravanId).map((image) => image.id));
+
+  requestedIds.forEach((imageId, index) => {
+    if (validImageIds.has(imageId)) {
+      images.reorder(imageId, index);
+    }
+  });
+};
+
 export default async function registerAdminPageRoutes(fastify, options = {}) {
   const { rootDir } = options;
 
@@ -291,18 +310,6 @@ export default async function registerAdminPageRoutes(fastify, options = {}) {
     if (!requireAdminSession(request, reply)) {
       return;
     }
-
-    if (rejectInvalidCsrf(request, reply, { _csrf: request.query?._csrf })) {
-      return renderEditPage(request, reply, 'Добавить', {
-        title: '',
-        slug: '',
-        price: 0,
-        status: 'available',
-        featured: 0,
-        images: []
-      }, true, 'Недействительный токен безопасности. Обновите страницу и попробуйте снова.');
-    }
-
     try {
       const { formData, uploadedFiles } = await parseMultipartForm(request);
 
@@ -351,11 +358,6 @@ export default async function registerAdminPageRoutes(fastify, options = {}) {
     if (!requireAdminSession(request, reply)) {
       return;
     }
-
-    if (rejectInvalidCsrf(request, reply, { _csrf: request.query?._csrf })) {
-      return reply.code(403).send({ message: 'Invalid CSRF token' });
-    }
-
     try {
       const { id } = request.params;
       const caravan = caravans.getById(parseInt(id));
@@ -392,6 +394,8 @@ export default async function registerAdminPageRoutes(fastify, options = {}) {
         }
       }
 
+      applyImageOrder(parseInt(id), formData.image_order);
+
       await handleImageUploads(parseInt(id), uploadedFiles, rootDir, fastify.log);
 
       return reply.redirect(`/admin/edit/${id}`);
@@ -422,7 +426,7 @@ export default async function registerAdminPageRoutes(fastify, options = {}) {
       return;
     }
 
-    if (rejectInvalidCsrf(request, reply, { _csrf: request.query?._csrf })) {
+    if (rejectInvalidCsrf(request, reply)) {
       return reply.code(403).send({ message: 'Invalid CSRF token' });
     }
 
@@ -451,7 +455,7 @@ export default async function registerAdminPageRoutes(fastify, options = {}) {
       return;
     }
 
-    if (rejectInvalidCsrf(request, reply, { _csrf: request.query?._csrf })) {
+    if (rejectInvalidCsrf(request, reply)) {
       return reply.code(403).send({ message: 'Invalid CSRF token' });
     }
 
