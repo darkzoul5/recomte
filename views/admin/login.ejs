@@ -46,7 +46,7 @@
               placeholder="Введите username" 
               value="<%= username || '' %>"
               required 
-              autofocus
+              <%= username ? '' : 'autofocus' %>
             >
             <span class="icon is-small is-left">
               <i class="fas fa-user"></i>
@@ -65,6 +65,7 @@
               name="password" 
               placeholder="Введите пароль" 
               required 
+              <%= username ? 'autofocus' : '' %>
             >
             <span class="icon is-small is-left">
               <i class="fas fa-key"></i>
