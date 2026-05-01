@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { REQUIRED_TABLES } from '../db/schema.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dbPath = process.env.DB_PATH || './data/app.db';
@@ -14,8 +15,7 @@ try {
     "SELECT name FROM sqlite_master WHERE type='table'"
   ).all().map(row => row.name);
   
-  const requiredTables = ['caravans', 'images', 'caravan_features'];
-  const missingTables = requiredTables.filter(t => !tables.includes(t));
+  const missingTables = REQUIRED_TABLES.filter(t => !tables.includes(t));
   
   db.close();
   

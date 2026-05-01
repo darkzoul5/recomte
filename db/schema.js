@@ -142,3 +142,29 @@ CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at);
 
   return schema;
 };
+
+export const REQUIRED_TABLES = [
+  'caravans',
+  'images',
+  'caravan_features',
+  'admin_users',
+  'sessions'
+];
+
+export const applySchema = (db) => {
+  const statements = createSchema()
+    .split(';')
+    .map(s => s.trim())
+    .filter(s => s.length > 0);
+
+  statements.forEach(statement => {
+    try {
+      db.exec(statement);
+    } catch (e) {
+      // Silently ignore if table/index already exists
+      if (!e.message.includes('already exists')) {
+        console.error('Schema error:', e);
+      }
+    }
+  });
+};

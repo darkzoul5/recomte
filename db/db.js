@@ -2,7 +2,7 @@ import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createSchema } from './schema.js';
+import { applySchema } from './schema.js';
 import {
   validateColumnName,
   validateCaravanData,
@@ -36,23 +36,7 @@ export const initDb = () => {
     db.pragma('foreign_keys = ON');
     db.pragma('journal_mode = WAL');
 
-    // Create schema
-    const schema = createSchema();
-    const statements = schema
-      .split(';')
-      .map(s => s.trim())
-      .filter(s => s.length > 0);
-
-    statements.forEach(statement => {
-      try {
-        db.exec(statement);
-      } catch (e) {
-        // Silently ignore if table/index already exists
-        if (!e.message.includes('already exists')) {
-          console.error('Schema error:', e);
-        }
-      }
-    });
+    applySchema(db);
 
 
     console.log(`✓ Database initialized at ${DB_PATH}`);
