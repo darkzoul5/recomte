@@ -94,25 +94,47 @@ const normalize = (value) => {
 };
 
 export const ensureInitialAdminUser = async () => {
-  if (adminUsers.exists()) {
-    return { created: false };
-  }
-
   const username = normalize(process.env.ADMIN_USERNAME);
   const password = process.env.ADMIN_PASSWORD;
 
   if (!username) {
-    throw new Error('ADMIN_USERNAME is required when no admin users exist');
+    throw new Error('ADMIN_USERNAME is required to configure the admin user');
   }
 
   if (!password) {
-    throw new Error('No admin users exist. Set ADMIN_PASSWORD to create the initial admin user');
+    throw new Error('ADMIN_PASSWORD is required to configure the admin user');
+  }
+
+  const existingUser = adminUsers.getByUsername(username);
+  if (existingUser?.password_hash) {
+    let passwordMatches = false;
+    try {
+      passwordMatches = await argon2.verify(existingUser.password_hash, password);
+    } catch {
+      passwordMatches = false;
+    }
+
+    if (passwordMatches) {
+      return { created: false, updated: false, username };
+    }
+
+    const passwordHash = await argon2.hash(password);
+    adminUsers.updatePasswordHash(username, passwordHash);
+
+    return { created: false, updated: true, username };
+  }
+
+  if (adminUsers.exists()) {
+    const passwordHash = await argon2.hash(password);
+    adminUsers.create(username, passwordHash);
+
+    return { created: true, updated: false, username };
   }
 
   const passwordHash = await argon2.hash(password);
   adminUsers.create(username, passwordHash);
 
-  return { created: true, username };
+  return { created: true, updated: false, username };
 };
 
 export const verifyAdminCredentials = async (username, password) => {

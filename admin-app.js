@@ -29,6 +29,8 @@ const fastify = createServer();
     const bootstrapResult = await ensureInitialAdminUser();
     if (bootstrapResult.created) {
       fastify.log.warn(`Bootstrap admin user created: ${bootstrapResult.username}`);
+    } else if (bootstrapResult.updated) {
+      fastify.log.warn(`Bootstrap admin password updated from ADMIN_PASSWORD for: ${bootstrapResult.username}`);
     }
 
     await registerCommonPlugins(fastify, { rootDir: __dirname, isAdminServer: true });
