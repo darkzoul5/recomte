@@ -18,6 +18,14 @@ const loginAttemptStore = new Map();
 
 const getClientIp = (request) => request.ip || request.headers['x-forwarded-for'] || 'unknown';
 
+const getSubmittedUsername = (username) => {
+  if (typeof username !== 'string') {
+    return '';
+  }
+
+  return username.trim();
+};
+
 const cleanupExpiredAuthEntries = () => {
   const now = Date.now();
 
@@ -128,15 +136,17 @@ const ensureLoginNotLocked = (request, reply, username) => {
   return reply.view('admin/login', {
     title: 'Админ Вход',
     error: 'Слишком много неудачных попыток входа. Повторите позже.',
+    username: getSubmittedUsername(username),
     csrfToken: ensureCsrfToken(request)
   });
 };
 
 const authRouteRateLimit = createAuthRateLimiter('admin-auth');
 
-const renderLoginPage = (request, reply, error = null) => reply.view('admin/login', {
+const renderLoginPage = (request, reply, error = null, username = '') => reply.view('admin/login', {
   title: 'Админ Вход',
   error,
+  username: getSubmittedUsername(username),
   csrfToken: ensureCsrfToken(request)
 });
 
@@ -186,7 +196,7 @@ export default async function registerAdminAuthRoutes(fastify) {
     const { username, password } = request.body;
 
     if (rejectInvalidCsrf(request, reply)) {
-      return renderLoginPage(request, reply, 'Недействительный токен безопасности. Обновите страницу и попробуйте снова.');
+      return renderLoginPage(request, reply, 'Недействительный токен безопасности. Обновите страницу и попробуйте снова.', username);
     }
 
     const lockResult = ensureLoginNotLocked(request, reply, username);
@@ -195,7 +205,7 @@ export default async function registerAdminAuthRoutes(fastify) {
     }
 
     if (!username || !password) {
-      return renderLoginPage(request, reply, 'Логин и пароль требуются');
+      return renderLoginPage(request, reply, 'Логин и пароль требуются', username);
     }
 
     try {
@@ -210,11 +220,11 @@ export default async function registerAdminAuthRoutes(fastify) {
 
       registerFailedLogin(username, getClientIp(request));
 
-      return renderLoginPage(request, reply, 'Неверный логин или пароль');
+      return renderLoginPage(request, reply, 'Неверный логин или пароль', username);
     } catch (error) {
       fastify.log.error(error);
       registerFailedLogin(username, getClientIp(request));
-      return renderLoginPage(request, reply, 'Ошибка сервера');
+      return renderLoginPage(request, reply, 'Ошибка сервера', username);
     }
   });
 
