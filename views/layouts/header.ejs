@@ -3,9 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <%
+    const siteName = 'Recomte';
+    const fallbackDescription = 'Used caravans from Europe with inspection, repair, and preparation for sale in Russia.';
+    const metaTitle = seo?.title || title || siteName;
+    const metaDescription = seo?.description || fallbackDescription;
+    const canonicalUrl = seo?.canonicalUrl || 'https://recomte.ru/';
+    const ogImage = seo?.ogImage || 'https://recomte.ru/public/images/top-image.jpg';
+    const structuredData = seo?.structuredData || null;
+    const structuredDataJson = structuredData
+      ? JSON.stringify(structuredData).replace(/<\//g, '<\\/')
+      : '';
+  %>
   <link rel="preload" as="image" href="/public/images/top-image.jpg">
   <link rel="icon" type="image/svg+xml" href="/public/images/favicon.svg">
-  <title>recomte.ru | <%= title %></title>
+  <title>recomte.ru | <%= metaTitle %></title>
+  <meta name="description" content="<%= metaDescription %>">
+  <link rel="canonical" href="<%= canonicalUrl %>">
+  <meta name="robots" content="index, follow">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="<%= siteName %>">
+  <meta property="og:title" content="<%= metaTitle %>">
+  <meta property="og:description" content="<%= metaDescription %>">
+  <meta property="og:url" content="<%= canonicalUrl %>">
+  <meta property="og:image" content="<%= ogImage %>">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= metaTitle %>">
+  <meta name="twitter:description" content="<%= metaDescription %>">
+  <meta name="twitter:image" content="<%= ogImage %>">
+  <% if (structuredDataJson) { %>
+    <script type="application/ld+json"><%- structuredDataJson %></script>
+  <% } %>
   <link rel="stylesheet" href="/public/css/bulma.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/public/css/style.css">
