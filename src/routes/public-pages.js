@@ -22,11 +22,11 @@ const getAvailability = (status) => {
 };
 
 const buildHomeSeo = (caravans = []) => {
-  const description = 'Used caravans from Europe with inspection, repair, and preparation for sale in Russia.';
+  const description = 'Б/у прицепы-дачи из Европы с осмотром, ремонтом и подготовкой к продаже в России.';
   const pathname = '/';
 
   return {
-    title: 'Used European Caravans in Russia',
+    title: 'Европейские б/у прицепы-дачи в России',
     description,
     canonicalUrl: buildAbsoluteUrl(pathname),
     ogImage: caravans[0]?.images?.[0]?.url
@@ -53,11 +53,11 @@ const buildHomeSeo = (caravans = []) => {
 };
 
 const buildCatalogueSeo = (caravans = []) => {
-  const description = 'Browse available used caravans from Europe with photos, specifications, and preparation details for buyers in Russia.';
+  const description = 'Просмотрите доступные б/у прицепы-дачи из Европы с фото, характеристиками и условиями подготовки для покупателей в России.';
   const pathname = '/caravans';
 
   return {
-    title: 'Caravan Catalogue',
+    title: 'Каталог прицепов-дач',
     description,
     canonicalUrl: buildAbsoluteUrl(pathname),
     ogImage: caravans[0]?.images?.[0]?.url
@@ -66,7 +66,7 @@ const buildCatalogueSeo = (caravans = []) => {
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
-      name: `${SITE_NAME} caravan catalogue`,
+      name: `${SITE_NAME} каталог прицепов-дач`, 
       url: buildAbsoluteUrl(pathname),
       description,
       inLanguage: 'ru-RU',
@@ -85,11 +85,11 @@ const buildCatalogueSeo = (caravans = []) => {
 };
 
 const buildContactSeo = () => {
-  const description = 'Contact Recomte for caravan enquiries, viewings, delivery questions, and purchase support in Russia.';
+  const description = 'Свяжитесь с Recomte по вопросам прицепов-дач, просмотров, доставки и покупки в России.';
   const pathname = '/contact';
 
   return {
-    title: 'Contacts',
+    title: 'Контакты',
     description,
     canonicalUrl: buildAbsoluteUrl(pathname),
     ogImage: DEFAULT_OG_IMAGE,
@@ -97,7 +97,7 @@ const buildContactSeo = () => {
       {
         '@context': 'https://schema.org',
         '@type': 'ContactPage',
-        name: `${SITE_NAME} contacts`,
+        name: `${SITE_NAME} контакты`,
         url: buildAbsoluteUrl(pathname),
         description,
         inLanguage: 'ru-RU'
@@ -123,7 +123,7 @@ const buildCaravanSeo = (caravan) => {
   const pathname = `/caravans/${caravan.slug}`;
   const plainDescription = toPlainText(
     caravan.description,
-    'Used caravan from Europe prepared for sale in Russia.'
+    'Б/у прицеп-дача из Европы, подготовленная к продаже в России.'
   );
   const description = truncate(plainDescription, 160);
   const ogImage = caravan.images?.[0]?.url
@@ -131,15 +131,14 @@ const buildCaravanSeo = (caravan) => {
     : DEFAULT_OG_IMAGE;
 
   const additionalProperty = [
-    caravan.year ? { '@type': 'PropertyValue', name: 'Year', value: caravan.year } : null,
-    caravan.beds_count ? { '@type': 'PropertyValue', name: 'Beds', value: caravan.beds_count } : null,
+    caravan.year ? { '@type': 'PropertyValue', name: 'Год', value: caravan.year } : null,
+    caravan.beds_count ? { '@type': 'PropertyValue', name: 'Спальные места', value: caravan.beds_count } : null,
     caravan.manufacturer_country
-      ? { '@type': 'PropertyValue', name: 'Country of manufacture', value: caravan.manufacturer_country }
+      ? { '@type': 'PropertyValue', name: 'Страна производства', value: caravan.manufacturer_country }
       : null,
     caravan.gross_weight_kg
-      ? { '@type': 'PropertyValue', name: 'Gross weight (kg)', value: caravan.gross_weight_kg }
-      : null,
-    caravan.camper_season ? { '@type': 'PropertyValue', name: 'Season', value: caravan.camper_season } : null
+      ? { '@type': 'PropertyValue', name: 'Вес брутто (кг)', value: caravan.gross_weight_kg } : null,
+    caravan.camper_season ? { '@type': 'PropertyValue', name: 'Сезон', value: caravan.camper_season } : null
   ].filter(Boolean);
 
   return {
@@ -207,14 +206,14 @@ export default async function publicPagesRoutes(fastify) {
       const caravans = data.caravans || [];
 
       return reply.view('catalogue', {
-        title: 'Каталог',
+        title: 'Каталог прицепов-дач',
         caravans,
         seo: buildCatalogueSeo(caravans)
       });
     } catch (error) {
       fastify.log.error(error);
       return reply.view('catalogue', {
-        title: 'Каталог',
+        title: 'Каталог прицепов-дач',
         caravans: [],
         seo: buildCatalogueSeo([])
       });
@@ -234,7 +233,7 @@ export default async function publicPagesRoutes(fastify) {
 
       const caravan = JSON.parse(response.body);
       return reply.view('caravan', {
-        title: caravan.title,
+        title: `Прицеп-дача ${caravan.title}`,
         caravan,
         seo: buildCaravanSeo(caravan)
       });

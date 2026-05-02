@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>recomte.ru | Admin Login</title>
+  <title>recomte.ru | Вход в админку</title>
   
   <link rel="stylesheet" href="/public/css/bulma.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,7 +18,7 @@
     <div class="login-header">
       <h1>
         <i class="fas fa-lock"></i>
-        Admin Panel
+        Админ панель
       </h1>
       <p>Область администратора</p>
     </div>
@@ -43,7 +43,7 @@
               class="input" 
               type="text" 
               name="username" 
-              placeholder="Введите username" 
+              placeholder="Введите логин" 
               value="<%= username || '' %>"
               required 
               <%= username ? '' : 'autofocus' %>
