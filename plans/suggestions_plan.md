@@ -3,7 +3,7 @@
 ## 1. Public Website Fixes
 
 1. Consolidate layouts so public pages use one real SEO-capable header/base. `views/layouts/base.ejs` has richer meta tags, but active pages include `views/layouts/header.ejs`, which does not.
-2. Add unique page metadata for home, catalogue, contact, and each caravan detail page: title, description, canonical URL, OpenGraph image, and structured data.
+2. DONE? Add unique page metadata for home, catalogue, contact, and each caravan detail page: title, description, canonical URL, OpenGraph image, and structured data.
 3. Replace placeholder contact details with real business contact paths: phone, WhatsApp/Telegram, email, Avito/profile links, and clear working hours.
 4. Improve brand consistency: one typography scale, cleaner spacing, consistent buttons/cards, and a stronger first-screen message for Recomte.
 5. Add trust-building content tailored to used imports: inspection checklist, repair/upgrade summary, import/delivery process, document support, payment/reservation terms, and "why buy from us".
