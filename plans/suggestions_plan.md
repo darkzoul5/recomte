@@ -1,7 +1,5 @@
 # Suggestions Plan
 
-Business context: used-caravan reseller model. Buy in European countries, repair/upgrade, and sell in Russia.
-
 ## 1. Public Website Fixes
 
 1. Consolidate layouts so public pages use one real SEO-capable header/base. `views/layouts/base.ejs` has richer meta tags, but active pages include `views/layouts/header.ejs`, which does not.
