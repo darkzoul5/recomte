@@ -37,9 +37,9 @@ echo "Environment: $NODE_ENV"
 echo "Database path: $DB_PATH"
 echo "Log level: $LOG_LEVEL"
 
-npm start:public &
+npm run start:public &
 PUBLIC_PID=$!
-npm start:admin &
+npm run start:admin &
 ADMIN_PID=$!
 
 trap 'kill $PUBLIC_PID $ADMIN_PID 2>/dev/null || true' INT TERM
