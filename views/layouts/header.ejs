@@ -52,16 +52,23 @@
 <!-- Header -->
 <header class="section has-background-image" style="padding: 2rem 0;">
   <div class="container">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div class="header-top" style="display: flex; justify-content: space-between; align-items: center;">
       <div>
         <h1 class="title is-2 has-text-white mb-1"><a href="/" class="has-text-white" style="text-decoration: none;"><img src="/public/images/favicons/favicon-orange-512x512.png" alt="" style="height: 1em; vertical-align: middle;">Recomte</a></h1>
       </div>
-      <nav class="navbar px-5 py-2 rounded" style="background-color: rgba(0, 0, 0, 0.7); gap: 1.5rem; display: inline-flex; align-items: center;" role="navigation">
+      <label for="mobile-menu-toggle" class="mobile-menu-button" aria-label="Открыть меню" aria-controls="mobile-menu">Меню</label>
+      <nav class="navbar desktop-menu px-5 py-2 rounded" style="background-color: rgba(0, 0, 0, 0.7); gap: 1.5rem; display: inline-flex; align-items: center;" role="navigation">
         <a class="navbar-item has-text-white" href="/">Главная</a>
         <a class="navbar-item has-text-white" href="/caravans">Каталог</a>
         <a class="navbar-item has-text-white" href="/contact">Контакты</a>
       </nav>
     </div>
+    <input id="mobile-menu-toggle" class="mobile-menu-toggle-checkbox" type="checkbox" hidden>
+    <nav id="mobile-menu" class="mobile-menu" aria-label="Мобильное меню">
+      <a class="navbar-item has-text-white" href="/">Главная</a>
+      <a class="navbar-item has-text-white" href="/caravans">Каталог</a>
+      <a class="navbar-item has-text-white" href="/contact">Контакты</a>
+    </nav>
   </div>
 </header>
 
