@@ -72,37 +72,6 @@ src/
 
 ---
 
-## ⚙️ Phase 3 — Entry Point Cleanup
-
-### Goal
-
-Remove confusion caused by multiple server entry files.
-
----
-
-### Current issue
-
-Multiple entry points:
-
-- app.js
-- admin-app.js
-- public-server.js
-
-This makes startup logic unclear.
-
----
-
-### New structure
-
-```text
-src/server/
-├── index.js   (main entry point)
-├── public.js  (public routes)
-└── admin.js   (admin system)
-```
-
----
-
 ## 🧩 Phase 4 — View Layer Modernization
 
 ### Goal

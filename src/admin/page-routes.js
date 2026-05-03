@@ -184,7 +184,7 @@ const mapFormToCaravanData = (formData) => {
   };
 };
 
-const renderEditPage = async (request, reply, title, caravan, isNew, error) => reply.view('admin/edit', {
+const renderEditPage = async (request, reply, title, caravan, isNew, error) => reply.view('pages/admin/edit', {
   title,
   caravan,
   isNew,
@@ -237,14 +237,14 @@ export default async function registerAdminPageRoutes(fastify, options = {}) {
       });
 
       const data = JSON.parse(response.body);
-      return reply.view('admin/dashboard', {
+      return reply.view('pages/admin/dashboard', {
         title: 'Панель управления',
         caravans: data.caravans || [],
         csrfToken: ensureCsrfToken(request)
       });
     } catch (error) {
       fastify.log.error(error);
-      return reply.view('admin/dashboard', {
+      return reply.view('pages/admin/dashboard', {
         title: 'Панель управления',
         caravans: [],
         csrfToken: ensureCsrfToken(request)
@@ -272,7 +272,7 @@ export default async function registerAdminPageRoutes(fastify, options = {}) {
       }
 
       const caravan = JSON.parse(response.body);
-      return reply.view('admin/edit', {
+      return reply.view('pages/admin/edit', {
         title: `Редактировать: ${caravan.title}`,
         caravan,
         isNew: false,
@@ -369,7 +369,7 @@ export default async function registerAdminPageRoutes(fastify, options = {}) {
       const { formData, uploadedFiles } = await parseMultipartForm(request);
 
       if (rejectInvalidCsrf(request, reply, formData)) {
-        return reply.view('admin/edit', {
+        return reply.view('pages/admin/edit', {
           title: `Редактировать: ${caravan.title}`,
           caravan,
           isNew: false,
@@ -411,7 +411,7 @@ export default async function registerAdminPageRoutes(fastify, options = {}) {
       });
       const caravan = JSON.parse(response.body);
 
-      return reply.view('admin/edit', {
+      return reply.view('pages/admin/edit', {
         title: `Редактировать: ${caravan.title}`,
         caravan,
         isNew: false,

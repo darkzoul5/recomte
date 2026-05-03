@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preload" as="image" href="/public/images/top-image.jpg">
+  <link rel="icon" type="image/svg+xml" href="/public/images/favicon.svg">
+  <title>recomte.ru | 404 - Страница не найдена</title>
+  
+  <link rel="stylesheet" href="/public/css/bulma.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/public/css/style.css">
+  <style>
+    html, body {
+      height: 100%;
+    }
+    
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      flex-shrink: 0;
+    }
+
+    .error-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .error-content h1 {
+      font-size: 5rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .error-content p {
+      font-size: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .error-content .button {
+      margin-top: 2rem;
+    }
+
+    footer {
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<header class="section" style="padding: 2rem 0;">
+  <div class="container">
+    <h1 class="title is-2 mb-1"><a href="/" style="text-decoration: none;"><img src="/public/images/favicons/favicon-orange-512x512.png" alt="" style="height: 1em; vertical-align: middle;">Recomte</a></h1>
+  </div>
+</header>
+
+<div class="error-container">
+  <div class="error-content">
+    <h1>404</h1>
+    <p>Страница не найдена</p>
+    <p class="is-size-6">Возможно, эта страница была перемещена или удалена.</p>
+    <a href="/" class="button is-light is-medium">
+      <span class="icon">
+        <i class="fas fa-home"></i>
+      </span>
+      <span>Вернуться на главную</span>
+    </a>
+  </div>
+</div>
+
+<footer class="footer has-background-light">
+  <div class="content has-text-centered">
+    <p>&copy; 2026 Recomte.ru</p>
+  </div>
+</footer>
+
+</body>
+</html>

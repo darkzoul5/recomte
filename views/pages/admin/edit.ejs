@@ -1,4 +1,4 @@
-<%- include('../layouts/admin-header', { title: isNew ? 'Новая Прицеп-дача' : 'Редактировать' }) %>
+<%- include('../../components/header/admin', { title: isNew ? 'Новая Прицеп-дача' : 'Редактировать' }) %>
 
 <link rel="stylesheet" href="/public/vendor/filepond/filepond.min.css">
 <link rel="stylesheet" href="/public/vendor/filepond-plugin-image-preview/filepond-plugin-image-preview.min.css">
@@ -504,4 +504,4 @@
 <script src="/public/vendor/sortablejs/Sortable.min.js"></script>
 <script src="/public/js/admin-edit.js"></script>
 
-<%- include('../layouts/admin-footer') %>
+<%- include('../../components/footer/admin') %>

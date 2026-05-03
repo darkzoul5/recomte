@@ -181,14 +181,14 @@ export default async function publicPagesRoutes(fastify) {
       const data = JSON.parse(response.body);
       const caravans = data.caravans || [];
 
-      return reply.view('home', {
+      return reply.view('pages/home/index', {
         title: 'Главная',
         caravans,
         seo: buildHomeSeo(caravans)
       });
     } catch (error) {
       fastify.log.error(error);
-      return reply.view('home', {
+      return reply.view('pages/home/index', {
         title: 'Главная',
         caravans: [],
         seo: buildHomeSeo([])
@@ -205,14 +205,14 @@ export default async function publicPagesRoutes(fastify) {
       const data = JSON.parse(response.body);
       const caravans = data.caravans || [];
 
-      return reply.view('catalogue', {
+      return reply.view('pages/catalog/index', {
         title: 'Каталог прицепов-дач',
         caravans,
         seo: buildCatalogueSeo(caravans)
       });
     } catch (error) {
       fastify.log.error(error);
-      return reply.view('catalogue', {
+      return reply.view('pages/catalog/index', {
         title: 'Каталог прицепов-дач',
         caravans: [],
         seo: buildCatalogueSeo([])
@@ -228,11 +228,11 @@ export default async function publicPagesRoutes(fastify) {
       });
 
       if (response.statusCode === 404) {
-        return reply.code(404).view('404');
+        return reply.code(404).view('pages/errors/404');
       }
 
       const caravan = JSON.parse(response.body);
-      return reply.view('caravan', {
+      return reply.view('pages/catalog/caravan', {
         title: `Прицеп-дача ${caravan.title}`,
         caravan,
         seo: buildCaravanSeo(caravan)
@@ -244,7 +244,7 @@ export default async function publicPagesRoutes(fastify) {
   });
 
   fastify.get('/contact', async (request, reply) => {
-    return reply.view('contact', {
+    return reply.view('pages/contact/index', {
       title: 'Контакты',
       seo: buildContactSeo()
     });

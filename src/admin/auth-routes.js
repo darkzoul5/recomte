@@ -133,7 +133,7 @@ const ensureLoginNotLocked = (request, reply, username) => {
   const retryAfterSeconds = Math.ceil((nearestUnlockTs - now) / 1000);
   reply.header('Retry-After', String(Math.max(retryAfterSeconds, 1)));
   reply.code(429);
-  return reply.view('admin/login', {
+  return reply.view('pages/admin/login', {
     title: 'Админ Вход',
     error: 'Слишком много неудачных попыток входа. Повторите позже.',
     username: getSubmittedUsername(username),
@@ -143,7 +143,7 @@ const ensureLoginNotLocked = (request, reply, username) => {
 
 const authRouteRateLimit = createAuthRateLimiter('admin-auth');
 
-const renderLoginPage = (request, reply, error = null, username = '') => reply.view('admin/login', {
+const renderLoginPage = (request, reply, error = null, username = '') => reply.view('pages/admin/login', {
   title: 'Админ Вход',
   error,
   username: getSubmittedUsername(username),
