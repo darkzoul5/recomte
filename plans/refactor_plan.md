@@ -72,44 +72,6 @@ src/
 
 ---
 
-## 🧩 Phase 4 — View Layer Modernization
-
-### Goal
-
-Turn current templates into a reusable, component-based structure.
-
----
-
-### Current issue
-
-The `views/` folder works but:
-
-- lacks reusable components
-- pages are partially duplicated
-- structure is flat
-
----
-
-### New structure
-
-```text
-views/
-├── layouts/
-├── components/
-│   ├── header/
-│   ├── footer/
-│   ├── hero/
-│   └── cards/
-│
-├── pages/
-│   ├── home/
-│   ├── contact/
-│   ├── catalog/
-│   └── admin/
-```
-
----
-
 ## Phase 5 — Optional Frontend Evolution
 
 ### Goal
