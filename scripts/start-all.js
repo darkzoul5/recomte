@@ -32,5 +32,4 @@ const shutdown = () => {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-startChild(fileURLToPath(new URL('../public-server.js', import.meta.url)), 'public server');
-startChild(fileURLToPath(new URL('../admin-app.js', import.meta.url)), 'admin server');
+startChild(fileURLToPath(new URL('../src/server/index.js', import.meta.url)), 'combined server');
