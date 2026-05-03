@@ -9,13 +9,13 @@ COPY package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
 # Copy only necessary application files
-COPY public-server.js .
-COPY admin-app.js .
 COPY db/ ./db
+COPY public/ ./public
+COPY scripts/ ./scripts
 COPY src/ ./src
 COPY views/ ./views
-COPY scripts/ ./scripts
-COPY public/ ./public
+
+
 COPY --chmod=755 entrypoint.sh .
 
 EXPOSE 3000 3001
