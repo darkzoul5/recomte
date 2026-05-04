@@ -12,12 +12,18 @@ const SESSION_MAX_AGE = 60 * 60 * 1000; // 1 hour in milliseconds
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 const SESSION_CLEANUP_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes
 
-export const createServer = () => Fastify({
-  logger: {
-    level: process.env.LOG_LEVEL || 'info'
-  },
-  trustProxy: true
-});
+export const createServer = (isAdminServer = false) => {
+  const logLevel = isAdminServer
+    ? (process.env.ADMIN_LOG_LEVEL || process.env.LOG_LEVEL || 'info')
+    : (process.env.PUBLIC_LOG_LEVEL || process.env.LOG_LEVEL || 'info');
+
+  return Fastify({
+    logger: {
+      level: logLevel
+    },
+    trustProxy: true
+  });
+};
 
 class SqliteSessionStore {
   constructor(maxAge) {

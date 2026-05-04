@@ -31,7 +31,7 @@ export const validatePublicServerEnv = () => {
 };
 
 export const buildPublicServer = async () => {
-  const fastify = createServer();
+  const fastify = createServer(false);
 
   await registerCommonPlugins(fastify, { rootDir: projectRoot, isAdminServer: false });
 

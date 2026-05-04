@@ -45,7 +45,7 @@ export const validateAdminServerEnv = () => {
 };
 
 export const buildAdminServer = async () => {
-  const fastify = createServer();
+  const fastify = createServer(true);
 
   await registerCommonPlugins(fastify, { rootDir: projectRoot, isAdminServer: true });
 
