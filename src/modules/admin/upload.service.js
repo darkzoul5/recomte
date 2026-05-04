@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import sharp from 'sharp';
-import { images, caravans } from '../../db/db.js';
+import { images, caravans } from '../../../db/db.js';
 
 const ALLOWED_IMAGE_MIME_TYPES = new Set([
   'image/jpeg',
@@ -114,18 +114,14 @@ export const handleImageUploads = async (caravanId, uploadedFiles, rootDir, logg
     return;
   }
 
-  for (const fileData of uploadedFiles) {
-    try {
-      await saveCaravanImageAsWebp({
-        caravanId,
-        fileBuffer: fileData.buffer,
-        originalFilename: fileData.filename,
-        mimetype: fileData.mimetype,
-        rootDir,
-        logger
-      });
-    } catch (error) {
-      logger.error(`Image upload/conversion failed for file ${fileData.filename}: ${error.message}`);
-    }
+  for (const file of uploadedFiles) {
+    await saveCaravanImageAsWebp({
+      caravanId,
+      fileBuffer: file.buffer,
+      originalFilename: file.filename,
+      mimetype: file.mimetype,
+      rootDir,
+      logger
+    });
   }
 };

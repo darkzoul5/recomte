@@ -3,9 +3,9 @@ import { validateEnv, validators } from '../utils/env.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createServer, registerCommonPlugins } from './setup.js';
-import publicPagesRoutes from '../routes/public-pages.js';
-import caravansRoutes from '../routes/caravans.js';
-import sitemapRoutes from '../routes/sitemap.js';
+import { registerCaravansRoutes } from '../modules/caravans/index.js';
+import { registerPagesRoutes } from '../modules/pages/index.js';
+import { registerSitemapRoutes } from '../modules/sitemap/index.js';
 
 dotenv.config({ override: false });
 
@@ -37,9 +37,9 @@ export const buildPublicServer = async () => {
 
   fastify.get('/healthcheck', { logLevel: 'silent' }, async () => ({ status: 'ok' }));
 
-  await fastify.register(caravansRoutes);
-  await fastify.register(publicPagesRoutes);
-  await fastify.register(sitemapRoutes);
+  await registerCaravansRoutes(fastify);
+  await registerPagesRoutes(fastify);
+  await registerSitemapRoutes(fastify);
 
   fastify.get('*', async (request, reply) => {
     return reply.code(404).view('404');

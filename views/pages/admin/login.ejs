@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>recomte.ru | Вход в админку</title>
+  <title>recomte.ru | Вход</title>
+  
+  <link rel="icon" type="image/png" sizes="16x16" href="/public/images/favicons/favicon-orange-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/public/images/favicons/favicon-orange-32x32.png">
+  <link rel="icon" type="image/png" sizes="180x180" href="/public/images/favicons/favicon-orange-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/public/images/favicons/favicon-orange-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/public/images/favicons/favicon-orange-512x512.png">
   
   <link rel="stylesheet" href="/public/css/bulma.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -20,7 +26,6 @@
         <i class="fas fa-lock"></i>
         Админ панель
       </h1>
-      <p>Область администратора</p>
     </div>
 
     <!-- Form -->
@@ -36,7 +41,7 @@
         <input type="hidden" name="_csrf" value="<%= csrfToken || '' %>">
         <div class="field">
           <label class="label">
-            Username
+            Логин
           </label>
           <div class="control has-icons-left">
             <input 

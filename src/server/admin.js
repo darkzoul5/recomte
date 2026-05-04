@@ -4,9 +4,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { createServer, registerCommonPlugins } from './setup.js';
 import adminRoutes from '../routes/admin.js';
-import { ensureInitialAdminUser } from '../middleware/auth.js';
-import registerAdminAuthRoutes from '../admin/auth-routes.js';
-import registerAdminPageRoutes from '../admin/page-routes.js';
+import { ensureInitialAdminUser } from '../modules/auth/index.js';
+import { registerAuthRoutes } from '../modules/auth/index.js';
+import { registerAdminRoutes } from '../modules/admin/index.js';
 
 dotenv.config({ override: false });
 
@@ -59,8 +59,8 @@ export const buildAdminServer = async () => {
   fastify.get('/healthcheck', { logLevel: 'silent' }, async () => ({ status: 'ok' }));
 
   await fastify.register(adminRoutes);
-  await registerAdminAuthRoutes(fastify);
-  await registerAdminPageRoutes(fastify, { rootDir: __dirname });
+  await registerAuthRoutes(fastify);
+  await registerAdminRoutes(fastify, { rootDir: projectRoot });
 
   return fastify;
 };

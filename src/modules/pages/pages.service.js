@@ -21,7 +21,7 @@ const getAvailability = (status) => {
   return 'https://schema.org/InStock';
 };
 
-const buildHomeSeo = (caravans = []) => {
+export const buildHomeSeo = (caravans = []) => {
   const description = 'Б/у прицепы-дачи из Европы с осмотром, ремонтом и подготовкой к продаже в России.';
   const pathname = '/';
 
@@ -52,7 +52,7 @@ const buildHomeSeo = (caravans = []) => {
   };
 };
 
-const buildCatalogueSeo = (caravans = []) => {
+export const buildCatalogueSeo = (caravans = []) => {
   const description = 'Просмотрите доступные б/у прицепы-дачи из Европы с фото, характеристиками и условиями подготовки для покупателей в России.';
   const pathname = '/caravans';
 
@@ -84,7 +84,7 @@ const buildCatalogueSeo = (caravans = []) => {
   };
 };
 
-const buildContactSeo = () => {
+export const buildContactSeo = () => {
   const description = 'Свяжитесь с Recomte по вопросам прицепов-дач, просмотров, доставки и покупки в России.';
   const pathname = '/contact';
 
@@ -119,7 +119,7 @@ const buildContactSeo = () => {
   };
 };
 
-const buildCaravanSeo = (caravan) => {
+export const buildCaravanSeo = (caravan) => {
   const pathname = `/caravans/${caravan.slug}`;
   const plainDescription = toPlainText(
     caravan.description,
@@ -170,83 +170,3 @@ const buildCaravanSeo = (caravan) => {
     }
   };
 };
-
-export default async function publicPagesRoutes(fastify) {
-  fastify.get('/', async (request, reply) => {
-    try {
-      const response = await fastify.inject({
-        method: 'GET',
-        url: '/api/featured-caravans'
-      });
-      const data = JSON.parse(response.body);
-      const caravans = data.caravans || [];
-
-      return reply.view('pages/home/index', {
-        title: 'Главная',
-        caravans,
-        seo: buildHomeSeo(caravans)
-      });
-    } catch (error) {
-      fastify.log.error(error);
-      return reply.view('pages/home/index', {
-        title: 'Главная',
-        caravans: [],
-        seo: buildHomeSeo([])
-      });
-    }
-  });
-
-  fastify.get('/caravans', async (request, reply) => {
-    try {
-      const response = await fastify.inject({
-        method: 'GET',
-        url: '/api/caravans'
-      });
-      const data = JSON.parse(response.body);
-      const caravans = data.caravans || [];
-
-      return reply.view('pages/catalog/index', {
-        title: 'Каталог прицепов-дач',
-        caravans,
-        seo: buildCatalogueSeo(caravans)
-      });
-    } catch (error) {
-      fastify.log.error(error);
-      return reply.view('pages/catalog/index', {
-        title: 'Каталог прицепов-дач',
-        caravans: [],
-        seo: buildCatalogueSeo([])
-      });
-    }
-  });
-
-  fastify.get('/caravans/:slug', async (request, reply) => {
-    try {
-      const response = await fastify.inject({
-        method: 'GET',
-        url: `/api/caravans/${request.params.slug}`
-      });
-
-      if (response.statusCode === 404) {
-        return reply.code(404).view('pages/errors/404');
-      }
-
-      const caravan = JSON.parse(response.body);
-      return reply.view('pages/catalog/caravan', {
-        title: `Прицеп-дача ${caravan.title}`,
-        caravan,
-        seo: buildCaravanSeo(caravan)
-      });
-    } catch (error) {
-      fastify.log.error(error);
-      return reply.code(500).send({ message: 'Error loading caravan' });
-    }
-  });
-
-  fastify.get('/contact', async (request, reply) => {
-    return reply.view('pages/contact/index', {
-      title: 'Контакты',
-      seo: buildContactSeo()
-    });
-  });
-}

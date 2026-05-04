@@ -1,10 +1,15 @@
 import {
   verifyAdminCredentials,
+  ensureInitialAdminUser
+} from './auth.service.js';
+import {
   setAdminSession,
   clearAdminSession,
-  ensureCsrfToken
-} from '../middleware/auth.js';
-import { rejectInvalidCsrf, redirectByAdminSession } from './route-helpers.js';
+  ensureCsrfToken,
+  getCsrfTokenFromRequest,
+  verifyCsrfToken,
+  isAdminSessionValid
+} from './auth.middleware.js';
 
 const MINUTE_MS = 60 * 1000;
 const AUTH_RATE_LIMIT_WINDOW_MS = parseInt(process.env.AUTH_RATE_LIMIT_WINDOW_MS || `${MINUTE_MS}`, 10);
@@ -22,7 +27,6 @@ const getSubmittedUsername = (username) => {
   if (typeof username !== 'string') {
     return '';
   }
-
   return username.trim();
 };
 
@@ -46,7 +50,7 @@ const cleanupExpiredAuthEntries = () => {
 
 setInterval(cleanupExpiredAuthEntries, MINUTE_MS).unref();
 
-const createAuthRateLimiter = (routeKey) => async (request, reply) => {
+export const createAuthRateLimiter = (routeKey) => async (request, reply) => {
   const now = Date.now();
   const ip = getClientIp(request);
   const key = `${routeKey}:${ip}`;
@@ -141,8 +145,6 @@ const ensureLoginNotLocked = (request, reply, username) => {
   });
 };
 
-const authRouteRateLimit = createAuthRateLimiter('admin-auth');
-
 const renderLoginPage = (request, reply, error = null, username = '') => reply.view('pages/admin/login', {
   title: 'Админ Вход',
   error,
@@ -166,7 +168,6 @@ const regenerateSession = (request) => new Promise((resolve, reject) => {
 });
 
 const destroySession = (request) => new Promise((resolve, reject) => {
-  // Clear admin markers in case session methods are not available or before destroying
   try { clearAdminSession(request); } catch (e) {}
 
   if (!request.session || typeof request.session.destroy !== 'function') {
@@ -184,67 +185,83 @@ const destroySession = (request) => new Promise((resolve, reject) => {
   });
 });
 
-export default async function registerAdminAuthRoutes(fastify) {
-  fastify.get('/admin/login', { onRequest: [authRouteRateLimit] }, async (request, reply) => {
-    if (request.session.adminId) {
-      return redirectByAdminSession(request, reply);
-    }
-    return renderLoginPage(request, reply, null);
-  });
+const rejectInvalidCsrf = (request, reply, bodyOverride = null) => {
+  const candidateToken = getCsrfTokenFromRequest(request, bodyOverride);
+  if (verifyCsrfToken(request, candidateToken)) {
+    return false;
+  }
 
-  fastify.post('/admin/login', { onRequest: [authRouteRateLimit] }, async (request, reply) => {
-    const { username, password } = request.body;
+  reply.code(403);
+  return true;
+};
 
-    if (rejectInvalidCsrf(request, reply)) {
-      return renderLoginPage(request, reply, 'Недействительный токен безопасности. Обновите страницу и попробуйте снова.', username);
-    }
+const redirectByAdminSession = (request, reply) => {
+  if (isAdminSessionValid(request)) {
+    return reply.redirect('/admin/dash');
+  }
 
-    const lockResult = ensureLoginNotLocked(request, reply, username);
-    if (lockResult !== true) {
-      return lockResult;
-    }
+  clearAdminSession(request);
+  return reply.redirect('/admin/login');
+};
 
-    if (!username || !password) {
-      return renderLoginPage(request, reply, 'Логин и пароль требуются', username);
-    }
+export const getLoginPage = async (request, reply) => {
+  if (request.session.adminId) {
+    return redirectByAdminSession(request, reply);
+  }
+  return renderLoginPage(request, reply, null);
+};
 
-    try {
-      const adminUser = await verifyAdminCredentials(username, password);
-      if (adminUser) {
-        resetLoginAttempts(username, getClientIp(request));
-        await regenerateSession(request);
-        // store numeric admin id in session for better security
-        setAdminSession(request, adminUser);
-        return reply.redirect('/admin/dash');
-      }
+export const postLogin = async (request, reply) => {
+  const { username, password } = request.body;
 
-      registerFailedLogin(username, getClientIp(request));
+  if (rejectInvalidCsrf(request, reply)) {
+    return renderLoginPage(request, reply, 'Недействительный токен безопасности. Обновите страницу и попробуйте снова.', username);
+  }
 
-      return renderLoginPage(request, reply, 'Неверный логин или пароль', username);
-    } catch (error) {
-      fastify.log.error(error);
-      registerFailedLogin(username, getClientIp(request));
-      return renderLoginPage(request, reply, 'Ошибка сервера', username);
-    }
-  });
+  const lockResult = ensureLoginNotLocked(request, reply, username);
+  if (lockResult !== true) {
+    return lockResult;
+  }
 
-  fastify.post('/admin/logout', { onRequest: [authRouteRateLimit] }, async (request, reply) => {
-    if (rejectInvalidCsrf(request, reply)) {
-      return reply.send({ error: 'Invalid CSRF token' });
-    }
+  if (!username || !password) {
+    return renderLoginPage(request, reply, 'Логин и пароль требуются', username);
+  }
 
-    try {
-      // clear any admin markers on the session and remove persisted session
-      await destroySession(request);
-
-      // attempt to clear common session cookie names to remove client cookie
-      try { reply.clearCookie('session'); } catch (e) {}
-      try { reply.clearCookie('sessionId'); } catch (e) {}
-      try { reply.clearCookie('connect.sid'); } catch (e) {}
-    } catch (err) {
-      fastify.log.error('Error destroying session during logout', err);
+  try {
+    const adminUser = await verifyAdminCredentials(username, password);
+    if (adminUser) {
+      resetLoginAttempts(username, getClientIp(request));
+      await regenerateSession(request);
+      setAdminSession(request, adminUser);
+      return reply.redirect('/admin/dash');
     }
 
-    return reply.redirect('/admin/login');
-  });
-}
+    registerFailedLogin(username, getClientIp(request));
+
+    return renderLoginPage(request, reply, 'Неверный логин или пароль', username);
+  } catch (error) {
+    request.server.log.error(error);
+    registerFailedLogin(username, getClientIp(request));
+    return renderLoginPage(request, reply, 'Ошибка сервера', username);
+  }
+};
+
+export const postLogout = async (request, reply) => {
+  if (rejectInvalidCsrf(request, reply)) {
+    return reply.send({ error: 'Invalid CSRF token' });
+  }
+
+  try {
+    await destroySession(request);
+
+    try { reply.clearCookie('session'); } catch (e) {}
+    try { reply.clearCookie('sessionId'); } catch (e) {}
+    try { reply.clearCookie('connect.sid'); } catch (e) {}
+  } catch (err) {
+    request.server.log.error('Error destroying session during logout', err);
+  }
+
+  return reply.redirect('/admin/login');
+};
+
+export { ensureInitialAdminUser };
