@@ -1,34 +1,17 @@
-name: Build and Push Docker Image
+name: Build, Tag and Push Docker Image
 
 on:
   push:
     branches:
       - main
-    paths:
-      - "Dockerfile"
-      - "entrypoint.sh"
-      - "docker-compose.yml"
-      - "deploy.sh"
-      - "app.js"
-      - "admin-app.js"
-      - "public-server.js"
-      - ".dockerignore"
-      - "src/**"
-      - "*.js"
-      - "package*.json"
-      - "db/**"
-      - "src/**"
-      - "views/**"
-      - "public/**"
-      - "scripts/**"
-      - ".github/workflows/build-and-push.yml"
-
+    paths-ignore:
+      - "README.md"
+      - "docs/**"
+      - ".env.example"
+      - "plans/**"
+      - ".gitignore"
+      - "LICENSE"
   workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Tag for stable release (e.g., v1.0.0)'
-        required: true
-        type: string
 
 concurrency:
   group: campersite-deploy-${{ github.ref }}
@@ -38,12 +21,54 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
 
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      should_tag: ${{ steps.version.outputs.should_tag }}
+
     steps:
-      - name: Checkout code 
+      - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      # 🧠 Decide whether to tag + generate version
+      - name: Determine tag
+        id: version
+        run: |
+          SHOULD_TAG=false
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            SHOULD_TAG=true
+          else
+            LAST_COMMIT=$(git log -1 --pretty=%s)
+            if echo "$LAST_COMMIT" | grep -q "\[tag it\]"; then
+              SHOULD_TAG=true
+            fi
+          fi
+
+          echo "should_tag=$SHOULD_TAG" >> $GITHUB_OUTPUT
+
+          if [ "$SHOULD_TAG" = "true" ]; then
+            TAG="v$(date +'%Y.%m.%d-%H%M')"
+            echo "version=$TAG" >> $GITHUB_OUTPUT
+          else
+            echo "version=" >> $GITHUB_OUTPUT
+          fi
+
+      # 🏷️ Create Git tag (only if needed)
+      - name: Create Git tag
+        if: steps.version.outputs.should_tag == 'true'
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+
+          git config user.name "gitea-actions"
+          git config user.email "actions@local"
+
+          git tag $VERSION
+          git push origin $VERSION
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -55,16 +80,16 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
+      # 🐳 Docker metadata
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v6
         with:
           images: git.darkzoul.org/dark_zoul/campersite
           tags: |
-            type=raw,value=${{ inputs.tag }},enable=${{ github.event_name == 'workflow_dispatch' }}
-            type=raw,value=latest,enable=${{ github.event_name == 'workflow_dispatch' }}
             type=raw,value=dev
-            type=sha,prefix=dev-
+            type=raw,value=${{ steps.version.outputs.version }},enable=${{ steps.version.outputs.should_tag }}
+            type=raw,value=latest,enable=${{ steps.version.outputs.should_tag }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
@@ -80,6 +105,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build-and-push
+
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.5
