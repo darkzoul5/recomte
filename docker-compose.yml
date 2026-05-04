@@ -2,10 +2,14 @@ services:
   app:
     image: git.darkzoul.org/dark_zoul/campersite:latest
     container_name: recomte_app
+    env_file:
+      - .env
     environment:
       - DB_PATH=/app/data/app.db
       - NODE_ENV=production
-      - LOG_LEVEL=${LOG_LEVEL:-info}
+      #- LOG_LEVEL=${LOG_LEVEL:-info}
+      - ADMIN_LOG_LEVEL=${ADMIN_LOG_LEVEL:-debug}
+      - PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-info}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - ADMIN_PORT=${ADMIN_PORT:-3001}
@@ -50,10 +54,12 @@ services:
   app_test:
     image: git.darkzoul.org/dark_zoul/campersite:dev
     container_name: recomte_app_test
+    env_file:
+      - .env
     environment:
       - DB_PATH=/app/data/app.db
       - NODE_ENV=production
-      - LOG_LEVEL=${LOG_LEVEL:-info}
+      #- LOG_LEVEL=${LOG_LEVEL:-info}
       - ADMIN_LOG_LEVEL=${ADMIN_LOG_LEVEL:-info}
       - PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-info}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
