@@ -1,0 +1,87 @@
+name: Dependency Update Bot
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-deps:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install tools
+        run: npm install -g npm-check-updates
+
+      # 🔍 Check if updates exist
+      - name: Check updates
+        id: check
+        run: |
+          ncu --jsonUpgraded > upgrades.json
+
+          if [ ! -s upgrades.json ] || [ "$(cat upgrades.json)" = "{}" ]; then
+            echo "has_updates=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_updates=true" >> $GITHUB_OUTPUT
+          fi
+
+      # 🟢 Apply updates
+      - name: Apply dependency updates
+        if: steps.check.outputs.has_updates == 'true'
+        run: |
+          ncu -u
+          npm install
+
+      # 🌿 Create branch
+      - name: Create branch
+        if: steps.check.outputs.has_updates == 'true'
+        run: |
+          BRANCH="deps/update-$(date +%Y-%m-%d-%H%M)"
+          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+
+          git checkout -b $BRANCH
+
+      # 💾 Commit changes
+      - name: Commit updates
+        if: steps.check.outputs.has_updates == 'true'
+        run: |
+          git config user.name "gitea-actions-bot"
+          git config user.email "gitea-actions-bot@local"
+
+          git add package.json package-lock.json
+          git commit -m "chore: automated dependency updates"
+
+      # 📤 Push branch
+      - name: Push branch
+        if: steps.check.outputs.has_updates == 'true'
+        run: |
+          git push origin $BRANCH
+
+      # 🔁 Create PR (Gitea API)
+      - name: Create Pull Request
+        if: steps.check.outputs.has_updates == 'true'
+        env:
+          TOKEN: ${{ secrets.REPO_W_TOKEN }}
+        run: |
+          curl -X POST "https://git.darkzoul.org/api/v1/repos/dark_zoul/campersite/pulls" \
+          -H "Authorization: token $TOKEN" \
+          -H "Content-Type: application/json" \
+          -d "{
+            \"head\": \"${BRANCH}\",
+            \"base\": \"main\",
+            \"title\": \"chore: dependency updates\",
+            \"body\": \"Automated dependency update PR (patch/minor/major included)\"
+          }"

@@ -38,7 +38,7 @@ Modernize the frontend design without changing backend logic.
 
 ---
 
-## Phase 3 — Optional Frontend Evolution
+## Phase 2 — Optional Frontend Evolution
 
 ### Goal
 
