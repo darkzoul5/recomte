@@ -11,6 +11,7 @@ on:
       - "plans/**"
       - ".gitignore"
       - "LICENSE"
+      - ".github/workflows/node-deps.yml"
   workflow_dispatch:
 
 concurrency:
