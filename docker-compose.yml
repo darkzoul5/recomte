@@ -1,14 +1,14 @@
 services:
   app:
     image: git.darkzoul.org/dark_zoul/campersite:latest
-    container_name: campersite_app
+    container_name: recomte_app
     environment:
       - DB_PATH=/app/data/app.db
       - NODE_ENV=production
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - ADMIN_PORT=3001
+      - ADMIN_PORT=${ADMIN_PORT:-3001}
       - SESSION_SECRET=${SESSION_SECRET}
     volumes:
       - ./data:/app/data
@@ -19,6 +19,7 @@ services:
     labels:
       # traefik
       traefik.enable: "true"
+      traefik.docker.network: "traefik-proxy"
       # Main router
       traefik.http.routers.app.rule: "Host(`recomte.ru`)"
       traefik.http.routers.app.entrypoints: "websecure"
@@ -48,14 +49,16 @@ services:
 
   app_test:
     image: git.darkzoul.org/dark_zoul/campersite:dev
-    container_name: campersite_app_test
+    container_name: recomte_app_test
     environment:
       - DB_PATH=/app/data/app.db
       - NODE_ENV=production
       - LOG_LEVEL=${LOG_LEVEL:-info}
+      - ADMIN_LOG_LEVEL=${ADMIN_LOG_LEVEL:-info}
+      - PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-info}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - ADMIN_PORT=3001
+      - ADMIN_PORT=${ADMIN_PORT:-3001}
       - SESSION_SECRET=${SESSION_SECRET}
     volumes:
       - ./data:/app/data
@@ -66,6 +69,7 @@ services:
     labels:
       # traefik
       traefik.enable: "true"
+      traefik.docker.network: "traefik-proxy"
       # Main router 
       traefik.http.routers.app-test.rule: "Host(`test.recomte.ru`)"
       traefik.http.routers.app-test.entrypoints: "websecure"

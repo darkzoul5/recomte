@@ -7,6 +7,9 @@ echo "Starting Recomte.ru application..."
 export NODE_ENV=${NODE_ENV:-production}
 export DB_PATH=${DB_PATH:-./data/app.db}
 export SESSION_SECRET=${SESSION_SECRET:-default_secret_change_in_production}
+export LOG_LEVEL=${LOG_LEVEL:-info}
+export ADMIN_LOG_LEVEL=${ADMIN_LOG_LEVEL:-info}
+export PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-info}
 
 # Create data directory if it doesn't exist
 mkdir -p /app/data
@@ -36,6 +39,8 @@ echo "Starting Node.js application..."
 echo "Environment: $NODE_ENV"
 echo "Database path: $DB_PATH"
 echo "Log level: $LOG_LEVEL"
+echo "Admin log level: $ADMIN_LOG_LEVEL"
+echo "Public log level: $PUBLIC_LOG_LEVEL"
 
 SERVER_MODE=public node /app/src/server/index.js &
 PUBLIC_PID=$!
