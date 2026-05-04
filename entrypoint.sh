@@ -46,11 +46,8 @@ echo "Log level: $LOG_LEVEL"
 echo "Admin log level: $ADMIN_LOG_LEVEL"
 echo "Public log level: $PUBLIC_LOG_LEVEL"
 
-SERVER_MODE=public node /app/src/server/index.js &
-PUBLIC_PID=$!
+SERVER_MODE=all node /app/src/server/index.js &
+SERVER_PID=$!
 
-SERVER_MODE=admin node /app/src/server/admin.js &
-ADMIN_PID=$!
-
-trap 'kill $PUBLIC_PID $ADMIN_PID 2>/dev/null || true' INT TERM
-wait $PUBLIC_PID $ADMIN_PID
+trap 'kill $SERVER_PID $ADMIN_PID 2>/dev/null || true' INT TERM
+wait $SERVER_PID
