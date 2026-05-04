@@ -5,13 +5,22 @@ services:
     env_file:
       - .env
     environment:
+      - NODE_ENV=production
+      # Admin credentials
+      - ADMIN_USERNAME=${ADMIN_USERNAME} # MUST be set for admin interface to work
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD} # MUST be set for admin interface to work
+      # Session secret
+      - SESSION_SECRET=${SESSION_SECRET} # MUST be set for app to work
+
+      # Optional --------------------------------------------
       - DB_PATH=/app/data/app.db
       - PORT=${PORT:-3000}
       - ADMIN_PORT=${ADMIN_PORT:-3001}
-      - NODE_ENV=production
+      #Logging - global level or separate for admin and public
       #- LOG_LEVEL=${LOG_LEVEL:-info}
       - ADMIN_LOG_LEVEL=${ADMIN_LOG_LEVEL:-info}
       - PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-info}
+
     volumes:
       - ./data:/app/data
       - ./public/images:/app/public/images
@@ -55,10 +64,18 @@ services:
     env_file:
       - .env
     environment:
+      - NODE_ENV=production
+      # Admin credentials
+      - ADMIN_USERNAME=${ADMIN_USERNAME} # MUST be set for admin interface to work
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD} # MUST be set for admin interface to work
+      # Session secret
+      - SESSION_SECRET=${SESSION_SECRET} # MUST be set for app to work
+
+      # Optional --------------------------------------------
       - DB_PATH=/app/data/app.db
       - PORT=${PORT:-3000}
       - ADMIN_PORT=${ADMIN_PORT:-3001}
-      - NODE_ENV=production
+      #Logging - global level or separate for admin and public
       #- LOG_LEVEL=${LOG_LEVEL:-info}
       - ADMIN_LOG_LEVEL=${ADMIN_LOG_LEVEL:-info}
       - PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-info}
