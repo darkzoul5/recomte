@@ -6,15 +6,12 @@ services:
       - .env
     environment:
       - DB_PATH=/app/data/app.db
-      - NODE_ENV=production
       - PORT=${PORT:-3000}
-      #- LOG_LEVEL=${LOG_LEVEL:-info}
-      - ADMIN_LOG_LEVEL=${ADMIN_LOG_LEVEL:-debug}
-      - PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-info}
-      - ADMIN_USERNAME=${ADMIN_USERNAME}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - ADMIN_PORT=${ADMIN_PORT:-3001}
-      - SESSION_SECRET=${SESSION_SECRET}
+      - NODE_ENV=production
+      #- LOG_LEVEL=${LOG_LEVEL:-info}
+      - ADMIN_LOG_LEVEL=${ADMIN_LOG_LEVEL:-info}
+      - PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-info}
     volumes:
       - ./data:/app/data
       - ./public/images:/app/public/images
@@ -60,14 +57,12 @@ services:
     environment:
       - DB_PATH=/app/data/app.db
       - PORT=${PORT:-3000}
+      - ADMIN_PORT=${ADMIN_PORT:-3001}
       - NODE_ENV=production
       #- LOG_LEVEL=${LOG_LEVEL:-info}
       - ADMIN_LOG_LEVEL=${ADMIN_LOG_LEVEL:-info}
       - PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-info}
-      - ADMIN_USERNAME=${ADMIN_USERNAME}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - ADMIN_PORT=${ADMIN_PORT:-3001}
-      - SESSION_SECRET=${SESSION_SECRET}
+
     volumes:
       - ./data:/app/data
       - ./public/images:/app/public/images
