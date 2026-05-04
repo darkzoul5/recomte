@@ -10,6 +10,10 @@ export SESSION_SECRET=${SESSION_SECRET:-default_secret_change_in_production}
 export LOG_LEVEL=${LOG_LEVEL:-info}
 export ADMIN_LOG_LEVEL=${ADMIN_LOG_LEVEL:-info}
 export PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-info}
+export PORT=${PORT:-3000}
+export ADMIN_PORT=${ADMIN_PORT:-3001}
+export ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+export ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
 
 # Create data directory if it doesn't exist
 mkdir -p /app/data
