@@ -192,6 +192,12 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
   });
 
   // WebP conversion middleware removed - use static file serving for now
+  // Serve robots.txt at the site root for SEO and default crawlers
+  fastify.get('/robots.txt', async (request, reply) => {
+    // The static plugin serves files from the public directory when using the root option above.
+    // This will serve /robots.txt from public/robots.txt at the site root.
+    return reply.sendFile('robots.txt', { root: path.join(rootDir, 'public') });
+  });
   
   await fastify.register(fastifyStatic, {
     root: path.join(rootDir, 'public'),
