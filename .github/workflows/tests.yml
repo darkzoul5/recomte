@@ -26,8 +26,8 @@ jobs:
       - name: Start admin server
         env:
           ADMIN_USERNAME: test
-          ADMIN_PASSWORD: test
-          SESSION_SECRET: test-secret
+          ADMIN_PASSWORD: testtesttest
+          SESSION_SECRET: testqwertyuiopasdfghjklzxcvbnm123456test
         run: |
           node src/server/index.js &
       
@@ -47,7 +47,7 @@ jobs:
       - name: Run admin reachable test
         env:
           PUBLIC_BASE_URL: http://127.0.0.1:3001
-        run: node tests/is-admin-reachable.js
+        run: node tests/is-reachable.js
 
       - name: Run public reachable test
         env:
