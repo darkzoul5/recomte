@@ -25,6 +25,7 @@ jobs:
       # Start admin server
       - name: Start admin server
         env:
+          NODE_ENV: production
           ADMIN_USERNAME: test
           ADMIN_PASSWORD: testtesttest
           SESSION_SECRET: testqwertyuiopasdfghjklzxcvbnm123456test
