@@ -73,7 +73,7 @@ Prepare the project for future scaling if needed.
 
 ---
 
-### Option C — Full migration
+### Option C — Full migration 
 
 - Move frontend to Next.js
 - Backend becomes API-only
