@@ -49,7 +49,7 @@ jobs:
         env:
           TEST_PATH: /admin/login
           TEST_PORT: 3001
-        run: node tests/is-reachable.js
+        run: node tests/smoke-http.js
 
       - name: Run public reachable test
         env:
