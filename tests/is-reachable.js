@@ -1,6 +1,6 @@
 import http from 'http';
 
-const baseUrl = process.env.PUBLIC_BASE_URL || 'http://127.0.0.1:3000';
+const baseUrl = process.env.PUBLIC_BASE_URL;
 const target = new URL('/', baseUrl);
 
 const fetchRoot = () => new Promise((resolve, reject) => {
@@ -22,19 +22,20 @@ const fetchRoot = () => new Promise((resolve, reject) => {
 });
 
 const run = async () => {
-	console.log(`Testing public website reachability at ${target.origin}${target.pathname}`);
+	console.log(`Testing ${baseUrl} website reachability at ${target.origin}${target.pathname}`);
 	try {
 		const result = await fetchRoot();
 		const status = result.statusCode;
 		if (status >= 200 && status < 300) {
-			console.log(`PASS: Public website reachable (HTTP ${status}).`);
+			console.log(`PASS: ${baseUrl} website reachable (HTTP ${status}).`);
 			process.exit(0);
 		} else {
-			console.error(`FAIL: Public website not reachable (HTTP ${status}).`);
+			console.error(`FAIL: ${baseUrl} website not r
+eachable (HTTP ${status}).`);
 			process.exit(1);
 		}
 	} catch (err) {
-		console.error('FAIL: Could not reach public website.');
+		console.error(`FAIL: Could not reach ${baseUrl} website.`);
 		console.error(err?.message || err);
 		process.exit(1);
 	}
