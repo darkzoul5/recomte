@@ -48,21 +48,20 @@ jobs:
       - name: Run admin reachable test
         env:
           TEST_PATH: /admin/login
-          PORT: 3001
+          TEST_PORT: 3001
         run: node tests/is-reachable.js
 
       - name: Run public reachable test
         env:
           TEST_PATH: /
-          PORT: 3000
-        run: node tests/is-reachable.js
+        run: node tests/smoke-http.js
 
       - name: Run robots.txt reachable test
         env:
           TEST_PATH: /robots.txt
-        run: node tests/is-reachable.js
+        run: node tests/smoke-http.js
     
       - name: Run sitemap reachable test
         env:
           TEST_PATH: /sitemap.xml
-        run: node tests/is-reachable.js
+        run: node tests/smoke-http.js
