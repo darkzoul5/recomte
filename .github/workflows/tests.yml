@@ -47,10 +47,10 @@ jobs:
 
       - name: Run admin reachable test
         env:
-          PUBLIC_BASE_URL: http://127.0.0.1:3001
+          PUBLIC_BASE_URL: http://127.0.0.1:3001/admin/login
         run: node tests/is-reachable.js
 
       - name: Run public reachable test
         env:
-          PUBLIC_BASE_URL: http://127.0.0.1:3000
+          PUBLIC_BASE_URL: http://127.0.0.1:3000/
         run: node tests/is-reachable.js
