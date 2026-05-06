@@ -41,7 +41,9 @@ const fetchUrl = (urlObj) => new Promise((resolve, reject) => {
 
 const run = async () => {
 	const target = buildTargetUrl();
-	console.log(`Testing URL ${target.href}`);
+	// Provide more explicit log for CI: show base + path and resolved URL
+	const requestedPath = process.env.TEST_PATH || '/';
+	console.log(`Testing URL http://127.0.0.1:${PORT}${requestedPath} (resolved: ${target.href})`);
 	try {
 		const { statusCode } = await fetchUrl(target);
 		if (statusCode >= 200 && statusCode < 300) {
