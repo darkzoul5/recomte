@@ -1,18 +1,23 @@
 name: Build, Tag and Push Docker Image
 
 on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - "README.md"
-      - "docs/**"
-      - ".env.example"
-      - "plans/**"
-      - ".gitignore"
-      - "LICENSE"
-      - ".github/workflows/node-deps.yml"
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Run Tests"]
+    types:
+      - completed
+  #push:
+    #branches:
+      #- main
+    #paths-ignore:
+      #- "README.md"
+      #- "docs/**"
+      #- ".env.example"
+      #- "plans/**"
+      #- ".gitignore"
+      #- "LICENSE"
+      #- ".github/workflows/node-deps.yml"
+
 
 concurrency:
   group: campersite-deploy-${{ github.ref }}

@@ -1,0 +1,51 @@
+name: Run Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Start admin server
+      - name: Start admin server
+        run: |
+          npm start &
+      
+      # Wait until server is reachable 
+      - name: Wait for server
+        run: |
+          for i in {1..10}; do
+            if curl -s http://127.0.0.1:3001 >/dev/null; then
+              echo "Server is up"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Server failed to start"
+          exit 1
+
+      - name: Run admin reachable test
+        env:
+          PUBLIC_BASE_URL: http://127.0.0.1:3001
+        run: node tests/is-admin-reachable.js
+
+      - name: Run public reachable test
+        env:
+          PUBLIC_BASE_URL: http://127.0.0.1:3001
+        run: node tests/is-public-reachable.js
