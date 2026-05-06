@@ -45,23 +45,23 @@ jobs:
           echo "Server failed to start"
           exit 1
 
-      - name: Run admin reachable test
+      - name: Run admin smoketest
         env:
           TEST_PATH: /admin/login
           TEST_PORT: 3001
         run: node tests/smoke-http.js
 
-      - name: Run public reachable test
+      - name: Run public smoketest
         env:
           TEST_PATH: /
         run: node tests/smoke-http.js
 
-      - name: Run robots.txt reachable test
+      - name: Run robots.txt smoketest
         env:
           TEST_PATH: /robots.txt
         run: node tests/smoke-http.js
     
-      - name: Run sitemap reachable test
+      - name: Run sitemap smoketest
         env:
           TEST_PATH: /sitemap.xml
         run: node tests/smoke-http.js
