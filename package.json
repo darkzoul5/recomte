@@ -12,8 +12,8 @@
     "db:init": "node scripts/init-db.js",
     "db:seed": "node scripts/seed-db.js",
     "admin:passwd": "node scripts/admin-password-reset.js",
-    "test:auth-protection": "node scripts/tests/test-auth-protection.js",
-    "test:csrf-protection": "node scripts/tests/test-csrf-protection.js"
+    "test:auth-protection": "node tests/test-auth-protection.js",
+    "test:csrf-protection": "node tests/test-csrf-protection.js"
   },
   "keywords": [
     "caravans",

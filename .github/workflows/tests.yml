@@ -25,7 +25,7 @@ jobs:
       # Start admin server
       - name: Start admin server
         run: |
-          npm start &
+          node src/server/index.js &
       
       # Wait until server is reachable 
       - name: Wait for server
