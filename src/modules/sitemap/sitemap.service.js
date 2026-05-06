@@ -16,7 +16,7 @@ const escapeXml = (str) => {
 };
 
 export const getRobotsContent = () => {
-  const robotsPath = path.join(__dirname, '../../public/robots.txt');
+  const robotsPath = path.join(__dirname, '../../../public/robots.txt');
   return fs.readFileSync(robotsPath, 'utf-8');
 };
 
