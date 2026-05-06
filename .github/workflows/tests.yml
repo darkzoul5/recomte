@@ -47,10 +47,22 @@ jobs:
 
       - name: Run admin reachable test
         env:
-          PUBLIC_BASE_URL: http://127.0.0.1:3001/admin/login
+          TEST_PATH: /admin/login
+          PORT: 3001
         run: node tests/is-reachable.js
 
       - name: Run public reachable test
         env:
-          PUBLIC_BASE_URL: http://127.0.0.1:3000/
+          TEST_PATH: /
+          PORT: 3000
+        run: node tests/is-reachable.js
+
+      - name: Run robots.txt reachable test
+        env:
+          TEST_PATH: /robots.txt
+        run: node tests/is-reachable.js
+    
+      - name: Run sitemap reachable test
+        env:
+          TEST_PATH: /sitemap.xml
         run: node tests/is-reachable.js

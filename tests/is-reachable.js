@@ -1,41 +1,58 @@
 import http from 'http';
 
+const argUrl = process.argv[2];
+const envUrl = process.env.TEST_URL;
 const baseUrl = process.env.PUBLIC_BASE_URL;
-const target = new URL('/', baseUrl);
 
-const fetchRoot = () => new Promise((resolve, reject) => {
-	const req = http.request({
-		protocol: target.protocol,
-		hostname: target.hostname,
-		port: target.port,
-		path: target.pathname,
+const buildTargetUrl = () => {
+	const raw = argUrl || envUrl;
+	if (raw) {
+		try {
+			// If a full URL is provided, use it directly
+			return new URL(raw);
+		} catch {
+			// If a relative URL is provided, try to resolve it against baseUrl
+			if (baseUrl) return new URL(raw, baseUrl);
+			// Fallback: throw to trigger a helpful error
+			throw new Error(`Invalid URL provided: ${raw}`);
+		}
+	}
+	// No explicit URL; use baseUrl as root or default localhost server
+	if (baseUrl) return new URL('/', baseUrl);
+	return new URL('http://127.0.0.1:3000/');
+};
+
+const fetchUrl = (urlObj) => new Promise((resolve, reject) => {
+	const protocol = urlObj.protocol === 'https:' ? https : http;
+	const port = urlObj.port ? Number(urlObj.port) : (urlObj.protocol === 'https:' ? 443 : 80);
+	const req = protocol.request({
+		protocol: urlObj.protocol,
+		hostname: urlObj.hostname,
+		port,
+		path: urlObj.pathname + urlObj.search,
 		method: 'GET'
 	}, (res) => {
-		// Consume data to finish the request
 		res.on('data', () => {});
-		res.on('end', () => {
-			resolve({ statusCode: res.statusCode || 0 });
-		});
+		res.on('end', () => resolve({ statusCode: res.statusCode || 0 }));
 	});
 	req.on('error', reject);
 	req.end();
 });
 
 const run = async () => {
-	console.log(`Testing ${baseUrl} website reachability at ${target.origin}${target.pathname}`);
+	const target = buildTargetUrl();
+	console.log(`Testing URL ${target.href}`);
 	try {
-		const result = await fetchRoot();
-		const status = result.statusCode;
-		if (status >= 200 && status < 300) {
-			console.log(`PASS: ${baseUrl} website reachable (HTTP ${status}).`);
+		const { statusCode } = await fetchUrl(target);
+		if (statusCode >= 200 && statusCode < 300) {
+			console.log(`PASS: URL reachable (HTTP ${statusCode}).`);
 			process.exit(0);
 		} else {
-			console.error(`FAIL: ${baseUrl} website not r
-eachable (HTTP ${status}).`);
+			console.error(`FAIL: URL not reachable (HTTP ${statusCode}).`);
 			process.exit(1);
 		}
 	} catch (err) {
-		console.error(`FAIL: Could not reach ${baseUrl} website.`);
+		console.error(`FAIL: Could not reach URL: ${target.href}`);
 		console.error(err?.message || err);
 		process.exit(1);
 	}
