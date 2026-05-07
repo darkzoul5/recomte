@@ -7,7 +7,7 @@
   description: caravan.description || '',
   image: (caravan.images && caravan.images.length > 0) ? caravan.images.map((img) => img.url) : [],
   sku: caravan.sku || caravan.id || '',
-  brand: { "@type": "Brand", name: caravan.manufacturer || '' },
+  brand:  { "@type": "Brand", name: caravan.brand || '' } : undefined,
   seller: { "@type": "Organization", name: "Recomte" },
   offers: {
     "@type": "Offer",
