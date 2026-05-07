@@ -1,4 +1,30 @@
 <%- include('../../components/header/public', { title }) %>
+<script type="application/ld+json">
+<%- JSON.stringify({
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  name: caravan.title,
+  description: caravan.description || '',
+  image: (caravan.images && caravan.images.length > 0) ? caravan.images.map((img) => img.url) : [],
+  sku: caravan.sku || caravan.id || '',
+  brand: { "@type": "Brand", name: caravan.manufacturer || '' },
+  seller: { "@type": "Organization", name: "Recomte" },
+  offers: {
+    "@type": "Offer",
+    priceCurrency: "RUB",
+    price: caravan.price,
+    availability: caravan.status === 'sold'
+      ? "https://schema.org/OutOfStock"
+      : "https://schema.org/InStock",
+    itemCondition: "https://schema.org/UsedCondition",
+    availableDeliveryMethod: "https://schema.org/OnSitePickup",
+    hasMerchantReturnPolicy: {
+      "@type": "MerchantReturnPolicy",
+      returnPolicyCategory: "https://schema.org/MerchantReturnNotPermitted"
+    }
+  }
+}, null, 2) %>
+</script>
 <link rel="stylesheet" href="/public/css/caravan-gallery.css">
 
 <%
