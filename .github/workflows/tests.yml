@@ -78,7 +78,7 @@ jobs:
           TEST_PATH: /sitemap.xml
         run: node tests/smoke-http.js
       
-      - name: Run /contacts smoketest
+      - name: Run /contact smoketest
         env:
-          TEST_PATH: /contacts
+          TEST_PATH: /contact
         run: node tests/smoke-http.js
