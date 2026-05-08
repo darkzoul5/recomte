@@ -82,3 +82,8 @@ jobs:
         env:
           TEST_PATH: /contact
         run: node tests/smoke-http.js
+
+      - name: Run /caravans smoketest
+        env:
+          TEST_PATH: /caravans
+        run: node tests/smoke-http.js
