@@ -149,7 +149,7 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
-    "frame-ancestors 'self'"
+    "frame-ancestors 'self'" 
   ].join('; ');
 
   const permissionsPolicyHeader = [
