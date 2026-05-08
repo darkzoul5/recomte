@@ -144,8 +144,8 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     "script-src 'self' https:",
     "worker-src 'self' blob: https:",
     "font-src 'self' https: data:",
-    "frame-src 'self' https://www.openstreetmap.org https://*.openstreetmap.org",
-    "child-src 'self' blob: https://www.openstreetmap.org https://*.openstreetmap.org",
+    "frame-src 'self' https://umap.openstreetmap.fr https://*.openstreetmap.org",
+    "child-src 'self' blob: https://*.openstreetmap.org",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
@@ -161,7 +161,7 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     'magnetometer=()',
     'gyroscope=()',
     'accelerometer=()',
-    'fullscreen=(self)'
+    'fullscreen=(self "https://umap.openstreetmap.fr")'
   ].join(', ');
 
   const shouldSetNoIndex = isAdminServer || process.env.NODE_ENV !== 'production';
