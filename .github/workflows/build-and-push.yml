@@ -6,17 +6,7 @@ on:
     workflows: ["Run Tests"]
     types:
       - completed
-  #push:
-    #branches:
-      #- main
-    #paths-ignore:
-      #- "README.md"
-      #- "docs/**"
-      #- ".env.example"
-      #- "plans/**"
-      #- ".gitignore"
-      #- "LICENSE"
-      #- ".github/workflows/node-deps.yml"
+  
 
 
 concurrency:
