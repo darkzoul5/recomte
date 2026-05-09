@@ -30,6 +30,7 @@ done < <(
 echo "[deploy] Pulling repository updates..."
 git fetch origin
 git reset --hard origin/main
+git clean -fd
 
 echo "[deploy] Pulling latest images..."
 docker compose pull
