@@ -119,6 +119,26 @@ export const buildContactSeo = () => {
   };
 };
 
+export const buildPrivacySeo = () => {
+  const description = 'Политика конфиденциальности сайта recomte.ru.';
+  const pathname = '/privacy';
+
+  return {
+    title: 'Политика конфиденциальности',
+    description,
+    canonicalUrl: buildAbsoluteUrl(pathname),
+    ogImage: DEFAULT_OG_IMAGE,
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: 'Политика конфиденциальности',
+      url: buildAbsoluteUrl(pathname),
+      description,
+      inLanguage: 'ru-RU'
+    }
+  };
+};
+
 export const buildCaravanSeo = (caravan) => {
   const pathname = `/caravans/${caravan.slug}`;
   const plainDescription = toPlainText(

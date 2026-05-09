@@ -1,4 +1,4 @@
-import { buildHomeSeo, buildCatalogueSeo, buildContactSeo, buildCaravanSeo } from './pages.service.js';
+import { buildHomeSeo, buildCatalogueSeo, buildContactSeo, buildCaravanSeo, buildPrivacySeo } from './pages.service.js';
 
 export const getHomePage = async (request, reply) => {
   try {
@@ -75,5 +75,12 @@ export const getContactPage = async (request, reply) => {
   return reply.view('pages/contact/index', {
     title: 'Контакты',
     seo: buildContactSeo()
+  });
+};
+
+export const getPrivacyPage = async (request, reply) => {
+  return reply.view('pages/privacy/index', {
+    title: 'Политика конфиденциальности',
+    seo: buildPrivacySeo()
   });
 };
