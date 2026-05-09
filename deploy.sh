@@ -13,20 +13,28 @@ fi
 
 cd "${DEPLOY_DIR}"
 
+echo "[deploy] Recording current container image IDs..."
+
+declare -A OLD_IMAGE_IDS
+
+while read -r CONTAINER_NAME IMAGE_ID; do
+	OLD_IMAGE_IDS["$CONTAINER_NAME"]="$IMAGE_ID"
+done < <(
+	docker compose ps -q | while read -r CONTAINER_ID; do
+		CONTAINER_NAME="$(docker inspect --format '{{.Name}}' "$CONTAINER_ID" | sed 's#^/##')"
+		IMAGE_ID="$(docker inspect --format '{{.Image}}' "$CONTAINER_ID")"
+		echo "$CONTAINER_NAME $IMAGE_ID"
+	done
+)
+
 echo "[deploy] Pulling repository updates..."
 git pull --ff-only
 
 echo "[deploy] Pulling latest images..."
-REPO="git.darkzoul.org/dark_zoul/campersite"
-
-# Capture current image IDs for :latest and :dev before pulling new images
-echo "[deploy] Recording current image IDs for ${REPO} (:latest and :dev)"
-OLD_LATEST_ID="$(docker images --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep "^${REPO}:latest" | awk '{print $2}' || true)"
-OLD_DEV_ID="$(docker images --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep "^${REPO}:dev" | awk '{print $2}' || true)"
-
 docker compose pull
 
 echo "[deploy] Starting services..."
+
 attempt=1
 while true; do
 	if docker compose up -d --remove-orphans; then
@@ -45,18 +53,32 @@ done
 
 echo "[deploy] Completed successfully."
 
-# After successful deploy, check new image IDs for tags and remove old ones if they changed
-echo "[deploy] Checking new image IDs for ${REPO} (:latest and :dev)"
-NEW_LATEST_ID="$(docker images --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep "^${REPO}:latest" | awk '{print $2}' || true)"
-NEW_DEV_ID="$(docker images --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep "^${REPO}:dev" | awk '{print $2}' || true)"
+echo "[deploy] Checking for replaced images..."
 
-set +e
-if [ -n "$OLD_LATEST_ID" ] && [ -n "$NEW_LATEST_ID" ] && [ "$OLD_LATEST_ID" != "$NEW_LATEST_ID" ]; then
-	echo "[deploy] :latest changed (old=$OLD_LATEST_ID new=$NEW_LATEST_ID) -> removing old image"
-	docker image rm -f "$OLD_LATEST_ID" || echo "[deploy] Warning: failed to remove old :latest image $OLD_LATEST_ID"
-fi
+declare -A REMOVED_IMAGES
 
-if [ -n "$OLD_DEV_ID" ] && [ -n "$NEW_DEV_ID" ] && [ "$OLD_DEV_ID" != "$NEW_DEV_ID" ]; then
-	echo "[deploy] :dev changed (old=$OLD_DEV_ID new=$NEW_DEV_ID) -> removing old image"
-	docker image rm -f "$OLD_DEV_ID" || echo "[deploy] Warning: failed to remove old :dev image $OLD_DEV_ID"
-fi
+while read -r CONTAINER_NAME NEW_IMAGE_ID; do
+	OLD_IMAGE_ID="${OLD_IMAGE_IDS[$CONTAINER_NAME]:-}"
+
+	if [ -n "$OLD_IMAGE_ID" ] && [ "$OLD_IMAGE_ID" != "$NEW_IMAGE_ID" ]; then
+		if [ -z "${REMOVED_IMAGES[$OLD_IMAGE_ID]:-}" ]; then
+			echo "[deploy] Container '$CONTAINER_NAME' changed image:"
+			echo "          old=$OLD_IMAGE_ID"
+			echo "          new=$NEW_IMAGE_ID"
+
+			if docker image rm "$OLD_IMAGE_ID"; then
+				echo "[deploy] Removed old image $OLD_IMAGE_ID"
+			else
+				echo "[deploy] Old image still in use or could not be removed: $OLD_IMAGE_ID"
+			fi
+
+			REMOVED_IMAGES["$OLD_IMAGE_ID"]=1
+		fi
+	fi
+done < <(
+	docker compose ps -q | while read -r CONTAINER_ID; do
+		CONTAINER_NAME="$(docker inspect --format '{{.Name}}' "$CONTAINER_ID" | sed 's#^/##')"
+		IMAGE_ID="$(docker inspect --format '{{.Image}}' "$CONTAINER_ID")"
+		echo "$CONTAINER_NAME $IMAGE_ID"
+	done
+)
