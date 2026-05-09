@@ -64,7 +64,7 @@ jobs:
           git config user.email "gitea-actions-bot@local"
 
           git add package.json package-lock.json
-          git commit -m "chore: automated dependency updates"
+          git commit -m "deps: Node dependency update"
 
       # 📤 Push branch
       - name: Push branch
@@ -84,6 +84,6 @@ jobs:
           -d "{
             \"head\": \"${BRANCH}\",
             \"base\": \"main\",
-            \"title\": \"chore: dependency updates\",
-            \"body\": \"Automated dependency update PR (patch/minor/major included)\"
+            \"title\": \"deps: Node dependency updates\",
+            \"body\": \"Node dependency update PR\"
           }"
