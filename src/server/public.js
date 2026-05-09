@@ -42,11 +42,11 @@ export const buildPublicServer = async () => {
   await registerSitemapRoutes(fastify);
 
   fastify.get('*', async (request, reply) => {
-    return reply.code(404).view('404');
+    return reply.code(404).view('pages/errors/404');
   });
 
   fastify.post('*', async (request, reply) => {
-    return reply.code(404).view('404');
+    return reply.code(404).view('pages/errors/404');
   });
 
   return fastify;
