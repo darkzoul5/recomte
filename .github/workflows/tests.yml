@@ -13,7 +13,15 @@ on:
       - "LICENSE"
       - ".github/workflows/node-deps.yml"
   pull_request:
-
+    paths-ignore:
+      - "README.md"
+      - "docs/**"
+      - ".env.example"
+      - "plans/**"
+      - ".gitignore"
+      - "LICENSE"
+      - ".github/workflows/node-deps.yml"
+      
 concurrency:
   group: campersite-test-${{ github.ref }}
   cancel-in-progress: true
