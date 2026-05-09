@@ -44,7 +44,8 @@ jobs:
       - name: Apply dependency updates
         if: steps.check.outputs.has_updates == 'true'
         run: |
-          ncu -u
+          ncu -u --target minor
+          rm -f package-lock.json
           npm install
 
       # 🌿 Create branch
