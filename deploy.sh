@@ -28,7 +28,8 @@ done < <(
 )
 
 echo "[deploy] Pulling repository updates..."
-git pull --ff-only
+git fetch origin
+git reset --hard origin/main
 
 echo "[deploy] Pulling latest images..."
 docker compose pull
