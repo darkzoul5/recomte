@@ -14,3 +14,36 @@ main {
     flex: 1;
 }
 
+/* Equal-height cards in grids (home, catalog) */
+.columns.is-multiline > .column {
+    display: flex;
+}
+
+.columns.is-multiline > .column > .card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.columns.is-multiline > .column > .card .card-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+}
+
+/* Keep the primary action at the bottom for consistent layout */
+.columns.is-multiline > .column > .card .card-content .button.is-small,
+.columns.is-multiline > .column > .card .card-content .button.is-primary,
+.columns.is-multiline > .column > .card .card-content .button.is-success {
+    margin-top: auto;
+    align-self: flex-start;
+}
+
+/* Ensure images keep aspect ratio without stretching content height */
+.card .card-image .image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
