@@ -1,0 +1,148 @@
+/* Contact page layout (scoped to contact page) */
+
+.contact-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.78fr);
+  gap: 0.9rem;
+  align-items: start;
+}
+
+.contact-layout__map,
+.contact-layout__card {
+  margin-bottom: 0;
+}
+
+.contact-layout__map {
+  padding: 0;
+  overflow: hidden;
+}
+
+.contact-layout__iframe {
+  display: block;
+  width: 100%;
+  min-height: 560px;
+  border: 0;
+}
+
+/* Right column: content-sized equal-width tiles on desktop */
+.contact-layout__info {
+  display: grid;
+  justify-items: start;
+  align-content: start;
+  gap: 0.75rem;
+  width: max-content; /* width = widest card */
+  max-width: 100%;
+}
+
+.contact-layout__card {
+  padding: 0.9rem 1.05rem;
+  margin-bottom: 0;
+  width: 100%; /* match shared width of the info column */
+  max-width: 100%;
+}
+
+/* Typography and spacing inside tiles */
+.contact-layout__eyebrow {
+  margin-bottom: 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7a7a7a;
+}
+
+.contact-layout__hours-list {
+  list-style: none;
+  margin: 0.45rem 0 0;
+  padding: 0;
+}
+
+.contact-layout__hours-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.9rem;
+  padding: 0.1rem 0;
+}
+
+.contact-layout__hours-list li span,
+.contact-layout__hours-list li span:first-child {
+  font-weight: 400; /* do not bold worktime rows */
+}
+
+.contact-layout__item {
+  padding-top: 0.6rem;
+}
+
+.contact-layout__item + .contact-layout__item {
+  margin-top: 0.65rem;
+  border-top: 1px solid rgba(10, 10, 10, 0.08);
+}
+
+.contact-layout__label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.contact-layout__label i { color: #1f1f1f; }
+
+.contact-layout__item p { margin: 0; }
+
+.contact-layout__item p + p { margin-top: 0.4rem; }
+
+.contact-layout__item--time { padding-top: 0; }
+
+/* First breakpoint: <= 900px
+   - Tiles go first, split 2x2 and centered; map after tiles
+*/
+@media screen and (max-width: 900px) {
+  .contact-layout { grid-template-columns: 1fr; gap: 0.75rem; }
+
+  .contact-layout__info {
+    order: -1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    width: auto;
+    max-width: 720px;
+    margin: 0 auto; /* center blocks */
+    justify-items: stretch;
+    align-items: start; /* do not equalize tile heights */
+  }
+
+  .contact-layout__map { order: 1; }
+
+  .contact-layout__card { margin-top: 0; width: 100%; }
+
+  .contact-layout__card + .contact-layout__card { margin-top: 0; }
+
+  .contact-layout__iframe { min-height: 300px; }
+}
+
+/* Second breakpoint: <= 600px
+   - Single column, centered
+*/
+@media screen and (max-width: 600px) {
+  .contact-layout__info {
+    grid-template-columns: 1fr;
+    width: auto;
+    max-width: 520px;
+    margin: 0 auto; /* center stack */
+    align-items: start; /* do not stretch tiles vertically */
+  }
+
+  .contact-layout__map { order: 1; }
+  .contact-layout__info { order: 0; }
+
+  .contact-layout__card { width: 100%; padding: 0.85rem 1rem; }
+
+  /* Make map rectangular at small sizes */
+  .contact-layout__iframe {
+    aspect-ratio: 4/3; /* taller */
+    height: auto;
+    min-height: 360px;
+  }
+}
