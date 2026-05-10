@@ -12,6 +12,7 @@ import {
 import { parseMultipartForm, handleImageUploads } from './upload.service.js';
 import { rejectInvalidCsrf, requireAdminSession } from './admin.helpers.js';
 import { ensureCsrfToken } from '../auth/auth.middleware.js';
+import { images } from '../../../db/db.js';
 
 export const renderEditPage = async (request, reply, title, caravan, isNew, error) => reply.view('pages/admin/edit', {
   title,
@@ -189,9 +190,7 @@ export const postUpdateCaravan = async (request, reply, rootDir, fastify) => {
 
       for (const imageId of imagesToDelete) {
         if (imageId) {
-          // Import images here to delete them
-          const { images } = await import('../../db/db.js');
-          images.delete(parseInt(imageId), true);
+          images.delete(parseInt(imageId, 10), true);
         }
       }
     }
