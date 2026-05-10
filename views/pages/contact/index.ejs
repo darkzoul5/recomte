@@ -1,71 +1,72 @@
 <%- include('../../components/header/public', { title: 'Контакты' }) %>
-<!-- Page-specific styles -->
-<link rel="stylesheet" href="/public/css/contact.css">
+  <!-- Page-specific styles -->
+  <link rel="stylesheet" href="/public/css/contact.css">
 
-<!-- Contacts Section -->
-<section class="section">
-  <div class="container">
-    <div class="contact-layout">
-      <div class="contact-layout__map box">
-        <iframe
-          class="contact-layout__iframe"
-          allowfullscreen
-          allow="geolocation"
-          src="https://umap.openstreetmap.fr/ru/map/recomteru_1403335?scaleControl=false&miniMap=false&scrollWheelZoom=true&zoomControl=true&editMode=disabled&moreControl=false&searchControl=null&tilelayersControl=null&embedControl=null&datalayersControl=false&onLoadPanel=none&captionBar=false&captionMenus=false">
-        </iframe>
-      </div>
-
-      <div class="contact-layout__info">
-        <div class="contact-layout__card box">
-          <div class="contact-layout__item contact-layout__item--map">
-            <div class="contact-layout__label">
-              <i class="fas fa-map-marker-alt"></i>
-              <span>Адрес</span>
-            </div>
-            <p>Санкт-Петербург, Московский район</p>
-          </div>
+  <!-- Contacts Section -->
+  <section class="section">
+    <div class="container">
+      <div class="contact-layout">
+        <div class="contact-layout__map box">
+          <iframe class="contact-layout__iframe" allowfullscreen allow="geolocation"
+            src="https://umap.openstreetmap.fr/ru/map/recomteru_1403335?scaleControl=false&miniMap=false&scrollWheelZoom=true&zoomControl=true&editMode=disabled&moreControl=false&searchControl=null&tilelayersControl=null&embedControl=null&datalayersControl=false&onLoadPanel=none&captionBar=false&captionMenus=false">
+          </iframe>
         </div>
 
-        <div class="contact-layout__card box">
-          <div class="contact-layout__item contact-layout__item--phone">
-            <div class="contact-layout__label">
-              <i class="fas fa-phone"></i>
-              <span>Телефон</span>
+        <div class="contact-layout__info">
+          <div class="contact-layout__card box">
+            <div class="contact-layout__item contact-layout__item--map">
+              <div class="contact-layout__label">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Адрес</span>
+              </div>
+              <div class="contact-value">
+                <p>Санкт-Петербург, Московский район</p>
+              </div>
             </div>
-            <p><a href="tel:+7 (xxx) xxx-xx-xx">+7 (xxx) xxx-xx-xx</a></p>
           </div>
-        </div>
 
-        <div class="contact-layout__card box">
-          <div class="contact-layout__item contact-layout__item--email">
-            <div class="contact-layout__label">
-              <i class="fas fa-envelope"></i>
-              <span>Э-почта</span>
+          <div class="contact-layout__card box">
+            <div class="contact-layout__item contact-layout__item--phone">
+              <div class="contact-layout__label">
+                <i class="fas fa-phone"></i>
+                <span>Телефон</span>
+              </div>
+              <div class="contact-value"><a href="tel:+7 (xxx) xxx-xx-xx">+7 (xxx) xxx-xx-xx</a></div>
             </div>
-            <p><a href="mailto:info@recomte.ru">info@recomte.ru</a></p>
           </div>
-        </div>
 
-        <div class="contact-layout__card box">
-          <div class="contact-layout__item contact-layout__item--time">
-            <div class="contact-layout__label">
-              <i class="fas fa-clock"></i>
-              <span>Время работы</span>
+          <div class="contact-layout__card box">
+            <div class="contact-layout__item contact-layout__item--email">
+              <div class="contact-layout__label">
+                <i class="fas fa-envelope"></i>
+                <span>Э-почта</span>
+              </div>
+              <div class="contact-value"><a href="mailto:info@recomte.ru">info@recomte.ru</a></div>
             </div>
-          <ul class="contact-layout__hours-list">
-            <li><span>Пн:  10:00 — 17:00</span></li>
-            <li><span>Вт:  10:00 — 17:00</span></li>
-            <li><span>Ср:  10:00 — 17:00</span></li>
-            <li><span>Чт:  10:00 — 17:00</span></li>
-            <li><span>Пт:  10:00 — 17:00</span></li>
-            <li><span>Сб:  по договоренности</span></li>
-            <li><span>Вс:  по договоренности</span></li>
-          </ul>
+          </div>
+
+          <div class="contact-layout__card box">
+            <div class="contact-layout__item contact-layout__item--time">
+              <div class="contact-layout__label">
+                <i class="fas fa-clock"></i>
+                <span>Время работы</span>
+              </div>
+              <div class="contact-value contact-value--list">
+                <ul class="contact-layout__hours-list">
+                  <li><span>Пн: 10:00 — 17:00</span></li>
+                  <li><span>Вт: 10:00 — 17:00</span></li>
+                  <li><span>Ср: 10:00 — 17:00</span></li>
+                  <li><span>Чт: 10:00 — 17:00</span></li>
+                  <li><span>Пт: 10:00 — 17:00</span></li>
+                  <li><span>Сб: по договоренности</span></li>
+                  <li><span>Вс: по договоренности</span></li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<%- include('../../components/footer/public') %>
+  <%- include('../../components/footer/public') %>
