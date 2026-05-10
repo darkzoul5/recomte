@@ -43,6 +43,7 @@ export const hydrateCaravan = (caravan) => {
     ...featureMap,
     fridge_type_values: parseMultiValueField(caravan.fridge_type),
     heating_type_values: parseMultiValueField(caravan.heating_type),
+    water_heater_type_values: parseMultiValueField(caravan.water_heater_type),
     bed_types: bedTypes,
     images: caravanImages,
     feature_map: featureMap,

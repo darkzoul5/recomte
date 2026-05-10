@@ -255,17 +255,43 @@ export const validateCaravanData = (data, isUpdate = false) => {
       fridgeTypes = [data.fridge_type];
     }
 
-    const invalidFridgeType = fridgeTypes.some((value) => !['electric', 'gas'].includes(String(value)));
+    const ALLOWED_FRIDGE_TYPES = new Set([
+      '3-режимный (газ/12В/230В)',
+      '2-режимный (газ/230В)',
+      'Компрессорный (12В)',
+      'Электрический (230В)',
+      'Газовый',
+      'Термобокс'
+    ]);
+
+    const invalidFridgeType = fridgeTypes.some((value) => !ALLOWED_FRIDGE_TYPES.has(String(value)));
     if (invalidFridgeType) {
-      errors.push('fridge_type must contain only electric or gas');
+      errors.push('fridge_type must be one of the supported options');
     }
   }
   if (data.shower_type && !['none', 'separate', 'combined'].includes(String(data.shower_type))) {
     errors.push('shower_type must be none, separate, or combined');
   }
 
-  if (data.water_heater_type && !['electric', 'gas'].includes(String(data.water_heater_type))) {
-    errors.push('water_heater_type must be electric or gas');
+  if (data.water_heater_type) {
+    let boilerTypes = [];
+    if (Array.isArray(data.water_heater_type)) {
+      boilerTypes = data.water_heater_type;
+    } else if (typeof data.water_heater_type === 'string' && data.water_heater_type.trim().startsWith('[')) {
+      try {
+        const parsed = JSON.parse(data.water_heater_type);
+        boilerTypes = Array.isArray(parsed) ? parsed : [];
+      } catch {
+        boilerTypes = [];
+      }
+    } else {
+      boilerTypes = [data.water_heater_type];
+    }
+
+    const invalidBoilerType = boilerTypes.some((value) => !['electric', 'gas'].includes(String(value)));
+    if (invalidBoilerType) {
+      errors.push('water_heater_type must contain only electric or gas');
+    }
   }
 
 

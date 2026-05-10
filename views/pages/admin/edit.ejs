@@ -172,11 +172,10 @@
         <label style="font-weight: normal;"><input type="checkbox" name="has_hot_water" <%= caravan?.has_hot_water ? 'checked' : '' %>> Горячая вода</label>
       </div>
       <div class="form-group">
-        <label>Тип бойлера</label>
-        <select name="water_heater_type">
-          <option value="">Выбрать...</option>
-          <option value="electric" <%= caravan?.water_heater_type === 'electric' ? 'selected' : '' %>>Электрический</option>
-          <option value="gas" <%= caravan?.water_heater_type === 'gas' ? 'selected' : '' %>>Газовый</option>
+        <label>Тип бойлера (можно несколько)</label>
+        <select name="water_heater_type" multiple size="2">
+          <option value="electric" <%= caravan?.water_heater_type_values && caravan.water_heater_type_values.includes('electric') ? 'selected' : '' %>>Электрический</option>
+          <option value="gas" <%= caravan?.water_heater_type_values && caravan.water_heater_type_values.includes('gas') ? 'selected' : '' %>>Газовый</option>
         </select>
       </div>
     </div>
@@ -198,9 +197,13 @@
       </div>
       <div class="form-group">
         <label>Питание холодильника (можно несколько)</label>
-        <select name="fridge_type" multiple size="2">
-          <option value="electric" <%= caravan?.fridge_type_values && caravan.fridge_type_values.includes('electric') ? 'selected' : '' %>>Электричество</option>
-          <option value="gas" <%= caravan?.fridge_type_values && caravan.fridge_type_values.includes('gas') ? 'selected' : '' %>>Газ</option>
+        <select name="fridge_type" multiple size="6">
+          <option value="3-режимный (газ/12В/230В)" <%= caravan?.fridge_type_values && caravan.fridge_type_values.includes('3-режимный (газ/12В/230В)') ? 'selected' : '' %>>3-режимный (газ/12В/230В)</option>
+          <option value="2-режимный (газ/230В)" <%= caravan?.fridge_type_values && caravan.fridge_type_values.includes('2-режимный (газ/230В)') ? 'selected' : '' %>>2-режимный (газ/230В)</option>
+          <option value="Компрессорный (12В)" <%= caravan?.fridge_type_values && caravan.fridge_type_values.includes('Компрессорный (12В)') ? 'selected' : '' %>>Компрессорный (12В)</option>
+          <option value="Электрический (230В)" <%= caravan?.fridge_type_values && caravan.fridge_type_values.includes('Электрический (230В)') ? 'selected' : '' %>>Электрический (230В)</option>
+          <option value="Газовый" <%= caravan?.fridge_type_values && caravan.fridge_type_values.includes('Газовый') ? 'selected' : '' %>>Газовый</option>
+          <option value="Термобокс" <%= caravan?.fridge_type_values && caravan.fridge_type_values.includes('Термобокс') ? 'selected' : '' %>>Термобокс</option>
         </select>
       </div>
     </div>

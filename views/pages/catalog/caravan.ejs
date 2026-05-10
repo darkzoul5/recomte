@@ -204,7 +204,11 @@
                 <% if (caravan.fresh_water_tank_l) { %><li>Пресная вода: <%= caravan.fresh_water_tank_l %> л</li><% } %>
                 <% if (caravan.grey_water_tank_l) { %><li>Серая вода: <%= caravan.grey_water_tank_l %> л</li><% } %>
                 <% if (caravan.has_hot_water) { %><li><i class="fas fa-check has-text-success"></i> Горячая вода</li><% } %>
-                <% if (caravan.water_heater_type) { %><li>Бойлер: <%= caravan.water_heater_type === 'electric' ? 'Электрический' : 'Газовый' %></li><% } %>
+                <% if (caravan.water_heater_type_values && caravan.water_heater_type_values.length > 0) { %>
+                  <li>Бойлер: <%= caravan.water_heater_type_values.join(', ') %></li>
+                <% } else if (caravan.water_heater_type) { %>
+                  <li>Бойлер: <%= caravan.water_heater_type %></li>
+                <% } %>
                 <% if (caravan.boiler_volume_l) { %><li>Объём бойлера: <%= caravan.boiler_volume_l %> л</li><% } %>
               </ul>
             </div>
@@ -215,7 +219,7 @@
                 <h4 class="subtitle is-6 has-text-weight-bold">Кухня</h4>
               <ul>
                 <% if (caravan.fridge_volume_l) { %><li>Холодильник: <%= caravan.fridge_volume_l %> л</li><% } %>
-                <% if (caravan.fridge_type_values && caravan.fridge_type_values.length > 0) { %><li>Питание холодильника: <%= caravan.fridge_type_values.map((value) => value === 'electric' ? 'Электричество' : 'Газ').join(', ') %></li><% } %>
+                <% if (caravan.fridge_type_values && caravan.fridge_type_values.length > 0) { %><li>Питание холодильника: <%= caravan.fridge_type_values.join(', ') %></li><% } %>
                 <% if (caravan.stove_burners_count && caravan.stove_burners_count > 0) { %><li><i class="fas fa-check has-text-success"></i> Плита: <%= caravan.stove_burners_count %> конфорок</li><% } %>
                 <% if (caravan.has_microwave) { %><li><i class="fas fa-check has-text-success"></i> Микроволновка</li><% } %>
                 <% if (caravan.has_oven) { %><li><i class="fas fa-check has-text-success"></i> Духовка</li><% } %>
