@@ -1,89 +1,69 @@
 <%- include('../../components/header/public', { title: 'Контакты' }) %>
+<!-- Page-specific styles -->
+<link rel="stylesheet" href="/public/css/contact.css">
 
 <!-- Contacts Section -->
 <section class="section">
   <div class="container">
-    <h2 class="title has-text-centered">Контакты</h2>
-
-    <div class="columns is-multiline mt-5">
-      <!-- Working hours -->
-      <div class="column is-half">
-        <div class="box">
-          <h3 class="title is-5">Рабочее время</h3>
-          <table class="table is-fullwidth">
-            <tbody>
-              <tr>
-                <td><strong>Пн</strong></td>
-                <td>10:00 — 17:00</td>
-              </tr>
-              <tr>
-                <td><strong>Вт</strong></td>
-                <td>10:00 — 17:00</td>
-              </tr>
-              <tr>
-                <td><strong>Ср</strong></td>
-                <td>10:00 — 17:00</td>
-              </tr>
-              <tr>
-                <td><strong>Чт</strong></td>
-                <td>10:00 — 17:00</td>
-              </tr>
-              <tr>
-                <td><strong>Пт</strong></td>
-                <td>10:00 — 17:00</td>
-              </tr>
-              <tr>
-                <td><strong>Сб</strong></td>
-                <td>по договоренности</td>
-              </tr>
-              <tr>
-                <td><strong>Вс</strong></td>
-                <td>по договоренности</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+    <div class="contact-layout">
+      <div class="contact-layout__map box">
+        <iframe
+          class="contact-layout__iframe"
+          allowfullscreen
+          allow="geolocation"
+          src="https://umap.openstreetmap.fr/ru/map/recomteru_1403335?scaleControl=false&miniMap=false&scrollWheelZoom=true&zoomControl=true&editMode=disabled&moreControl=false&searchControl=null&tilelayersControl=null&embedControl=null&datalayersControl=false&onLoadPanel=none&captionBar=false&captionMenus=false">
+        </iframe>
       </div>
 
-      <!-- Contact info -->
-      <div class="column is-half">
-        <div class="box">
-          <h3 class="title is-5">Контактная информация</h3>
-          <p><i class="fas fa-phone mr-2"></i>Телефон: <a href="tel:+7 (xxx) xxx-xx-xx">+7 (xxx) xxx-xx-xx</a></p>
-          <p><i class="fas fa-envelope mr-2"></i>Email: <a href="mailto:info@recomte.ru">info@recomte.ru</a></p>
-          <p><i class="fas fa-globe mr-2"></i>Соцсети: <a href="https://avito.ru">Avito</a> | <a href="https://telegram.org">Telegram</a> </p>
+      <div class="contact-layout__info">
+        <div class="contact-layout__card box">
+          <div class="contact-layout__item contact-layout__item--map">
+            <div class="contact-layout__label">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>Адрес</span>
+            </div>
+            <p>Санкт-Петербург, Московский район</p>
+          </div>
+        </div>
+
+        <div class="contact-layout__card box">
+          <div class="contact-layout__item contact-layout__item--phone">
+            <div class="contact-layout__label">
+              <i class="fas fa-phone"></i>
+              <span>Телефон</span>
+            </div>
+            <p><a href="tel:+7 (xxx) xxx-xx-xx">+7 (xxx) xxx-xx-xx</a></p>
+          </div>
+        </div>
+
+        <div class="contact-layout__card box">
+          <div class="contact-layout__item contact-layout__item--email">
+            <div class="contact-layout__label">
+              <i class="fas fa-envelope"></i>
+              <span>Э-почта</span>
+            </div>
+            <p><a href="mailto:info@recomte.ru">info@recomte.ru</a></p>
+          </div>
+        </div>
+
+        <div class="contact-layout__card box">
+          <div class="contact-layout__item contact-layout__item--time">
+            <div class="contact-layout__label">
+              <i class="fas fa-clock"></i>
+              <span>Время работы</span>
+            </div>
+          <ul class="contact-layout__hours-list">
+            <li><span>Пн:  10:00 — 17:00</span></li>
+            <li><span>Вт:  10:00 — 17:00</span></li>
+            <li><span>Ср:  10:00 — 17:00</span></li>
+            <li><span>Чт:  10:00 — 17:00</span></li>
+            <li><span>Пт:  10:00 — 17:00</span></li>
+            <li><span>Сб:  по договоренности</span></li>
+            <li><span>Вс:  по договоренности</span></li>
+          </ul>
+          </div>
         </div>
       </div>
-
-      <!-- Address and Map -->
-      <div class="column is-half">
-        <div class="box">
-          <h3 class="title is-5">Адрес</h3>
-          <p>г. Санкт-Петербург, Московский район</p>
-          <br/>
-          <iframe style="width: 100%; height: 300px; border: 0;" allowfullscreen allow="geolocation" 
-            src="https://umap.openstreetmap.fr/ru/map/recomteru_1403335?scaleControl=false&miniMap=false&scrollWheelZoom=true&zoomControl=true&editMode=disabled&moreControl=false&searchControl=null&tilelayersControl=null&embedControl=null&datalayersControl=false&onLoadPanel=none&captionBar=false&captionMenus=false">
-          </iframe>
-          <br/>
-          <small>
-            <a href="https://umap.openstreetmap.fr/ru/map/recomteru_1403335">Смотреть в полноэкранном режиме</a>
-          </small>
-        </div>
-      </div>
-    </div>
-
-    <!-- Call to Action -->
-    <div class="box has-background-light mt-5">
-      <h2 class="subtitle is-4 mb-3">Интересуетесь Прицеп-дачей?</h2>
-      <p class="mb-4">
-        Свяжитесь с нами по телефону или через email. Мы поможем вам найти идеальную вариант для ваших путешествий!
-      </p>
-      <a href="/caravans" class="button is-primary">
-        <span class="icon">
-          <i class="fas fa-arrow-left"></i>
-        </span>
-        <span>Вернуться к каталогу</span>
-      </a>
     </div>
   </div>
 </section>
