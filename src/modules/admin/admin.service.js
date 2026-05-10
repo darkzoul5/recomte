@@ -60,6 +60,8 @@ export const processFeatures = (data) => {
     delete data[formKey];
   }
 
+  // Do not touch kitchen_appliances here; it is handled in mapFormToCaravanData
+
   const customFeaturesPayload = typeof data.custom_features_json === 'string'
     ? data.custom_features_json
     : (typeof data.custom_features === 'string' ? data.custom_features : '');
@@ -130,7 +132,7 @@ export const mapFormToCaravanData = (formData) => {
   ]);
   const heatingTypes = normalizeMultiSelect(formData.heating_type, ['diesel', 'gas', 'electric']);
   const waterHeaterTypes = normalizeMultiSelect(formData.water_heater_type, ['electric', 'gas']);
-  const kitchenAppliances = normalizeMultiSelect(formData.kitchen_appliances, ['microwave', 'oven']);
+  const kitchenAppliances = normalizeMultiSelect(formData.kitchen_appliances, ['microwave', 'oven', 'grill']);
 
   return {
     title: formData.title,
@@ -157,8 +159,7 @@ export const mapFormToCaravanData = (formData) => {
     sink_present: formData.sink_present ? 1 : 0,
     cooktop_type: null,
     stove_burners_count: formData.stove_burners_count ? parseInt(formData.stove_burners_count) : null,
-    has_microwave: kitchenAppliances.includes('microwave') ? 1 : 0,
-    has_oven: kitchenAppliances.includes('oven') ? 1 : 0,
+    kitchen_appliances: kitchenAppliances.length > 0 ? JSON.stringify(kitchenAppliances) : null,
     heating_type: heatingTypes.length > 0 ? JSON.stringify(heatingTypes) : null,
     heating_distribution: formData.heating_distribution || null,
     heater_brand: formData.heater_brand || null,

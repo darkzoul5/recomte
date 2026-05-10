@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS caravans (
   boiler_volume_l INTEGER,
   
   -- KITCHEN
+  kitchen_appliances TEXT,
   fridge_type TEXT,
   fridge_volume_l INTEGER,
   sink_present BOOLEAN DEFAULT 0,

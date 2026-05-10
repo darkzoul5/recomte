@@ -10,7 +10,7 @@ const ALLOWED_CARAVAN_COLUMNS = new Set([
   // Water systems
   'fresh_water_tank_l', 'grey_water_tank_l', 'has_hot_water', 'water_heater_type', 'boiler_volume_l',
   // Kitchen
-  'fridge_type', 'fridge_volume_l', 'sink_present', 'cooktop_type', 'stove_burners_count', 'has_microwave', 'has_oven',
+  'kitchen_appliances', 'fridge_type', 'fridge_volume_l', 'sink_present', 'cooktop_type', 'stove_burners_count', 'has_microwave', 'has_oven',
   // Heating & Climate
   'has_heating', 'heating_type', 'heating_distribution', 'heater_brand', 'has_ac', 'vent_fans_count', 'skylights_count', 'camper_season',
   // Comfort
@@ -267,6 +267,28 @@ export const validateCaravanData = (data, isUpdate = false) => {
     const invalidFridgeType = fridgeTypes.some((value) => !ALLOWED_FRIDGE_TYPES.has(String(value)));
     if (invalidFridgeType) {
       errors.push('fridge_type must be one of the supported options');
+    }
+  }
+
+  if (data.kitchen_appliances) {
+    let appliances = [];
+    if (Array.isArray(data.kitchen_appliances)) {
+      appliances = data.kitchen_appliances;
+    } else if (typeof data.kitchen_appliances === 'string' && data.kitchen_appliances.trim().startsWith('[')) {
+      try {
+        const parsed = JSON.parse(data.kitchen_appliances);
+        appliances = Array.isArray(parsed) ? parsed : [];
+      } catch {
+        appliances = [];
+      }
+    } else {
+      appliances = [data.kitchen_appliances];
+    }
+
+    const ALLOWED_APPLIANCES = new Set(['microwave', 'oven', 'grill']);
+    const invalid = appliances.some((v) => !ALLOWED_APPLIANCES.has(String(v)));
+    if (invalid) {
+      errors.push('kitchen_appliances must contain only microwave, oven, or grill');
     }
   }
   if (data.shower_type && !['none', 'separate', 'combined'].includes(String(data.shower_type))) {

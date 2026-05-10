@@ -147,7 +147,19 @@
     <% } %>
 
     <!-- Detailed specs if available -->
-    <% if (caravan.shower_type || caravan.has_toilet || caravan.sink_present || caravan.fridge_volume_l || caravan.fresh_water_tank_l || caravan.has_hot_water || caravan.water_heater_type || caravan.boiler_volume_l || caravan.length_mm || caravan.width_mm || caravan.height_mm || caravan.interior_height_mm || caravan.curb_weight_kg || caravan.gross_weight_kg || caravan.condition) { %>
+    <% if (
+      caravan.shower_type || caravan.has_toilet || caravan.sink_present ||
+      caravan.fridge_volume_l || caravan.fresh_water_tank_l || caravan.has_hot_water || caravan.water_heater_type || caravan.boiler_volume_l ||
+      caravan.length_mm || caravan.width_mm || caravan.height_mm || caravan.interior_height_mm || caravan.curb_weight_kg || caravan.gross_weight_kg || caravan.condition ||
+      (caravan.feature_map && (
+        (caravan.feature_map.grill && caravan.feature_map.grill !== '0') ||
+        (caravan.feature_map.awning && caravan.feature_map.awning !== '0') ||
+        (caravan.feature_map.bike_rack && caravan.feature_map.bike_rack !== '0') ||
+        (caravan.feature_map.mosquito_nets && caravan.feature_map.mosquito_nets !== '0') ||
+        (caravan.feature_map.tv_mount && caravan.feature_map.tv_mount !== '0') ||
+        (caravan.feature_map.air_conditioning && caravan.feature_map.air_conditioning !== '0')
+      ))
+    ) { %>
       <div class="box mt-5">
         <h2 class="subtitle is-4">Детальные характеристики</h2>
         
@@ -214,20 +226,21 @@
             </div>
           <% } %>
 
-          <% if (caravan.fridge_volume_l || (caravan.fridge_type_values && caravan.fridge_type_values.length > 0) || caravan.stove_burners_count || caravan.has_microwave || caravan.has_oven) { %>
+          <% if (caravan.fridge_volume_l || (caravan.fridge_type_values && caravan.fridge_type_values.length > 0) || caravan.stove_burners_count || (caravan.kitchen_appliances_values && caravan.kitchen_appliances_values.length > 0)) { %>
             <div class="column is-one-third">
                 <h4 class="subtitle is-6 has-text-weight-bold">Кухня</h4>
               <ul>
                 <% if (caravan.fridge_volume_l) { %><li>Холодильник: <%= caravan.fridge_volume_l %> л</li><% } %>
                 <% if (caravan.fridge_type_values && caravan.fridge_type_values.length > 0) { %><li>Питание холодильника: <%= caravan.fridge_type_values.join(', ') %></li><% } %>
                 <% if (caravan.stove_burners_count && caravan.stove_burners_count > 0) { %><li><i class="fas fa-check has-text-success"></i> Плита: <%= caravan.stove_burners_count %> конфорок</li><% } %>
-                <% if (caravan.has_microwave) { %><li><i class="fas fa-check has-text-success"></i> Микроволновка</li><% } %>
-                <% if (caravan.has_oven) { %><li><i class="fas fa-check has-text-success"></i> Духовка</li><% } %>
+                <% if (caravan.kitchen_appliances_values && caravan.kitchen_appliances_values.includes('microwave')) { %><li><i class="fas fa-check has-text-success"></i> Микроволновка</li><% } %>
+                <% if (caravan.kitchen_appliances_values && caravan.kitchen_appliances_values.includes('oven')) { %><li><i class="fas fa-check has-text-success"></i> Духовка</li><% } %>
+                <% if (caravan.kitchen_appliances_values && caravan.kitchen_appliances_values.includes('grill')) { %><li><i class="fas fa-check has-text-success"></i> Гриль</li><% } %>
               </ul>
             </div>
           <% } %>
 
-          <% if ((caravan.heating_type_values && caravan.heating_type_values.length > 0) || caravan.has_ac || caravan.vent_fans_count || caravan.skylights_count || caravan.heating_distribution || caravan.heater_brand || caravan.double_glazed_windows) { %>
+          <% if ((caravan.heating_type_values && caravan.heating_type_values.length > 0) || caravan.has_ac || (caravan.feature_map && caravan.feature_map.air_conditioning && caravan.feature_map.air_conditioning !== '0') || caravan.vent_fans_count || caravan.skylights_count || caravan.heating_distribution || caravan.heater_brand || caravan.double_glazed_windows) { %>
             <div class="column is-one-third">
                 <h4 class="subtitle is-6 has-text-weight-bold">Климат и отопление</h4>
               <ul>
@@ -235,10 +248,22 @@
                 <% if (caravan.heating_distribution) { %><li>Распределение тепла: <%= caravan.heating_distribution === 'liquid' ? 'Жидкостное' : 'Воздушное' %></li><% } %>
                 <% if (caravan.heater_brand) { %><li>Бренд котла: <%= caravan.heater_brand %></li><% } %>
                 <% if (caravan.camper_season) { %><li>Тип: <%= caravan.camper_season === 'winter' ? 'Зима' : 'Лето' %></li><% } %>
-                <% if (caravan.has_ac) { %><li><i class="fas fa-check has-text-success"></i> Кондиционер</li><% } %>
+                <% if (caravan.has_ac || (caravan.feature_map && caravan.feature_map.air_conditioning && caravan.feature_map.air_conditioning !== '0')) { %><li><i class="fas fa-check has-text-success"></i> Кондиционер</li><% } %>
                 <% if (caravan.vent_fans_count) { %><li>Вентиляторов: <%= caravan.vent_fans_count %></li><% } %>
                 <% if (caravan.skylights_count) { %><li>Люков: <%= caravan.skylights_count %></li><% } %>
                 <% if (caravan.double_glazed_windows) { %><li><i class="fas fa-check has-text-success"></i> Двойное остекление</li><% } %>
+              </ul>
+            </div>
+          <% } %>
+
+          <% if (caravan.feature_map && ((caravan.feature_map.awning && caravan.feature_map.awning !== '0') || (caravan.feature_map.bike_rack && caravan.feature_map.bike_rack !== '0') || (caravan.feature_map.mosquito_nets && caravan.feature_map.mosquito_nets !== '0') || (caravan.feature_map.tv_mount && caravan.feature_map.tv_mount !== '0'))) { %>
+            <div class="column is-one-third">
+                <h4 class="subtitle is-6 has-text-weight-bold">Оснащение</h4>
+              <ul>
+                <% if (caravan.feature_map.awning && caravan.feature_map.awning !== '0') { %><li><i class="fas fa-check has-text-success"></i> Маркиза</li><% } %>
+                <% if (caravan.feature_map.bike_rack && caravan.feature_map.bike_rack !== '0') { %><li><i class="fas fa-check has-text-success"></i> Велостойка</li><% } %>
+                <% if (caravan.feature_map.mosquito_nets && caravan.feature_map.mosquito_nets !== '0') { %><li><i class="fas fa-check has-text-success"></i> Москитные сетки</li><% } %>
+                <% if (caravan.feature_map.tv_mount && caravan.feature_map.tv_mount !== '0') { %><li><i class="fas fa-check has-text-success"></i> ТВ-кронштейн</li><% } %>
               </ul>
             </div>
           <% } %>

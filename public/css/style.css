@@ -15,27 +15,27 @@ main {
 }
 
 /* Equal-height cards in grids (home, catalog) */
-.columns.is-multiline > .column {
+.columns.is-multiline.cards-grid > .column {
     display: flex;
 }
 
-.columns.is-multiline > .column > .card {
+.columns.is-multiline.cards-grid > .column > .card {
     display: flex;
     flex-direction: column;
     height: 100%;
     width: 100%;
 }
 
-.columns.is-multiline > .column > .card .card-content {
+.columns.is-multiline.cards-grid > .column > .card .card-content {
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
 }
 
 /* Keep the primary action at the bottom for consistent layout */
-.columns.is-multiline > .column > .card .card-content .button.is-small,
-.columns.is-multiline > .column > .card .card-content .button.is-primary,
-.columns.is-multiline > .column > .card .card-content .button.is-success {
+.columns.is-multiline.cards-grid > .column > .card .card-content .button.is-small,
+.columns.is-multiline.cards-grid > .column > .card .card-content .button.is-primary,
+.columns.is-multiline.cards-grid > .column > .card .card-content .button.is-success {
     margin-top: auto;
     align-self: flex-start;
 }

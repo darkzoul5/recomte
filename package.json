@@ -11,6 +11,7 @@
     "start:admin": "node src/server/admin.js",
     "db:init": "node scripts/init-db.js",
     "db:seed": "node scripts/seed-db.js",
+    "db:migrate:kitchen-appliances": "node scripts/migrations/20260510_add_kitchen_appliances.js",
     "admin:passwd": "node scripts/admin-password-reset.js",
     "test:auth-protection": "node tests/test-auth-protection.js",
     "test:csrf-protection": "node tests/test-csrf-protection.js"

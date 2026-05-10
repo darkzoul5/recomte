@@ -12,7 +12,8 @@ const FEATURE_FLAGS = new Set([
 
 const RESERVED_FEATURE_KEYS = new Set([
   ...FEATURE_FLAGS,
-  'bed_types'
+  'bed_types',
+  'kitchen_appliances'
 ]);
 
 const serializeCustomFeatures = (featureMap) => {
@@ -74,17 +75,13 @@ const hydrateCaravan = (caravan) => {
     }
     return [];
   };
-
   return {
     ...caravan,
     ...featureMap,
     fridge_type_values: parseMultiValueField(caravan.fridge_type),
     heating_type_values: parseMultiValueField(caravan.heating_type),
     water_heater_type_values: parseMultiValueField(caravan.water_heater_type),
-    kitchen_appliances_values: [
-      ...(caravan.has_microwave ? ['microwave'] : []),
-      ...(caravan.has_oven ? ['oven'] : [])
-    ],
+    kitchen_appliances_values: parseMultiValueField(caravan.kitchen_appliances),
     bed_types: bedTypes,
     images: caravanImages,
     features: featureFlags,
