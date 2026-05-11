@@ -9,7 +9,7 @@ on:
 
 concurrency:
   group: campersite-release-build-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build-release:
