@@ -60,6 +60,11 @@
                     <% } %>
                   </p>
                 <% } %>
+                <% if (caravan.camper_season) { %>
+                  <p class="is-size-7 has-text-grey mt-1">
+                    Тип: <strong><%= caravan.camper_season === 'all_season' ? 'Всесезонный' : 'Лето' %></strong>
+                  </p>
+                <% } %>
                 <div class="is-flex is-align-items-center mt-2" style="gap: 0.75rem; flex-wrap: wrap;">
                   <a class="button is-success is-small" href="/caravans/<%= caravan.slug %>">Подробнее</a>
                 </div>
