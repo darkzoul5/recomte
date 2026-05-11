@@ -1,4 +1,4 @@
-# 🚀 Phase 1 — UI Upgrade (Tailwind CSS)
+# 🚀 UI Upgrade (Tailwind CSS)
 
 ## Goal
 
