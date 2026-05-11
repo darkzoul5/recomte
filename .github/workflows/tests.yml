@@ -22,6 +22,7 @@ on:
       - ".gitignore"
       - "LICENSE"
       - ".github/workflows/node-deps.yml"
+      - ".github/workflows/release-build.yml"
       
 concurrency:
   group: campersite-test-${{ github.ref }}
