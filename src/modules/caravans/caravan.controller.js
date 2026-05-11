@@ -12,7 +12,7 @@ export const listCaravans = async (request, reply) => {
     const filters = {};
     
     if (request.query.winter_rated === 'true') {
-      filters.camper_season = 'winter';
+      filters.camper_season = 'all_season';
     }
     if (request.query.camper_season) {
       filters.camper_season = String(request.query.camper_season);

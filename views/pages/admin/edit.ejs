@@ -231,7 +231,7 @@
         <label>Тип Прицеп-дачи</label>
         <select name="camper_season">
           <option value="summer" <%= caravan?.camper_season === 'summer' ? 'selected' : '' %>>Лето</option>
-          <option value="winter" <%= caravan?.camper_season === 'winter' ? 'selected' : '' %>>Зима</option>
+          <option value="all_season" <%= caravan?.camper_season === 'all_season' ? 'selected' : '' %>>Всесезонный</option>
         </select>
       </div>
       <div class="form-group">

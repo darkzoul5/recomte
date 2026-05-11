@@ -169,7 +169,7 @@ export const caravans = {
     }
     if (filters.winter_rated !== undefined) {
       sql += ' AND camper_season = ?';
-      params.push(filters.winter_rated ? 'winter' : 'summer');
+      params.push(filters.winter_rated ? 'all_season' : 'summer');
     }
     if (filters.camper_season) {
       sql += ' AND camper_season = ?';

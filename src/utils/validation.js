@@ -215,8 +215,8 @@ export const validateCaravanData = (data, isUpdate = false) => {
     errors.push('curb_weight_kg must be less than gross_weight_kg');
   }
 
-  if (data.camper_season && !['winter', 'summer'].includes(String(data.camper_season))) {
-    errors.push('camper_season must be winter or summer');
+  if (data.camper_season && !['all_season', 'summer'].includes(String(data.camper_season))) {
+    errors.push('camper_season must be all_season or summer');
   }
 
   if (data.heating_type) {

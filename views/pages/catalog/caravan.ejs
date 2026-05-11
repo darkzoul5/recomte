@@ -120,7 +120,7 @@
                 <% if (caravan.camper_season) { %>
                   <tr>
                     <td><strong>Тип Прицеп-дачи:</strong></td>
-                    <td><%= caravan.camper_season === 'winter' ? 'Зима' : 'Лето' %></td>
+                    <td><%= caravan.camper_season === 'all_season' ? 'Всесезонный' : 'Лето' %></td>
                   </tr>
                 <% } %>
               </tbody>
@@ -247,7 +247,7 @@
                 <% if (caravan.heating_type_values && caravan.heating_type_values.length > 0) { %><li><i class="fas fa-check has-text-success"></i> Отопление: <%= caravan.heating_type_values.map((value) => value === 'diesel' ? 'Дизельное' : (value === 'gas' ? 'Газовое' : 'Электрическое')).join(', ') %></li><% } %>
                 <% if (caravan.heating_distribution) { %><li>Распределение тепла: <%= caravan.heating_distribution === 'liquid' ? 'Жидкостное' : 'Воздушное' %></li><% } %>
                 <% if (caravan.heater_brand) { %><li>Бренд котла: <%= caravan.heater_brand %></li><% } %>
-                <% if (caravan.camper_season) { %><li>Тип: <%= caravan.camper_season === 'winter' ? 'Зима' : 'Лето' %></li><% } %>
+                <% if (caravan.camper_season) { %><li>Тип: <%= caravan.camper_season === 'all_season' ? 'Всесезонный' : 'Лето' %></li><% } %>
                 <% if (caravan.has_ac || (caravan.feature_map && caravan.feature_map.air_conditioning && caravan.feature_map.air_conditioning !== '0')) { %><li><i class="fas fa-check has-text-success"></i> Кондиционер</li><% } %>
                 <% if (caravan.vent_fans_count) { %><li>Вентиляторов: <%= caravan.vent_fans_count %></li><% } %>
                 <% if (caravan.skylights_count) { %><li>Люков: <%= caravan.skylights_count %></li><% } %>

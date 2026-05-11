@@ -150,6 +150,7 @@ export const buildCaravanSeo = (caravan) => {
     ? buildAbsoluteUrl(caravan.images[0].url)
     : DEFAULT_OG_IMAGE;
 
+  const seasonLabel = caravan.camper_season === 'all_season' ? 'Всесезонный' : (caravan.camper_season === 'summer' ? 'Лето' : undefined);
   const additionalProperty = [
     caravan.year ? { '@type': 'PropertyValue', name: 'Год', value: caravan.year } : null,
     caravan.beds_count ? { '@type': 'PropertyValue', name: 'Спальные места', value: caravan.beds_count } : null,
@@ -158,7 +159,7 @@ export const buildCaravanSeo = (caravan) => {
       : null,
     caravan.gross_weight_kg
       ? { '@type': 'PropertyValue', name: 'Вес брутто (кг)', value: caravan.gross_weight_kg } : null,
-    caravan.camper_season ? { '@type': 'PropertyValue', name: 'Сезон', value: caravan.camper_season } : null
+    seasonLabel ? { '@type': 'PropertyValue', name: 'Сезон', value: seasonLabel } : null
   ].filter(Boolean);
 
   return {
