@@ -122,14 +122,17 @@ export const mapFormToCaravanData = (formData) => {
       .filter((entry) => allowedValues.includes(entry));
   };
 
-  const fridgeTypes = normalizeMultiSelect(formData.fridge_type, [
+  const allowedFridgeTypes = [
     '3-режимный (газ/12В/230В)',
     '2-режимный (газ/230В)',
     'Компрессорный (12В)',
     'Электрический (230В)',
     'Газовый',
     'Термобокс'
-  ]);
+  ];
+  const fridgeType = typeof formData.fridge_type === 'string' && allowedFridgeTypes.includes(formData.fridge_type)
+    ? formData.fridge_type
+    : null;
   const heatingTypes = normalizeMultiSelect(formData.heating_type, ['diesel', 'gas', 'electric']);
   const waterHeaterTypes = normalizeMultiSelect(formData.water_heater_type, ['electric', 'gas']);
   const kitchenAppliances = normalizeMultiSelect(formData.kitchen_appliances, ['microwave', 'oven', 'grill']);
@@ -154,7 +157,7 @@ export const mapFormToCaravanData = (formData) => {
     has_hot_water: formData.has_hot_water ? 1 : 0,
     water_heater_type: waterHeaterTypes.length > 0 ? JSON.stringify(waterHeaterTypes) : null,
     boiler_volume_l: formData.boiler_volume_l ? parseInt(formData.boiler_volume_l) : null,
-    fridge_type: fridgeTypes.length > 0 ? JSON.stringify(fridgeTypes) : null,
+    fridge_type: fridgeType,
     fridge_volume_l: formData.fridge_volume_l ? parseInt(formData.fridge_volume_l) : null,
     sink_present: formData.sink_present ? 1 : 0,
     cooktop_type: null,

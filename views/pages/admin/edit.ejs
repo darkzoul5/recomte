@@ -196,8 +196,8 @@
         <input type="number" name="fridge_volume_l" value="<%= caravan?.fridge_volume_l || '' %>">
       </div>
       <div class="form-group">
-        <label>Питание холодильника (можно несколько)</label>
-        <select name="fridge_type" multiple size="6">
+        <label>Питание холодильника</label>
+        <select name="fridge_type">
           <option value="3-режимный (газ/12В/230В)" <%= caravan?.fridge_type_values && caravan.fridge_type_values.includes('3-режимный (газ/12В/230В)') ? 'selected' : '' %>>3-режимный (газ/12В/230В)</option>
           <option value="2-режимный (газ/230В)" <%= caravan?.fridge_type_values && caravan.fridge_type_values.includes('2-режимный (газ/230В)') ? 'selected' : '' %>>2-режимный (газ/230В)</option>
           <option value="Компрессорный (12В)" <%= caravan?.fridge_type_values && caravan.fridge_type_values.includes('Компрессорный (12В)') ? 'selected' : '' %>>Компрессорный (12В)</option>
