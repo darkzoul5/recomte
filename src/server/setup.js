@@ -6,6 +6,7 @@ import fastifyFormbody from '@fastify/formbody';
 import fastifyMultipart from '@fastify/multipart';
 import fastifyCompress from '@fastify/compress';
 import path from 'path';
+import fs from 'fs';
 import { getDb } from '../../db/db.js';
 
 const SESSION_MAX_AGE = 60 * 60 * 1000; // 1 hour in milliseconds
@@ -109,6 +110,30 @@ const getSessionSecret = () => {
 };
 
 export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = false }) => {
+  const loadVersionInfo = () => {
+    try {
+      const filePath = path.join(rootDir, 'version.json');
+      const raw = fs.readFileSync(filePath, 'utf-8');
+      const data = JSON.parse(raw);
+      const env = data.env;
+      const version = data.version;
+      const commit = data.commit || null;
+      let text = '';
+      if (env === 'prod') {
+        text = version;
+      } else {
+        const short = commit || 'unknown';
+        text = `${version} | ${short}`;
+      }
+      return { env, version, commit, text };
+    } catch {
+      const env = process.env.NODE_ENV === 'production' ? 'prod' : 'dev';
+      const fallback = env === 'prod' ? { env, version: 'unknown', commit: null, text: '' } : { env, version: 'dev', commit: null, text: 'dev' };
+      return fallback;
+    }
+  };
+
+  const appVersion = loadVersionInfo();
   await fastify.register(fastifyCompress, {
     threshold: 1024,
     encodings: ['gzip', 'deflate']
@@ -218,6 +243,9 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     engine: {
       ejs: (await import('ejs')).default
     },
-    root: path.join(rootDir, 'views')
+    root: path.join(rootDir, 'views'),
+    defaultContext: {
+      appVersion
+    }
   });
 };

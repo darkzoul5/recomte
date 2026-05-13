@@ -3,9 +3,12 @@
 
 <footer class="footer has-background-light">
   <div class="content has-text-centered">
-    <p>
-      <small>Панель администратора © 2026 Recomte.ru</small>
+    <p class="mb-0">
+      <small>&copy; 2026 Recomte</small>
     </p>
+    <% if (typeof appVersion !== 'undefined' && appVersion && appVersion.text) { %>
+      <p><%= appVersion.text %></p>
+    <% } %>
   </div>
 </footer>
 

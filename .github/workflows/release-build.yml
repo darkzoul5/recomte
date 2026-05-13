@@ -44,6 +44,15 @@ jobs:
           git tag ${{ steps.version.outputs.version }}
           git push origin ${{ steps.version.outputs.version }}
 
+      - name: Generate version.json
+        run: |
+          cat <<EOF > version.json
+          {
+            "version": "${{ steps.version.outputs.version }}",
+            "env": "prod"
+          }
+          EOF
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 

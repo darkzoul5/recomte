@@ -15,6 +15,7 @@ COPY scripts/ ./scripts
 COPY src/ ./src
 COPY views/ ./views
 COPY --chmod=755 entrypoint.sh .
+COPY version.json .
 
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \

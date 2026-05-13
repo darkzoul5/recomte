@@ -44,6 +44,16 @@ jobs:
             type=raw,value=dev
             type=sha
 
+      - name: Generate version.json
+        run: |
+          cat <<EOF > version.json
+          {
+            "version": "dev",
+            "commit": "${{ github.sha }}",
+            "env": "dev"
+          }
+          EOF
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
         with:

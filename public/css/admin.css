@@ -798,6 +798,20 @@ body {
   background-color: #fafafa;
 }
 
+/* ===== Admin Footer: compact spacing ===== */
+.admin-page .footer {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.admin-page .footer .content {
+  margin: 0;
+}
+
+.admin-page .footer .content p {
+  margin: 0.15rem 0;
+}
+
 .admin-login .box {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border-radius: 4px;

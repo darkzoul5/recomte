@@ -10,4 +10,4 @@ letsencrypt/acme.json
 .DS_Store
 *.log
 tmp/*
-
+version.json
