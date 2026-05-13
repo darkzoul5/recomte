@@ -1,6 +1,6 @@
 services:
   app:
-    image: git.darkzoul.org/dark_zoul/campersite:latest
+    image: git.darkzoul.org/dark_zoul/recomte:latest
     container_name: recomte_app
     env_file:
       - .env
@@ -59,7 +59,7 @@ services:
       traefik.http.middlewares.nginx-headers.headers.customResponseHeaders.Server: ""
 
   app_test:
-    image: git.darkzoul.org/dark_zoul/campersite:dev
+    image: git.darkzoul.org/dark_zoul/recomte:dev
     container_name: recomte_app_test
     env_file:
       - .env
