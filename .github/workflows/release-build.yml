@@ -38,11 +38,13 @@ jobs:
 
       - name: Create Git tag
         run: |
+          set -e
+
           git config user.name "gitea-actions"
           git config user.email "actions@local"
 
-          git tag ${{ steps.version.outputs.version }}
-          git push origin ${{ steps.version.outputs.version }}
+          git tag "${{ steps.version.outputs.version }}"
+          git push origin "${{ steps.version.outputs.version }}"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -74,11 +76,15 @@ jobs:
           build-args: |
             APP_VERSION=${{ steps.version.outputs.version }}
             APP_COMMIT=${{ github.sha }}
-      
+
       - name: Generate release notes
         id: release_notes
         run: |
-          PREVIOUS_TAG=$(git tag --sort=-creatordate | sed -n '2p')
+          set -e
+
+          git fetch --tags
+
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 2>/dev/null || true)
 
           if [ -z "$PREVIOUS_TAG" ]; then
             COMMITS=$(git log --pretty=format:"- %s (%h)")
@@ -86,21 +92,33 @@ jobs:
             COMMITS=$(git log ${PREVIOUS_TAG}..HEAD --pretty=format:"- %s (%h)")
           fi
 
-          {
-            echo "notes<<EOF"
-            echo "## Changes"
-            echo ""
-            echo "$COMMITS"
-            echo "EOF"
-          } >> $GITHUB_OUTPUT
+          BODY=$(printf "## Changes\n\n%s" "$COMMITS")
+
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.version.outputs.version }}
-          name: ${{ steps.version.outputs.version }}
-          body: ${{ steps.release_notes.outputs.notes }}
-          generate_release_notes: false
+        run: |
+          set -e
+
+          echo "Creating release ${{ steps.version.outputs.version }}"
+
+          jq -n \
+            --arg tag "${{ steps.version.outputs.version }}" \
+            --arg name "${{ steps.version.outputs.version }}" \
+            --arg body "${{ steps.release_notes.outputs.body }}" \
+            '{
+              tag_name: $tag,
+              name: $name,
+              body: $body,
+              draft: false,
+              prerelease: false
+            }' \
+          | curl -s -X POST "${{ secrets.GIT_API_URL }}/repos/${{ github.repository }}/releases" \
+            -H "Authorization: token ${{ secrets.RELEASE_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d @-
 
   deploy-release:
     runs-on: ubuntu-latest
