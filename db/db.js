@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { applySchema } from './schema.js';
+import { runMigrations } from './migrations/index.js';
 import {
   validateColumnName,
   validateCaravanData,
@@ -21,7 +22,7 @@ let db = null;
 
 
 
-export const initDb = () => {
+export const initDb = async () => {
   try {
     // Ensure directory exists
     const dir = path.dirname(DB_PATH);
@@ -35,8 +36,10 @@ export const initDb = () => {
     // Enable foreign keys and set journal mode for better concurrency
     db.pragma('foreign_keys = ON');
     db.pragma('journal_mode = WAL');
+    db.pragma('busy_timeout = 5000');
 
     applySchema(db);
+    await runMigrations(db, { verbose: true });
 
 
     console.log(`✓ Database initialized at ${DB_PATH}`);

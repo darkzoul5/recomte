@@ -7,7 +7,7 @@ import { initDb, closeDb, adminUsers } from '../db/db.js';
 dotenv.config({ override: false });
 
 const main = async () => {
-  initDb();
+  await initDb();
 
   const rl = createInterface({ input, output });
 

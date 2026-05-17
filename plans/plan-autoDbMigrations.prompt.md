@@ -36,7 +36,7 @@ Initial migrations to port
 - UPDATE caravans SET camper_season='all_season' WHERE LOWER(camper_season)='winter'.
 
 Wire-in (db/db.js)
-- import { runMigrations } from './migrations.js'
+- import { runMigrations } from './migrations/index.js'
 - In initDb() after applySchema(db):
   - if (process.env.MIGRATIONS_AUTO !== '0' && process.env.MIGRATIONS_AUTO !== 'false') runMigrations(db)
 - Log concise progress (current version, applied N, done) and abort on failure.
@@ -51,7 +51,7 @@ Decision: one file per migration
 - Cons: small amount of file boilerplate, runner needs to discover/import files.
 
 Migration authoring template
-- Pattern (append at end, bump array length = new version; or add a new numbered file):
+- Pattern (add a new numbered file in db/migrations/):
 
   // Migration #X: <short description>
   (db) => {
@@ -90,4 +90,4 @@ Deployment
 
 Docs (README snippet)
 - Migrations run automatically on boot. To skip: MIGRATIONS_AUTO=0.
-- To add a migration: edit db/migrations.js, append a new function at the end; keep it idempotent and fast.
+- To add a migration: add a new numbered file under db/migrations/ (e.g. 0003_some_change.js); keep it idempotent and fast.

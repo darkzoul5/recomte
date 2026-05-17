@@ -6,20 +6,13 @@
   "type": "module",
   "scripts": {
     "start": "node src/server/index.js",
-    "start:all": "node src/server/index.js",
     "start:public": "node src/server/public.js",
     "start:admin": "node src/server/admin.js",
     "db:init": "node scripts/init-db.js",
     "db:seed": "node scripts/seed-db.js",
-    "admin:passwd": "node scripts/admin-password-reset.js",
-    "test:auth-protection": "node tests/test-auth-protection.js",
-    "test:csrf-protection": "node tests/test-csrf-protection.js"
+    "db:migrations": "node scripts/migrate-db.js",
+    "admin:passwd": "node scripts/admin-password-reset.js"
   },
-  "keywords": [
-    "caravans",
-    "sales",
-    "fastify"
-  ],
   "author": "dark_zoul",
   "license": "UNLICENSED",
   "private": true,

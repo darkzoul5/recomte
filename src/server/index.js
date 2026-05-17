@@ -33,7 +33,7 @@ const attachSignalHandlers = (servers) => {
 };
 
 const start = async () => {
-  initDb();
+  await initDb();
 
   const mode = getServerMode();
   const servers = [];

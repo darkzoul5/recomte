@@ -1,9 +1,9 @@
 import { initDb, closeDb, caravans } from '../db/db.js';
 
-const seed = () => {
+const seed = async () => {
   try {
     console.log('🌱 Seeding database with sample data...');
-    initDb();
+    await initDb();
 
     // Sample caravans
     const sampleCaravans = [
