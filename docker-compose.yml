@@ -82,7 +82,7 @@ services:
 
     volumes:
       - ./test-data:/app/data
-      - ./test-public/images:/app/public/images
+      - ./test-public/images/caravans:/app/public/images/caravans
     restart: unless-stopped
     networks:
       - traefik-proxy
