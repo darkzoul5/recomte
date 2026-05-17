@@ -81,8 +81,8 @@ services:
       - PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-info}
 
     volumes:
-      - ./data:/app/data
-      - ./public/images:/app/public/images
+      - ./test-data:/app/data
+      - ./test-public/images:/app/public/images
     restart: unless-stopped
     networks:
       - traefik-proxy
