@@ -22,7 +22,7 @@ const getAvailability = (status) => {
 };
 
 export const buildHomeSeo = (caravans = []) => {
-  const description = 'Б/у прицепы-дачи из Европы с осмотром, ремонтом и подготовкой к продаже в России.';
+  const description = 'Купить б/у прицеп-дачу из Европы. прицеп-дачи с фото и характеристиками.';
   const pathname = '/';
 
   return {
@@ -53,7 +53,7 @@ export const buildHomeSeo = (caravans = []) => {
 };
 
 export const buildCatalogueSeo = (caravans = []) => {
-  const description = 'Просмотрите доступные б/у прицепы-дачи из Европы с фото, характеристиками и условиями подготовки для покупателей в России.';
+  const description = 'Каталог б/у прицепов-дач и караванов из Европы. Фото, характеристики, комплектация и цены.';
   const pathname = '/caravans';
 
   return {
@@ -85,7 +85,7 @@ export const buildCatalogueSeo = (caravans = []) => {
 };
 
 export const buildContactSeo = () => {
-  const description = 'Свяжитесь с Recomte по вопросам прицепов-дач, просмотров, доставки и покупки в России.';
+  const description = 'Свяжитесь с нами по вопросам покупки, доставки и просмотра б/у прицепов-дач из Европы.';
   const pathname = '/contact';
 
   return {
@@ -120,7 +120,7 @@ export const buildContactSeo = () => {
 };
 
 export const buildPrivacySeo = () => {
-  const description = 'Политика конфиденциальности сайта recomte.ru.';
+  const description = 'Информация о конфиденциальности и защите персональных данных пользователей recomte.ru.';
   const pathname = '/privacy';
 
   return {
@@ -143,7 +143,7 @@ export const buildCaravanSeo = (caravan) => {
   const pathname = `/caravans/${caravan.slug}`;
   const plainDescription = toPlainText(
     caravan.description,
-    'Б/у прицеп-дача из Европы, подготовленная к продаже в России.'
+    'Б/у прицеп-дача из Европы, в России.'
   );
   const description = truncate(plainDescription, 160);
   const ogImage = caravan.images?.[0]?.url
