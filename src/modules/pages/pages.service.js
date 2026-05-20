@@ -22,7 +22,7 @@ const getAvailability = (status) => {
 };
 
 export const buildHomeSeo = (caravans = []) => {
-  const description = 'Купить б/у прицеп-дачу из Европы. прицеп-дачи с фото и характеристиками.';
+  const description = 'Купить б/у прицеп-дачи, караваны из Европы. прицеп-дачи и караваны с фото и характеристиками.';
   const pathname = '/';
 
   return {
@@ -85,7 +85,7 @@ export const buildCatalogueSeo = (caravans = []) => {
 };
 
 export const buildContactSeo = () => {
-  const description = 'Свяжитесь с нами по вопросам покупки, доставки и просмотра б/у прицепов-дач из Европы.';
+  const description = 'Свяжитесь с нами по вопросам покупки, доставки и просмотра б/у прицепов-дач, караванов из Европы.';
   const pathname = '/contact';
 
   return {
