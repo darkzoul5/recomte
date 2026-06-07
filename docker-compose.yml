@@ -22,8 +22,8 @@ services:
       - PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-info}
 
     volumes:
-      - ./data:/app/data
-      - ./public/images:/app/public/images
+      - ./storage/prod/db:/app/data
+      - ./storage/prod/images/caravans:/app/public/images/caravans
     restart: unless-stopped
     networks:
       - traefik-proxy

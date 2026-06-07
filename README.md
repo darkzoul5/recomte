@@ -43,12 +43,12 @@ Controls:
 
 - Disable auto migrations: `MIGRATIONS_AUTO=0`
 - Run migrations manually: `npm run db:migrations` (forces migrations even if auto is disabled)
-- Create a DB backup: `node scripts/backup-db.js --out data/backups/app-YYYYMMDD.db`
+- Create a DB backup: `node scripts/backup-db.js --db ./storage/prod/db/app.db --out ./storage/prod/backups/app-YYYYMMDD.db`
 - Initialize/seed:
   - `npm run db:init`
   - `npm run db:seed`
 
 ### Prod -> Test DB sync (Docker Compose)
 
-If you run separate prod/test containers with separate bind mounts (e.g. `./data` and `./storage/test`),
+If you run separate prod/test containers with separate bind mounts (e.g. `./storage/prod` and `./storage/test`),
 you can copy a consistent snapshot from prod into test by running `scripts/sync-prod-db-to-test.sh` on the server.

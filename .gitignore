@@ -2,9 +2,7 @@
 node_modules
 data
 data/app.db
-storage/test
-public/images/caravans
-storage/test/images/caravans
+storage/dev
 campersite.code-workspace
 # Docker & Deployment
 letsencrypt/

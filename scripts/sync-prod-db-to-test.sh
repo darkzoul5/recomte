@@ -12,7 +12,7 @@ BACKUPS_DIR_IN_CONTAINER="${BACKUPS_DIR_IN_CONTAINER:-/app/data/backups}"
 
 COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.yml}"
 
-PROD_BACKUPS_DIR_LOCAL="${PROD_BACKUPS_DIR_LOCAL:-./data/backups}"
+PROD_BACKUPS_DIR_LOCAL="${PROD_BACKUPS_DIR_LOCAL:-./storage/prod/backups}"
 TEST_BACKUPS_DIR_LOCAL="${TEST_BACKUPS_DIR_LOCAL:-./storage/test/backups}"
 
 PROD_RETENTION_DAYS="${PROD_RETENTION_DAYS:-30}"
@@ -76,8 +76,8 @@ echo "[sync] Syncing caravan images into test assets bind mount..."
 mkdir -p ./storage/test/images/caravans
 rm -rf ./storage/test/images/caravans/*
 
-if [ -d ./public/images/caravans ]; then
-  cp -a ./public/images/caravans/. ./storage/test/images/caravans/
+if [ -d ./storage/prod/images/caravans ]; then
+  cp -a ./storage/prod/images/caravans/. ./storage/test/images/caravans/
 fi
 
 echo "[sync] Starting test service (${TEST_SERVICE})..."
