@@ -23,6 +23,7 @@ services:
 
     volumes:
       - ./storage/prod/db:/app/data
+      - ./storage/prod/backups:/app/data/backups
       - ./storage/prod/images/caravans:/app/public/images/caravans
     restart: unless-stopped
     networks:
@@ -82,6 +83,7 @@ services:
 
     volumes:
       - ./storage/test/db:/app/data
+      - ./storage/test/backups:/app/data/backups
       - ./storage/test/images/caravans:/app/public/images/caravans
     restart: unless-stopped
     networks:
