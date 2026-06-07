@@ -8,6 +8,7 @@ import fastifyCompress from '@fastify/compress';
 import path from 'path';
 import fs from 'fs';
 import { getDb } from '../../db/db.js';
+import { createAppLogger } from './logger.js';
 
 const SESSION_MAX_AGE = 60 * 60 * 1000; // 1 hour in milliseconds
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -19,9 +20,8 @@ export const createServer = (isAdminServer = false) => {
     : (process.env.PUBLIC_LOG_LEVEL || process.env.LOG_LEVEL || 'info');
 
   return Fastify({
-    logger: {
-      level: logLevel
-    },
+    loggerInstance: createAppLogger(logLevel, { scope: isAdminServer ? 'admin' : 'public' }),
+    disableRequestLogging: true,
     trustProxy: true
   });
 };
@@ -215,6 +215,37 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     reply.header('Content-Security-Policy', cspHeader);
     reply.header('Permissions-Policy', permissionsPolicyHeader);
     return payload;
+  });
+
+  fastify.addHook('onResponse', async (request, reply) => {
+    const url = request.raw.url || request.url || '';
+    const statusCode = reply.statusCode || 0;
+
+    if (url === '/healthcheck') {
+      return;
+    }
+
+    if (url.startsWith('/public/') && statusCode < 400) {
+      return;
+    }
+
+    const responseTime = typeof reply.elapsedTime === 'number'
+      ? `${reply.elapsedTime.toFixed(1)}ms`
+      : '';
+
+    const message = `${request.method} ${url} ${statusCode}${responseTime ? ` ${responseTime}` : ''}`;
+
+    if (statusCode >= 500) {
+      fastify.log.error(message);
+      return;
+    }
+
+    if (statusCode >= 400) {
+      fastify.log.warn(message);
+      return;
+    }
+
+    fastify.log.info(message);
   });
 
   // WebP conversion middleware removed - use static file serving for now

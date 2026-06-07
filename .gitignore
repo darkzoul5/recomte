@@ -3,6 +3,7 @@ node_modules
 data
 data/app.db
 storage
+public/images/caravans
 campersite.code-workspace
 # Docker & Deployment
 letsencrypt/
