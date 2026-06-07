@@ -1,4 +1,85 @@
-import { caravans, images } from '../../../db/db.js';
+import { caravans, images, features } from '../../../db/db.js';
+
+const FEATURE_FLAGS = new Set([
+  'air_conditioning',
+  'awning',
+  'bike_rack',
+  'mosquito_nets',
+  'tv_mount'
+]);
+
+const RESERVED_FEATURE_KEYS = new Set([
+  ...FEATURE_FLAGS,
+  'bed_types',
+  'kitchen_appliances'
+]);
+
+const collectCustomFeatureItems = (featureMap) => {
+  if (!featureMap || typeof featureMap !== 'object') return [];
+
+  return Object.entries(featureMap)
+    .filter(([key]) => !RESERVED_FEATURE_KEYS.has(key))
+    .map(([key, value]) => ({ key, value }));
+};
+
+export const hydrateAdminCaravan = (caravan) => {
+  if (!caravan) return null;
+
+  const caravanImages = images.getByCaravanId(caravan.id);
+  const featureRows = features.getByCaravanId(caravan.id);
+  const featureMap = {};
+  const featureFlags = [];
+
+  for (const row of featureRows) {
+    featureMap[row.feature_key] = row.feature_value;
+    if (FEATURE_FLAGS.has(row.feature_key) && row.feature_value !== '0') {
+      featureFlags.push(row.feature_key);
+    }
+  }
+
+  let bedTypes = [];
+  if (featureMap.bed_types) {
+    try {
+      const parsed = JSON.parse(featureMap.bed_types);
+      bedTypes = Array.isArray(parsed) ? parsed : [];
+    } catch {
+      bedTypes = [];
+    }
+  }
+
+  const parseMultiValueField = (value) => {
+    if (!value) return [];
+    if (Array.isArray(value)) return value;
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if (!trimmed) return [];
+      if (trimmed.startsWith('[')) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+      return [trimmed];
+    }
+    return [];
+  };
+
+  return {
+    ...caravan,
+    ...featureMap,
+    fridge_type_values: parseMultiValueField(caravan.fridge_type),
+    heating_type_values: parseMultiValueField(caravan.heating_type),
+    water_heater_type_values: parseMultiValueField(caravan.water_heater_type),
+    kitchen_appliances_values: parseMultiValueField(caravan.kitchen_appliances),
+    bed_types: bedTypes,
+    images: caravanImages,
+    features: featureFlags,
+    feature_map: featureMap,
+    custom_features_items: collectCustomFeatureItems(featureMap)
+  };
+};
 
 // Feature processing: converts form field names to database feature objects
 export const processFeatures = (data) => {
@@ -139,6 +220,7 @@ export const mapFormToCaravanData = (formData) => {
 
   return {
     title: formData.title,
+    brand: formData.brand || null,
     slug: formData.slug,
     description: formData.description || '',
     year: formData.year ? parseInt(formData.year) : null,
@@ -177,6 +259,8 @@ export const mapFormToCaravanData = (formData) => {
     inverter_wattage: formData.inverter_wattage ? parseInt(formData.inverter_wattage) : null,
     has_12v_system: formData.has_12v_system ? 1 : 0,
     length_mm: formData.length_mm ? parseInt(formData.length_mm) : null,
+    length_with_hitch_mm: formData.length_with_hitch_mm ? parseInt(formData.length_with_hitch_mm) : null,
+    length_without_hitch_mm: formData.length_without_hitch_mm ? parseInt(formData.length_without_hitch_mm) : null,
     width_mm: formData.width_mm ? parseInt(formData.width_mm) : null,
     height_mm: formData.height_mm ? parseInt(formData.height_mm) : null,
     interior_height_mm: formData.interior_height_mm ? parseInt(formData.interior_height_mm) : null,
@@ -217,12 +301,12 @@ export const applyImageOrder = (caravanId, imageOrder) => {
 
 // Get all caravans (for admin dashboard)
 export const getAllCaravansForAdmin = () => {
-  return caravans.getAll();
+  return caravans.getAll().map(hydrateAdminCaravan);
 };
 
 // Get caravan by ID
 export const getCaravanById = (caravanId) => {
-  return caravans.getById(parseInt(caravanId));
+  return hydrateAdminCaravan(caravans.getById(parseInt(caravanId)));
 };
 
 // Create new caravan

@@ -105,6 +105,12 @@
                     <td><%= caravan.year %></td>
                   </tr>
                 <% } %>
+                <% if (caravan.brand) { %>
+                  <tr>
+                    <td><strong>Бренд:</strong></td>
+                    <td><%= caravan.brand %></td>
+                  </tr>
+                <% } %>
                 <% if (caravan.beds_count) { %>
                   <tr>
                     <td><strong>Спальных мест:</strong></td>
@@ -150,7 +156,7 @@
     <% if (
       caravan.shower_type || caravan.has_toilet || caravan.sink_present ||
       caravan.fridge_volume_l || caravan.fresh_water_tank_l || caravan.has_hot_water || caravan.water_heater_type || caravan.boiler_volume_l ||
-      caravan.length_mm || caravan.width_mm || caravan.height_mm || caravan.interior_height_mm || caravan.curb_weight_kg || caravan.gross_weight_kg || caravan.condition ||
+      caravan.length_mm || caravan.length_with_hitch_mm || caravan.length_without_hitch_mm || caravan.width_mm || caravan.height_mm || caravan.interior_height_mm || caravan.curb_weight_kg || caravan.gross_weight_kg || caravan.condition ||
       (caravan.feature_map && (
         (caravan.feature_map.grill && caravan.feature_map.grill !== '0') ||
         (caravan.feature_map.awning && caravan.feature_map.awning !== '0') ||
@@ -296,11 +302,12 @@
             </div>
           <% } %>
 
-          <% if (caravan.length_mm || caravan.width_mm || caravan.height_mm || caravan.interior_height_mm || caravan.curb_weight_kg || caravan.gross_weight_kg) { %>
+          <% if (caravan.length_mm || caravan.length_with_hitch_mm || caravan.length_without_hitch_mm || caravan.width_mm || caravan.height_mm || caravan.interior_height_mm || caravan.curb_weight_kg || caravan.gross_weight_kg) { %>
             <div class="column is-one-third">
               <h4 class="subtitle is-6 has-text-weight-bold">Размеры и масса</h4>
               <ul>
-                <% if (caravan.length_mm) { %><li>Длина: <%= (caravan.length_mm / 1000).toFixed(2) %> м</li><% } %>
+                <% if (caravan.length_with_hitch_mm || caravan.length_mm) { %><li>Полная длина: <%= (((caravan.length_with_hitch_mm || caravan.length_mm)) / 1000).toFixed(2) %> м</li><% } %>
+                <% if (caravan.length_without_hitch_mm) { %><li>Длина кузова: <%= (caravan.length_without_hitch_mm / 1000).toFixed(2) %> м</li><% } %>
                 <% if (caravan.width_mm) { %><li>Ширина: <%= caravan.width_mm %> мм</li><% } %>
                 <% if (caravan.height_mm) { %><li>Высота: <%= caravan.height_mm %> мм</li><% } %>
                 <% if (caravan.interior_height_mm) { %><li>Внутренняя высота: <%= caravan.interior_height_mm %> мм</li><% } %>

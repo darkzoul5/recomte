@@ -46,6 +46,13 @@
                   <h3 class="title is-5 mb-0"><%= caravan.title %></h3>
                   <span class="tag <%= getStatusClass(caravan.status) %> is-light"><%= getStatusLabel(caravan.status) %></span>
                 </div>
+                <% if (caravan.brand || caravan.year) { %>
+                  <p class="is-size-7 has-text-grey mb-2">
+                    <% if (caravan.brand) { %><strong><%= caravan.brand %></strong><% } %>
+                    <% if (caravan.brand && caravan.year) { %> · <% } %>
+                    <% if (caravan.year) { %><%= caravan.year %><% } %>
+                  </p>
+                <% } %>
                 <p><%= caravan.description ? caravan.description.substring(0, 100) + '...' : 'Современная Прицеп-дача для комфортных путешествий.' %></p>
                 <% if (caravan.curb_weight_kg || caravan.gross_weight_kg) { %>
                   <p class="is-size-7 has-text-grey mt-2">
@@ -63,6 +70,18 @@
                 <% if (caravan.camper_season) { %>
                   <p class="is-size-7 has-text-grey mt-1">
                     Тип: <strong><%= caravan.camper_season === 'all_season' ? 'Всесезонный' : 'Лето' %></strong>
+                  </p>
+                <% } %>
+                <% if (caravan.length_with_hitch_mm || caravan.length_without_hitch_mm || caravan.length_mm) { %>
+                  <p class="is-size-7 has-text-grey mt-1">
+                    Длина:
+                    <% if (caravan.length_with_hitch_mm || caravan.length_mm) { %>
+                      полная <strong><%= (((caravan.length_with_hitch_mm || caravan.length_mm)) / 1000).toFixed(2) %> м</strong>
+                    <% } %>
+                    <% if (caravan.length_without_hitch_mm) { %>
+                      <% if (caravan.length_with_hitch_mm || caravan.length_mm) { %> · <% } %>
+                      кузов <strong><%= (caravan.length_without_hitch_mm / 1000).toFixed(2) %> м</strong>
+                    <% } %>
                   </p>
                 <% } %>
                 <div class="is-flex is-align-items-center mt-2" style="gap: 0.75rem; flex-wrap: wrap;">

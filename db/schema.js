@@ -4,6 +4,7 @@ export const createSchema = () => {
 CREATE TABLE IF NOT EXISTS caravans (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   title TEXT NOT NULL,
+  brand TEXT,
   slug TEXT NOT NULL UNIQUE,
   description TEXT,
   year INTEGER,
@@ -59,6 +60,8 @@ CREATE TABLE IF NOT EXISTS caravans (
   
   -- DIMENSIONS & WEIGHT
   length_mm INTEGER,
+  length_with_hitch_mm INTEGER,
+  length_without_hitch_mm INTEGER,
   width_mm INTEGER,
   height_mm INTEGER,
   interior_height_mm INTEGER,

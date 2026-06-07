@@ -32,12 +32,23 @@
 
     <div class="form-row">
       <div class="form-group">
+        <label>Бренд</label>
+        <input type="text" name="brand" value="<%= caravan?.brand || '' %>" maxlength="100" placeholder="Hobby, Fendt, Knaus...">
+      </div>
+      <div class="form-group">
         <label>Название</label>
         <input type="text" name="title" value="<%= caravan?.title || '' %>" required>
       </div>
+    </div>
+
+    <div class="form-row">
       <div class="form-group">
         <label>Slug</label>
         <input type="text" name="slug" value="<%= caravan?.slug || '' %>" required>
+      </div>
+      <div class="form-group">
+        <label>Год выпуска</label>
+        <input type="number" name="year" value="<%= caravan?.year || '' %>" min="1950" max="2040">
       </div>
     </div>
 
@@ -52,10 +63,6 @@
       <div class="form-group">
         <label>Цена (₽)</label>
         <input type="number" name="price" value="<%= caravan?.price || '' %>" step="10" required>
-      </div>
-      <div class="form-group">
-        <label>Год выпуска</label>
-        <input type="number" name="year" value="<%= caravan?.year || '' %>" min="1950" max="2040">
       </div>
     </div>
 
@@ -371,20 +378,27 @@
     <h3><i class="fas fa-ruler"></i> Размеры и масса</h3>
     <div class="form-row">
       <div class="form-group">
-        <label>Длина (мм)</label>
-        <input type="number" name="length_mm" value="<%= caravan?.length_mm || '' %>">
+        <label>Полная длина (мм)</label>
+        <input type="number" name="length_with_hitch_mm" value="<%= caravan?.length_with_hitch_mm || caravan?.length_mm || '' %>">
       </div>
       <div class="form-group">
-        <label>Ширина (мм)</label>
-        <input type="number" name="width_mm" value="<%= caravan?.width_mm || '' %>">
+        <label>Длина кузова (мм)</label>
+        <input type="number" name="length_without_hitch_mm" value="<%= caravan?.length_without_hitch_mm || '' %>">
       </div>
     </div>
 
     <div class="form-row">
       <div class="form-group">
+        <label>Ширина (мм)</label>
+        <input type="number" name="width_mm" value="<%= caravan?.width_mm || '' %>">
+      </div>
+      <div class="form-group">
         <label>Высота (мм)</label>
         <input type="number" name="height_mm" value="<%= caravan?.height_mm || '' %>">
       </div>
+    </div>
+
+    <div class="form-row">
       <div class="form-group">
         <label>Внутренняя высота (мм)</label>
         <input type="number" name="interior_height_mm" value="<%= caravan?.interior_height_mm || '' %>">

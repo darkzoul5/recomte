@@ -22,7 +22,7 @@ const main = async () => {
   const db = new Database(dbPath);
 
   try {
-    // Simulate an older DB schema: caravans table exists without kitchen_appliances.
+    // Simulate an older DB schema: caravans table exists before later additive migrations.
     db.exec(`
       CREATE TABLE caravans (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -51,17 +51,21 @@ const main = async () => {
     applySchema(db);
     const result = await runMigrations(db, { verbose: false, force: true });
 
-    assert.equal(result.to, 2);
+    assert.equal(result.to, 3);
     assert.equal(result.skipped, false);
 
     assert.equal(columnExists(db, 'caravans', 'kitchen_appliances'), true);
+    assert.equal(columnExists(db, 'caravans', 'brand'), true);
+    assert.equal(columnExists(db, 'caravans', 'length_with_hitch_mm'), true);
+    assert.equal(columnExists(db, 'caravans', 'length_without_hitch_mm'), true);
 
-    const row = db.prepare('SELECT camper_season, kitchen_appliances FROM caravans WHERE id = 1').get();
+    const row = db.prepare('SELECT camper_season, kitchen_appliances, length_with_hitch_mm FROM caravans WHERE id = 1').get();
     assert.equal(row.camper_season, 'all_season');
     assert.equal(row.kitchen_appliances, '["microwave"]');
+    assert.equal(row.length_with_hitch_mm, null);
 
     const userVersion = Number(db.pragma('user_version', { simple: true }) || 0);
-    assert.equal(userVersion, 2);
+    assert.equal(userVersion, 3);
 
     console.log('✓ DB migrations test passed');
   } finally {

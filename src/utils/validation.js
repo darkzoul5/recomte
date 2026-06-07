@@ -4,7 +4,7 @@
 
 // Whitelist of allowed column names for caravans table
 const ALLOWED_CARAVAN_COLUMNS = new Set([
-  'title', 'slug', 'description', 'year', 'price', 'status', 'featured',
+  'title', 'brand', 'slug', 'description', 'year', 'price', 'status', 'featured',
   // Sleeping & Basic
   'beds_count', 'shower_type', 'has_toilet', 'toilet_type', 'windows_count', 'door_position', 'manufacturer_country',
   // Water systems
@@ -18,7 +18,7 @@ const ALLOWED_CARAVAN_COLUMNS = new Set([
   // Electrical System
   'battery_type', 'battery_capacity_ah', 'solar_wattage', 'inverter_wattage', 'has_12v_system',
   // Dimensions & Weight
-  'length_mm', 'width_mm', 'height_mm', 'interior_height_mm', 'curb_weight_kg', 'gross_weight_kg',
+  'length_mm', 'length_with_hitch_mm', 'length_without_hitch_mm', 'width_mm', 'height_mm', 'interior_height_mm', 'curb_weight_kg', 'gross_weight_kg',
   // Chassis & Towing
   'axles_count', 'brake_type', 'suspension_type', 'wheel_size_inch', 'hitch_weight_kg', 'braked', 'stabilizer_present',
   // Condition & History
@@ -142,6 +142,10 @@ export const validateCaravanData = (data, isUpdate = false) => {
       errors.push('Slug is required and must contain only lowercase letters, numbers, hyphens, and underscores');
     }
 
+    if (data.brand !== undefined && data.brand !== null && data.brand !== '' && typeof data.brand !== 'string') {
+      errors.push('Brand must be a string');
+    }
+
     if (!data.price || !validateInteger(data.price, 0, 100000000)) {
       errors.push('Price is required and must be a number between 0 and 100,000,000');
     }
@@ -170,6 +174,14 @@ export const validateCaravanData = (data, isUpdate = false) => {
     errors.push('Description must be 5000 characters or less');
   }
 
+  if (data.brand !== undefined && data.brand !== null && data.brand !== '') {
+    if (typeof data.brand !== 'string') {
+      errors.push('Brand must be a string');
+    } else if (String(data.brand).length > 100) {
+      errors.push('Brand must be 100 characters or less');
+    }
+  }
+
   // Validate boolean fields
   const booleanFields = [
     'featured', 'has_toilet', 'has_hot_water', 'sink_present', 'has_heating', 'double_glazed_windows',
@@ -188,7 +200,7 @@ export const validateCaravanData = (data, isUpdate = false) => {
   const integerFields = [
     'beds_count', 'fresh_water_tank_l', 'grey_water_tank_l', 'boiler_volume_l',
     'fridge_volume_l', 'stove_burners_count', 'battery_capacity_ah', 'solar_wattage',
-    'inverter_wattage', 'length_mm', 'width_mm', 'height_mm', 'interior_height_mm',
+    'inverter_wattage', 'length_mm', 'length_with_hitch_mm', 'length_without_hitch_mm', 'width_mm', 'height_mm', 'interior_height_mm',
     'curb_weight_kg', 'gross_weight_kg', 'windows_count', 'vent_fans_count',
     'skylights_count', 'axles_count', 'wheel_size_inch',
     'hitch_weight_kg'
@@ -213,6 +225,17 @@ export const validateCaravanData = (data, isUpdate = false) => {
 
   if (curbWeight !== null && grossWeight !== null && curbWeight >= grossWeight) {
     errors.push('curb_weight_kg must be less than gross_weight_kg');
+  }
+
+  const lengthWithHitch = data.length_with_hitch_mm !== undefined && data.length_with_hitch_mm !== null && data.length_with_hitch_mm !== ''
+    ? parseInt(data.length_with_hitch_mm, 10)
+    : null;
+  const lengthWithoutHitch = data.length_without_hitch_mm !== undefined && data.length_without_hitch_mm !== null && data.length_without_hitch_mm !== ''
+    ? parseInt(data.length_without_hitch_mm, 10)
+    : null;
+
+  if (lengthWithHitch !== null && lengthWithoutHitch !== null && lengthWithoutHitch > lengthWithHitch) {
+    errors.push('length_without_hitch_mm must be less than or equal to length_with_hitch_mm');
   }
 
   if (data.camper_season && !['all_season', 'summer'].includes(String(data.camper_season))) {
