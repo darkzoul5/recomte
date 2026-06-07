@@ -50,5 +50,5 @@ Controls:
 
 ### Prod -> Test DB sync (Docker Compose)
 
-If you run separate prod/test containers with separate bind mounts (e.g. `./data` and `./test-data`),
+If you run separate prod/test containers with separate bind mounts (e.g. `./data` and `./storage/test`),
 you can copy a consistent snapshot from prod into test by running `scripts/sync-prod-db-to-test.sh` on the server.

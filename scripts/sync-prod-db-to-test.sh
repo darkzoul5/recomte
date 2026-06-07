@@ -13,7 +13,7 @@ BACKUPS_DIR_IN_CONTAINER="${BACKUPS_DIR_IN_CONTAINER:-/app/data/backups}"
 COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.yml}"
 
 PROD_BACKUPS_DIR_LOCAL="${PROD_BACKUPS_DIR_LOCAL:-./data/backups}"
-TEST_BACKUPS_DIR_LOCAL="${TEST_BACKUPS_DIR_LOCAL:-./test-data/backups}"
+TEST_BACKUPS_DIR_LOCAL="${TEST_BACKUPS_DIR_LOCAL:-./storage/test/backups}"
 
 PROD_RETENTION_DAYS="${PROD_RETENTION_DAYS:-30}"
 PROD_KEEP_COUNT="${PROD_KEEP_COUNT:-14}"
@@ -55,29 +55,29 @@ echo "[sync] Creating prod backup inside ${PROD_CONTAINER}..."
 docker exec "${PROD_CONTAINER}" node ./scripts/backup-db.js --db "${PROD_DB_IN_CONTAINER}" --out "${backup_in_container}"
 
 echo "[sync] Copying backup into test DB bind mount..."
-mkdir -p ./test-data "${TEST_BACKUPS_DIR_LOCAL}" "${PROD_BACKUPS_DIR_LOCAL}"
+mkdir -p ./storage/test "${TEST_BACKUPS_DIR_LOCAL}" "${PROD_BACKUPS_DIR_LOCAL}"
 
-if [ -f ./test-data/app.db-wal ]; then
-  rm -f ./test-data/app.db-wal
+if [ -f ./storage/test/db/app.db-wal ]; then
+  rm -f ./storage/test/db/app.db-wal
 fi
 
-if [ -f ./test-data/app.db-shm ]; then
-  rm -f ./test-data/app.db-shm
+if [ -f ./storage/test/db/app.db-shm ]; then
+  rm -f ./storage/test/db/app.db-shm
 fi
 
-if [ -f ./test-data/app.db ]; then
-  cp -f ./test-data/app.db "${TEST_BACKUPS_DIR_LOCAL}/${test_backup_filename}"
+if [ -f ./storage/test/db/app.db ]; then
+  cp -f ./storage/test/db/app.db "${TEST_BACKUPS_DIR_LOCAL}/${test_backup_filename}"
 fi
 
 cp -f "${PROD_BACKUPS_DIR_LOCAL}/${backup_filename}" "${TEST_BACKUPS_DIR_LOCAL}/${backup_filename}"
-cp -f "./data/backups/${backup_filename}" "./test-data/app.db"
+cp -f "./data/backups/${backup_filename}" "./storage/test/db/app.db"
 
 echo "[sync] Syncing caravan images into test assets bind mount..."
-mkdir -p ./test-public/images/caravans
-rm -rf ./test-public/images/caravans/*
+mkdir -p ./storage/test/images/caravans
+rm -rf ./storage/test/images/caravans/*
 
 if [ -d ./public/images/caravans ]; then
-  cp -a ./public/images/caravans/. ./test-public/images/caravans/
+  cp -a ./public/images/caravans/. ./storage/test/images/caravans/
 fi
 
 echo "[sync] Starting test service (${TEST_SERVICE})..."
@@ -88,9 +88,9 @@ prune_backups "${PROD_BACKUPS_DIR_LOCAL}" 'prod-*.db' "${PROD_RETENTION_DAYS}" "
 prune_backups "${TEST_BACKUPS_DIR_LOCAL}" 'prod-*.db' "${TEST_PROD_RETENTION_DAYS}" "${TEST_PROD_KEEP_COUNT}"
 prune_backups "${TEST_BACKUPS_DIR_LOCAL}" 'test-before-sync-*.db' "${TEST_BEFORE_SYNC_RETENTION_DAYS}" "${TEST_BEFORE_SYNC_KEEP_COUNT}"
 
-echo "[sync] Done. Test DB replaced at ./test-data/app.db"
+echo "[sync] Done. Test DB replaced at ./storage/test/db/app.db"
 echo "[sync] Snapshot saved at ${TEST_BACKUPS_DIR_LOCAL}/${backup_filename}"
 if [ -f "${TEST_BACKUPS_DIR_LOCAL}/${test_backup_filename}" ]; then
   echo "[sync] Previous test DB saved at ${TEST_BACKUPS_DIR_LOCAL}/${test_backup_filename}"
 fi
-echo "[sync] Test caravan images refreshed at ./test-public/images/caravans"
+echo "[sync] Test caravan images refreshed at ./storage/test/images/caravans"
