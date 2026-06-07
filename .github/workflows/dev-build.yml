@@ -81,3 +81,4 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             bash /home/deploy/docker/campersite/deploy.sh
+            bash /home/deploy/docker/campersite/scripts/sync-prod-db-to-test.sh
