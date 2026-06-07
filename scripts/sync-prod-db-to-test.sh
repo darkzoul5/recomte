@@ -23,11 +23,13 @@ echo "[sync] Creating prod backup inside ${PROD_CONTAINER}..."
 docker exec "${PROD_CONTAINER}" node ./scripts/backup-db.js --db "${PROD_DB_IN_CONTAINER}" --out "${backup_in_container}"
 
 echo "[sync] Copying backup into test DB bind mount..."
-mkdir -p ./test-data
+mkdir -p ./test-data ./test-data/backups
+
+cp -f "./data/backups/${backup_filename}" "./test-data/backups/${backup_filename}"
 cp -f "./data/backups/${backup_filename}" "./test-data/app.db"
 
 echo "[sync] Starting test service (${TEST_SERVICE})..."
 docker compose -f "${COMPOSE_FILE}" up -d "${TEST_SERVICE}"
 
-echo "[sync] Done. Test DB replaced with snapshot ${backup_filename}"
-
+echo "[sync] Done. Test DB replaced at ./test-data/app.db"
+echo "[sync] Snapshot saved at ./test-data/backups/${backup_filename}"
