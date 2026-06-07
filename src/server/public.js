@@ -1,4 +1,4 @@
-import dotenv from 'dotenv';
+import './bootstrap-env.js';
 import { validateEnv, validators } from '../utils/env.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -6,8 +6,6 @@ import { createServer, registerCommonPlugins } from './setup.js';
 import { registerCaravansRoutes } from '../modules/caravans/index.js';
 import { registerPagesRoutes } from '../modules/pages/index.js';
 import { registerSitemapRoutes } from '../modules/sitemap/index.js';
-
-dotenv.config({ override: false });
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.join(__dirname, '..', '..');

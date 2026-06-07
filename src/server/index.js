@@ -1,9 +1,7 @@
-import dotenv from 'dotenv';
+import './bootstrap-env.js';
 import { initDb, closeDb } from '../../db/db.js';
 import { validatePublicServerEnv, buildPublicServer } from './public.js';
 import { validateAdminServerEnv, buildAdminServer } from './admin.js';
-
-dotenv.config({ override: false });
 
 const DEFAULT_MODE = 'all';
 const getServerMode = () => (process.env.SERVER_MODE || DEFAULT_MODE).toLowerCase();
