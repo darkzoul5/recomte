@@ -3,6 +3,7 @@ set -Eeuo pipefail
 
 LOCK_FILE="/tmp/campersite-deploy.lock"
 DEPLOY_DIR="/home/deploy/docker/campersite"
+COMPOSE_FILE="docker/docker-compose.yml"
 MAX_RETRIES=5
 
 exec 9>"${LOCK_FILE}"
@@ -20,7 +21,7 @@ declare -A OLD_IMAGE_IDS
 while read -r CONTAINER_NAME IMAGE_ID; do
 	OLD_IMAGE_IDS["$CONTAINER_NAME"]="$IMAGE_ID"
 done < <(
-	docker compose ps -q | while read -r CONTAINER_ID; do
+	docker compose -f "${COMPOSE_FILE}" ps -q | while read -r CONTAINER_ID; do
 		CONTAINER_NAME="$(docker inspect --format '{{.Name}}' "$CONTAINER_ID" | sed 's#^/##')"
 		IMAGE_ID="$(docker inspect --format '{{.Image}}' "$CONTAINER_ID")"
 		echo "$CONTAINER_NAME $IMAGE_ID"
@@ -33,13 +34,13 @@ git reset --hard origin/main
 git clean -fd
 
 echo "[deploy] Pulling latest images..."
-docker compose pull
+docker compose -f "${COMPOSE_FILE}" pull
 
 echo "[deploy] Starting services..."
 
 attempt=1
 while true; do
-	if docker compose up -d --remove-orphans; then
+	if docker compose -f "${COMPOSE_FILE}" up -d --remove-orphans; then
 		break
 	fi
 
@@ -78,7 +79,7 @@ while read -r CONTAINER_NAME NEW_IMAGE_ID; do
 		fi
 	fi
 done < <(
-	docker compose ps -q | while read -r CONTAINER_ID; do
+	docker compose -f "${COMPOSE_FILE}" ps -q | while read -r CONTAINER_ID; do
 		CONTAINER_NAME="$(docker inspect --format '{{.Name}}' "$CONTAINER_ID" | sed 's#^/##')"
 		IMAGE_ID="$(docker inspect --format '{{.Image}}' "$CONTAINER_ID")"
 		echo "$CONTAINER_NAME $IMAGE_ID"

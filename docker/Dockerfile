@@ -14,7 +14,7 @@ COPY public/ ./public
 COPY scripts/ ./scripts
 COPY src/ ./src
 COPY views/ ./views
-COPY --chmod=755 entrypoint.sh .
+COPY --chmod=755 docker/entrypoint.sh .
 COPY version.json .
 
 

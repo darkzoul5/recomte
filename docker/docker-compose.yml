@@ -3,7 +3,7 @@ services:
     image: git.darkzoul.org/dark_zoul/recomte:latest
     container_name: recomte_app
     env_file:
-      - .env
+      - ../.env
     environment:
       - NODE_ENV=production
       # Admin credentials
@@ -22,9 +22,9 @@ services:
       - PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-info}
 
     volumes:
-      - ./storage/prod/db:/app/data
-      - ./storage/prod/backups:/app/data/backups
-      - ./storage/prod/images/caravans:/app/public/images/caravans
+      - ../storage/prod/db:/app/data
+      - ../storage/prod/backups:/app/data/backups
+      - ../storage/prod/images/caravans:/app/public/images/caravans
     restart: unless-stopped
     networks:
       - traefik-proxy
@@ -63,7 +63,7 @@ services:
     image: git.darkzoul.org/dark_zoul/recomte:dev
     container_name: recomte_app_test
     env_file:
-      - .env
+      - ../.env
     environment:
       - NODE_ENV=production
       # Admin credentials
@@ -82,9 +82,9 @@ services:
       - PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-info}
 
     volumes:
-      - ./storage/test/db:/app/data
-      - ./storage/test/backups:/app/data/backups
-      - ./storage/test/images/caravans:/app/public/images/caravans
+      - ../storage/test/db:/app/data
+      - ../storage/test/backups:/app/data/backups
+      - ../storage/test/images/caravans:/app/public/images/caravans
     restart: unless-stopped
     networks:
       - traefik-proxy

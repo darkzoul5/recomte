@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 # Sync production SQLite DB into the test environment.
-# Run this on the server in the same directory as docker-compose.yml.
+# Run this on the server in the project repository.
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
@@ -14,7 +14,7 @@ TEST_SERVICE="${TEST_SERVICE:-app_test}"
 PROD_DB_IN_CONTAINER="${PROD_DB_IN_CONTAINER:-/app/data/app.db}"
 BACKUPS_DIR_IN_CONTAINER="${BACKUPS_DIR_IN_CONTAINER:-/app/data/backups}"
 
-COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.yml}"
+COMPOSE_FILE="${COMPOSE_FILE:-docker/docker-compose.yml}"
 
 PROD_BACKUPS_DIR_LOCAL="${PROD_BACKUPS_DIR_LOCAL:-./storage/prod/backups}"
 TEST_BACKUPS_DIR_LOCAL="${TEST_BACKUPS_DIR_LOCAL:-./storage/test/backups}"

@@ -3,6 +3,41 @@ set -e
 
 echo "Starting Recomte.ru application..."
 
+export NODE_ENV=${NODE_ENV:-production}
+export DB_PATH=${DB_PATH:-./data/app.db}
+export SESSION_SECRET=${SESSION_SECRET:-default_secret_change_in_production}
+export LOG_LEVEL=${LOG_LEVEL:-info}
+export ADMIN_LOG_LEVEL=${ADMIN_LOG_LEVEL:-info}
+export PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-info}
+export PORT=${PORT:-3000}
+export ADMIN_PORT=${ADMIN_PORT:-3001}
+export ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+export ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+
+mkdir -p /app/data
+mkdir -p /app/public/images
+
+if [ ! -f "$DB_PATH" ]; then
+  echo "Database file not found at $DB_PATH, initializing..."
+  node /app/scripts/init-db.js
+  echo "âœ“ Database initialized successfully"
+else
+  echo "Database file exists, validating schema..."
+  if node /app/scripts/validate-db.js; then
+    echo "âœ“ Database is properly initialized"
+  else
+    echo "âœ— FATAL: Database is corrupted or incomplete!"
+    BACKUP_FILE="$DB_PATH.corrupted.$(date +%s)"
+    cp "$DB_PATH" "$BACKUP_FILE"
+    echo "âš  Corrupted database backed up to: $BACKUP_FILE"
+    echo "âš  Please restore from backup or delete the corrupted file to reinitialize"
+    exit 1
+  fi
+fi#!/bin/sh
+set -e
+
+echo "Starting Recomte.ru application..."
+
 # Set default environment variables if not provided
 export NODE_ENV=${NODE_ENV:-production}
 export DB_PATH=${DB_PATH:-./data/app.db}
@@ -39,6 +74,20 @@ else
 fi
 
 # Start the application
+echo "Starting Node.js application..."
+echo "Environment: $NODE_ENV"
+echo "Database path: $DB_PATH"
+echo "Log level: $LOG_LEVEL"
+echo "Admin log level: $ADMIN_LOG_LEVEL"
+echo "Public log level: $PUBLIC_LOG_LEVEL"
+
+SERVER_MODE=all node /app/src/server/index.js &
+SERVER_PID=$!
+
+trap 'kill $SERVER_PID $ADMIN_PID 2>/dev/null || true' INT TERM
+wait $SERVER_PID
+
+
 echo "Starting Node.js application..."
 echo "Environment: $NODE_ENV"
 echo "Database path: $DB_PATH"
