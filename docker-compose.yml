@@ -81,8 +81,8 @@ services:
       - PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-info}
 
     volumes:
-      - ./test-data:/app/data
-      - ./test-public/images/caravans:/app/public/images/caravans
+      - ./storage/test/db:/app/data
+      - ./storage/test/images/caravans:/app/public/images/caravans
     restart: unless-stopped
     networks:
       - traefik-proxy
