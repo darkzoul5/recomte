@@ -70,6 +70,14 @@ const writeLine = (line) => {
   process.stdout.write(`${line}\n`);
 };
 
+const shouldSuppressMessage = (levelName, message) => {
+  if (levelName === 'info' && typeof message === 'string' && message.startsWith('Server listening at ')) {
+    return true;
+  }
+
+  return false;
+};
+
 class AppLogger {
   constructor(level = DEFAULT_LEVEL, bindings = {}) {
     this.level = toLevelName(level);
@@ -87,6 +95,10 @@ class AppLogger {
     }
 
     const { message, error } = normalizeArgs(args);
+    if (shouldSuppressMessage(currentLevel, message)) {
+      return;
+    }
+
     const bindingText = Object.entries(this.bindings)
       .filter(([, value]) => value !== undefined && value !== null && value !== '')
       .map(([key, value]) => `${key}=${value}`)
