@@ -36,8 +36,17 @@ fi
 cp -f "./data/backups/${backup_filename}" "./test-data/backups/${backup_filename}"
 cp -f "./data/backups/${backup_filename}" "./test-data/app.db"
 
+echo "[sync] Syncing caravan images into test assets bind mount..."
+mkdir -p ./test-public/images/caravans
+rm -rf ./test-public/images/caravans/*
+
+if [ -d ./public/images/caravans ]; then
+  cp -a ./public/images/caravans/. ./test-public/images/caravans/
+fi
+
 echo "[sync] Starting test service (${TEST_SERVICE})..."
 docker compose -f "${COMPOSE_FILE}" up -d "${TEST_SERVICE}"
 
 echo "[sync] Done. Test DB replaced at ./test-data/app.db"
 echo "[sync] Snapshot saved at ./test-data/backups/${backup_filename}"
+echo "[sync] Test caravan images refreshed at ./test-public/images/caravans"
