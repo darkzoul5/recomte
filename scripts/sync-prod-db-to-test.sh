@@ -55,7 +55,7 @@ echo "[sync] Creating prod backup inside ${PROD_CONTAINER}..."
 docker exec "${PROD_CONTAINER}" node ./scripts/backup-db.js --db "${PROD_DB_IN_CONTAINER}" --out "${backup_in_container}"
 
 echo "[sync] Copying backup into test DB bind mount..."
-mkdir -p ./storage/test "${TEST_BACKUPS_DIR_LOCAL}" "${PROD_BACKUPS_DIR_LOCAL}"
+mkdir -p ./storage/test/db ./storage/test/images/caravans "${TEST_BACKUPS_DIR_LOCAL}" "${PROD_BACKUPS_DIR_LOCAL}"
 
 if [ -f ./storage/test/db/app.db-wal ]; then
   rm -f ./storage/test/db/app.db-wal
@@ -70,7 +70,7 @@ if [ -f ./storage/test/db/app.db ]; then
 fi
 
 cp -f "${PROD_BACKUPS_DIR_LOCAL}/${backup_filename}" "${TEST_BACKUPS_DIR_LOCAL}/${backup_filename}"
-cp -f "./data/backups/${backup_filename}" "./storage/test/db/app.db"
+cp -f "${PROD_BACKUPS_DIR_LOCAL}/${backup_filename}" "./storage/test/db/app.db"
 
 echo "[sync] Syncing caravan images into test assets bind mount..."
 mkdir -p ./storage/test/images/caravans
