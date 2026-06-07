@@ -4,6 +4,10 @@ set -Eeuo pipefail
 # Sync production SQLite DB into the test environment.
 # Run this on the server in the same directory as docker-compose.yml.
 
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
+cd "${PROJECT_ROOT}"
+
 PROD_CONTAINER="${PROD_CONTAINER:-recomte_app}"
 TEST_SERVICE="${TEST_SERVICE:-app_test}"
 
