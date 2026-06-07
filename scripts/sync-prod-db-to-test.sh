@@ -25,6 +25,14 @@ docker exec "${PROD_CONTAINER}" node ./scripts/backup-db.js --db "${PROD_DB_IN_C
 echo "[sync] Copying backup into test DB bind mount..."
 mkdir -p ./test-data ./test-data/backups
 
+if [ -f ./test-data/app.db-wal ]; then
+  rm -f ./test-data/app.db-wal
+fi
+
+if [ -f ./test-data/app.db-shm ]; then
+  rm -f ./test-data/app.db-shm
+fi
+
 cp -f "./data/backups/${backup_filename}" "./test-data/backups/${backup_filename}"
 cp -f "./data/backups/${backup_filename}" "./test-data/app.db"
 
