@@ -5,7 +5,7 @@ set -Eeuo pipefail
 # Run this on the server in the same directory as docker-compose.yml.
 
 PROD_CONTAINER="${PROD_CONTAINER:-recomte_app}"
-TEST_SERVICE="${TEST_SERVICE:-app_test}"
+TEST_CONTAINER="${TEST_CONTAINER:-recomte_app_test}"
 
 PROD_DB_IN_CONTAINER="${PROD_DB_IN_CONTAINER:-/app/data/app.db}"
 BACKUPS_DIR_IN_CONTAINER="${BACKUPS_DIR_IN_CONTAINER:-/app/data/backups}"
@@ -16,18 +16,18 @@ timestamp="$(date +%Y%m%d-%H%M%S)"
 backup_filename="prod-${timestamp}.db"
 backup_in_container="${BACKUPS_DIR_IN_CONTAINER}/${backup_filename}"
 
-echo "[sync] Stopping test service (${TEST_SERVICE})..."
-docker compose -f "${COMPOSE_FILE}" stop "${TEST_SERVICE}"
+echo "[sync] Stopping test service (${TEST_CONTAINER})..."
+docker compose -f "${COMPOSE_FILE}" stop "${TEST_CONTAINER}"
 
 echo "[sync] Creating prod backup inside ${PROD_CONTAINER}..."
-docker exec "${PROD_CONTAINER}" node scripts/backup-db.js --db "${PROD_DB_IN_CONTAINER}" --out "${backup_in_container}"
+docker exec "${PROD_CONTAINER}" node ./scripts/backup-db.js --db "${PROD_DB_IN_CONTAINER}" --out "${backup_in_container}"
 
 echo "[sync] Copying backup into test DB bind mount..."
 mkdir -p ./test-data
 cp -f "./data/backups/${backup_filename}" "./test-data/app.db"
 
-echo "[sync] Starting test service (${TEST_SERVICE})..."
-docker compose -f "${COMPOSE_FILE}" up -d "${TEST_SERVICE}"
+echo "[sync] Starting test service (${TEST_CONTAINER})..."
+docker compose -f "${COMPOSE_FILE}" up -d "${TEST_CONTAINER}"
 
 echo "[sync] Done. Test DB replaced with snapshot ${backup_filename}"
 

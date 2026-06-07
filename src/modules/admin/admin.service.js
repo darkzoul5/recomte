@@ -328,6 +328,23 @@ export const deleteCaravan = (caravanId) => {
   return caravans.delete(parseInt(caravanId));
 };
 
+export const createCaravanImage = (caravanId, imageData) => {
+  return images.create(
+    parseInt(caravanId, 10),
+    imageData.url,
+    imageData.alt_text || '',
+    imageData.sort_order || 0
+  );
+};
+
+export const deleteCaravanImage = (imageId, deleteFile = true) => {
+  return images.delete(parseInt(imageId, 10), deleteFile);
+};
+
+export const reorderCaravanImage = (imageId, sortOrder) => {
+  return images.reorder(parseInt(imageId, 10), sortOrder);
+};
+
 // Update caravan status (hide/show)
 export const updateCaravanStatus = (caravanId, newStatus) => {
   const caravan = caravans.getById(parseInt(caravanId));
