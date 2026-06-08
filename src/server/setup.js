@@ -184,6 +184,10 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     ? ["'self'"]
     : ["'self'", ...getAllowedPublicFrameAncestors()];
 
+  const frameSrcValues = isAdminServer
+    ? ["'self'", 'https://yandex.ru', 'https://recomte.ru']
+    : ["'self'", 'https://yandex.ru'];
+
   const cspHeader = [
     "default-src 'self'",
     "img-src 'self' https: data: blob:",
@@ -192,7 +196,7 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     "connect-src 'self' https://mc.yandex.ru https://mc.yandex.com wss://mc.yandex.com/solid.ws",
     "worker-src 'self' blob: https:",
     "font-src 'self' https: data:",
-    "frame-src 'self' https://yandex.ru",
+    `frame-src ${frameSrcValues.join(' ')}`,
     "child-src 'self' blob:",
     "object-src 'none'",
     "base-uri 'self'",
