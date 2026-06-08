@@ -14,7 +14,9 @@
 }
 
 .caravan-gallery__main-button {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     padding: 0;
     border: 0;
@@ -25,8 +27,10 @@
 .caravan-gallery__main-image {
     display: block;
     width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
+    height: auto;
+    max-height: min(75vh, 720px);
+    object-fit: contain;
+    margin: 0 auto;
 }
 
 .caravan-gallery__status {
