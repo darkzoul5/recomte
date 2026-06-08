@@ -105,7 +105,7 @@ export const getNewPage = async (request, reply) => {
   return renderEditPage(request, reply, ADD_TITLE, buildEmptyCaravan(), true, null);
 };
 
-export const postCreateCaravan = async (request, reply, rootDir, fastify) => {
+export const postCreateCaravan = async (request, reply, fastify) => {
   if (!requireAdminSession(request, reply)) {
     return;
   }
@@ -124,7 +124,7 @@ export const postCreateCaravan = async (request, reply, rootDir, fastify) => {
     const processedForm = processFeatures({ ...formData });
     const newCaravan = createCaravan(mapFormToCaravanData(processedForm));
 
-    await handleImageUploads(newCaravan.id, uploadedFiles, rootDir, fastify.log);
+    await handleImageUploads(newCaravan.id, uploadedFiles, fastify.log);
 
     return reply.redirect('/admin/dash');
   } catch (error) {
@@ -133,7 +133,7 @@ export const postCreateCaravan = async (request, reply, rootDir, fastify) => {
   }
 };
 
-export const postUpdateCaravan = async (request, reply, rootDir, fastify) => {
+export const postUpdateCaravan = async (request, reply, fastify) => {
   if (!requireAdminSession(request, reply)) {
     return;
   }
@@ -174,7 +174,7 @@ export const postUpdateCaravan = async (request, reply, rootDir, fastify) => {
     }
 
     applyImageOrder(parseInt(id, 10), formData.image_order);
-    await handleImageUploads(parseInt(id, 10), uploadedFiles, rootDir, fastify.log);
+    await handleImageUploads(parseInt(id, 10), uploadedFiles, fastify.log);
 
     return reply.redirect(`/admin/edit/${id}`);
   } catch (error) {

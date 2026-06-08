@@ -11,13 +11,19 @@ cd "${PROJECT_ROOT}"
 PROD_CONTAINER="${PROD_CONTAINER:-recomte_app}"
 TEST_SERVICE="${TEST_SERVICE:-app_test}"
 
-PROD_DB_IN_CONTAINER="${PROD_DB_IN_CONTAINER:-/app/data/app.db}"
-BACKUPS_DIR_IN_CONTAINER="${BACKUPS_DIR_IN_CONTAINER:-/app/data/backups}"
+PROD_STORAGE_ROOT_IN_CONTAINER="${PROD_STORAGE_ROOT_IN_CONTAINER:-/app/storage}"
+BACKUPS_DIR_IN_CONTAINER="${BACKUPS_DIR_IN_CONTAINER:-${PROD_STORAGE_ROOT_IN_CONTAINER}/backups}"
 
 COMPOSE_FILE="${COMPOSE_FILE:-docker/docker-compose.yml}"
 
-PROD_BACKUPS_DIR_LOCAL="${PROD_BACKUPS_DIR_LOCAL:-./storage/prod/backups}"
-TEST_BACKUPS_DIR_LOCAL="${TEST_BACKUPS_DIR_LOCAL:-./storage/test/backups}"
+PROD_STORAGE_ROOT_LOCAL="${PROD_STORAGE_ROOT_LOCAL:-./storage/prod}"
+TEST_STORAGE_ROOT_LOCAL="${TEST_STORAGE_ROOT_LOCAL:-./storage/test}"
+PROD_DB_LOCAL="${PROD_DB_LOCAL:-${PROD_STORAGE_ROOT_LOCAL}/db/app.db}"
+TEST_DB_LOCAL="${TEST_DB_LOCAL:-${TEST_STORAGE_ROOT_LOCAL}/db/app.db}"
+PROD_IMAGES_DIR_LOCAL="${PROD_IMAGES_DIR_LOCAL:-${PROD_STORAGE_ROOT_LOCAL}/images/caravans}"
+TEST_IMAGES_DIR_LOCAL="${TEST_IMAGES_DIR_LOCAL:-${TEST_STORAGE_ROOT_LOCAL}/images/caravans}"
+PROD_BACKUPS_DIR_LOCAL="${PROD_BACKUPS_DIR_LOCAL:-${PROD_STORAGE_ROOT_LOCAL}/backups}"
+TEST_BACKUPS_DIR_LOCAL="${TEST_BACKUPS_DIR_LOCAL:-${TEST_STORAGE_ROOT_LOCAL}/backups}"
 
 PROD_RETENTION_DAYS="${PROD_RETENTION_DAYS:-30}"
 PROD_KEEP_COUNT="${PROD_KEEP_COUNT:-14}"
@@ -56,32 +62,32 @@ echo "[sync] Stopping test service (${TEST_SERVICE})..."
 docker compose -f "${COMPOSE_FILE}" stop "${TEST_SERVICE}"
 
 echo "[sync] Creating prod backup inside ${PROD_CONTAINER}..."
-docker exec "${PROD_CONTAINER}" node ./scripts/backup-db.js --db "${PROD_DB_IN_CONTAINER}" --out "${backup_in_container}"
+docker exec "${PROD_CONTAINER}" node ./scripts/backup-db.js --out "${backup_in_container}"
 
 echo "[sync] Copying backup into test DB bind mount..."
-mkdir -p ./storage/test/db ./storage/test/images/caravans "${TEST_BACKUPS_DIR_LOCAL}" "${PROD_BACKUPS_DIR_LOCAL}"
+mkdir -p "$(dirname "${TEST_DB_LOCAL}")" "${TEST_IMAGES_DIR_LOCAL}" "${TEST_BACKUPS_DIR_LOCAL}" "${PROD_BACKUPS_DIR_LOCAL}"
 
-if [ -f ./storage/test/db/app.db-wal ]; then
-  rm -f ./storage/test/db/app.db-wal
+if [ -f "${TEST_DB_LOCAL}-wal" ]; then
+  rm -f "${TEST_DB_LOCAL}-wal"
 fi
 
-if [ -f ./storage/test/db/app.db-shm ]; then
-  rm -f ./storage/test/db/app.db-shm
+if [ -f "${TEST_DB_LOCAL}-shm" ]; then
+  rm -f "${TEST_DB_LOCAL}-shm"
 fi
 
-if [ -f ./storage/test/db/app.db ]; then
-  cp -f ./storage/test/db/app.db "${TEST_BACKUPS_DIR_LOCAL}/${test_backup_filename}"
+if [ -f "${TEST_DB_LOCAL}" ]; then
+  cp -f "${TEST_DB_LOCAL}" "${TEST_BACKUPS_DIR_LOCAL}/${test_backup_filename}"
 fi
 
 cp -f "${PROD_BACKUPS_DIR_LOCAL}/${backup_filename}" "${TEST_BACKUPS_DIR_LOCAL}/${backup_filename}"
-cp -f "${PROD_BACKUPS_DIR_LOCAL}/${backup_filename}" "./storage/test/db/app.db"
+cp -f "${PROD_BACKUPS_DIR_LOCAL}/${backup_filename}" "${TEST_DB_LOCAL}"
 
 echo "[sync] Syncing caravan images into test assets bind mount..."
-mkdir -p ./storage/test/images/caravans
-rm -rf ./storage/test/images/caravans/*
+mkdir -p "${TEST_IMAGES_DIR_LOCAL}"
+rm -rf "${TEST_IMAGES_DIR_LOCAL:?}"/*
 
-if [ -d ./storage/prod/images/caravans ]; then
-  cp -a ./storage/prod/images/caravans/. ./storage/test/images/caravans/
+if [ -d "${PROD_IMAGES_DIR_LOCAL}" ]; then
+  cp -a "${PROD_IMAGES_DIR_LOCAL}/." "${TEST_IMAGES_DIR_LOCAL}/"
 fi
 
 echo "[sync] Starting test service (${TEST_SERVICE})..."
@@ -92,9 +98,9 @@ prune_backups "${PROD_BACKUPS_DIR_LOCAL}" 'prod-*.db' "${PROD_RETENTION_DAYS}" "
 prune_backups "${TEST_BACKUPS_DIR_LOCAL}" 'prod-*.db' "${TEST_PROD_RETENTION_DAYS}" "${TEST_PROD_KEEP_COUNT}"
 prune_backups "${TEST_BACKUPS_DIR_LOCAL}" 'test-before-sync-*.db' "${TEST_BEFORE_SYNC_RETENTION_DAYS}" "${TEST_BEFORE_SYNC_KEEP_COUNT}"
 
-echo "[sync] Done. Test DB replaced at ./storage/test/db/app.db"
+echo "[sync] Done. Test DB replaced at ${TEST_DB_LOCAL}"
 echo "[sync] Snapshot saved at ${TEST_BACKUPS_DIR_LOCAL}/${backup_filename}"
 if [ -f "${TEST_BACKUPS_DIR_LOCAL}/${test_backup_filename}" ]; then
   echo "[sync] Previous test DB saved at ${TEST_BACKUPS_DIR_LOCAL}/${test_backup_filename}"
 fi
-echo "[sync] Test caravan images refreshed at ./storage/test/images/caravans"
+echo "[sync] Test caravan images refreshed at ${TEST_IMAGES_DIR_LOCAL}"

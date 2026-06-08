@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import sharp from 'sharp';
 import { images, caravans } from '../../../db/db.js';
+import { getCaravanImagesDir, getPublicCaravanImagesUrlPrefix } from '../../utils/storage-paths.js';
 
 const ALLOWED_IMAGE_MIME_TYPES = new Set([
   'image/jpeg',
@@ -26,15 +27,15 @@ const resolveCaravanSlug = (caravanId) => {
   return slug;
 };
 
-const ensureImagesDir = (rootDir, slug) => {
-  const imagesDir = path.join(rootDir, 'public', 'images', 'caravans', slug);
+const ensureImagesDir = (slug) => {
+  const imagesDir = path.join(getCaravanImagesDir(), slug);
   if (!fs.existsSync(imagesDir)) {
     fs.mkdirSync(imagesDir, { recursive: true });
   }
   return imagesDir;
 };
 
-export const saveCaravanImageAsWebp = async ({ caravanId, fileBuffer, originalFilename, mimetype, rootDir, logger }) => {
+export const saveCaravanImageAsWebp = async ({ caravanId, fileBuffer, originalFilename, mimetype, logger }) => {
   if (!Number.isInteger(caravanId) || caravanId <= 0) {
     throw new Error('Invalid caravan ID');
   }
@@ -48,7 +49,7 @@ export const saveCaravanImageAsWebp = async ({ caravanId, fileBuffer, originalFi
   }
 
   const slug = resolveCaravanSlug(caravanId);
-  const imagesDir = ensureImagesDir(rootDir, slug);
+  const imagesDir = ensureImagesDir(slug);
 
   const existingImages = images.getByCaravanId(caravanId) || [];
   const nextIndex = existingImages.length + 1;
@@ -64,7 +65,7 @@ export const saveCaravanImageAsWebp = async ({ caravanId, fileBuffer, originalFi
   const imageWidth = Number.isInteger(metadata.width) ? metadata.width : null;
   const imageHeight = Number.isInteger(metadata.height) ? metadata.height : null;
 
-  const imageUrl = `/public/images/caravans/${slug}/${webpFileName}`;
+  const imageUrl = `${getPublicCaravanImagesUrlPrefix()}/${slug}/${webpFileName}`;
   const createdImage = images.create(caravanId, imageUrl, originalFilename || '', 0, imageWidth, imageHeight);
 
   if (logger && typeof logger.debug === 'function') {
@@ -114,7 +115,7 @@ export const parseMultipartForm = async (request) => {
   return { formData, uploadedFiles };
 };
 
-export const handleImageUploads = async (caravanId, uploadedFiles, rootDir, logger) => {
+export const handleImageUploads = async (caravanId, uploadedFiles, logger) => {
   if (uploadedFiles.length === 0) {
     return;
   }
@@ -125,7 +126,6 @@ export const handleImageUploads = async (caravanId, uploadedFiles, rootDir, logg
       fileBuffer: file.buffer,
       originalFilename: file.filename,
       mimetype: file.mimetype,
-      rootDir,
       logger
     });
   }

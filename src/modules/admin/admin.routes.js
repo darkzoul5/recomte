@@ -11,8 +11,6 @@ import {
 import { redirectByAdminSession } from './admin.helpers.js';
 
 export default async function registerAdminRoutes(fastify, options = {}) {
-  const { rootDir } = options;
-
   // Redirect root admin paths by session status
   fastify.get('/', async (request, reply) => {
     return redirectByAdminSession(request, reply);
@@ -39,12 +37,12 @@ export default async function registerAdminRoutes(fastify, options = {}) {
 
   // Create caravan
   fastify.post('/admin/new', async (request, reply) => {
-    return postCreateCaravan(request, reply, rootDir, fastify);
+    return postCreateCaravan(request, reply, fastify);
   });
 
   // Update caravan
   fastify.post('/admin/edit/:id', async (request, reply) => {
-    return postUpdateCaravan(request, reply, rootDir, fastify);
+    return postUpdateCaravan(request, reply, fastify);
   });
 
   // Delist caravan (hide)

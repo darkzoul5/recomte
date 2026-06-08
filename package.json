@@ -11,7 +11,7 @@
     "db:init": "node scripts/init-db.js",
     "db:seed": "node scripts/seed-db.js",
     "db:migrations": "node scripts/migrate-db.js",
-    "db:backup": "node scripts/backup-db.js --db ./storage/prod/db/app.db --out ./storage/prod/backups/app-manual.db",
+    "db:backup": "node scripts/backup-db.js",
     "images:backfill-dimensions": "node scripts/backfill-image-dimensions.js",
     "admin:passwd": "node scripts/admin-password-reset.js"
   },

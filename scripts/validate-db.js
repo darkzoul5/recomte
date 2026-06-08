@@ -1,10 +1,8 @@
 import Database from 'better-sqlite3';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import { REQUIRED_TABLES } from '../db/schema.js';
+import { getDbPath } from '../src/utils/storage-paths.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dbPath = process.env.DB_PATH || './data/app.db';
+const dbPath = getDbPath();
 
 try {
   // Open database connection

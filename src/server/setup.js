@@ -15,6 +15,7 @@ import {
   getSiteOrigin,
   getSiteUrl
 } from '../utils/site-url.js';
+import { getCaravanImagesDir } from '../utils/storage-paths.js';
 
 const SESSION_MAX_AGE = 60 * 60 * 1000; // 1 hour in milliseconds
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -156,6 +157,7 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
   const siteUrl = getSiteUrl();
   const siteHost = getSiteHost();
   const siteOrigin = getSiteOrigin();
+  fs.mkdirSync(getCaravanImagesDir(), { recursive: true });
   await fastify.register(fastifyCompress, {
     threshold: 1024,
     encodings: ['gzip', 'deflate']
@@ -282,7 +284,19 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     fastify.log.info(message);
   });
 
-  // WebP conversion middleware removed - use static file serving for now
+  await fastify.register(fastifyStatic, {
+    root: getCaravanImagesDir(),
+    prefix: '/public/images/caravans/',
+    decorateReply: false,
+    setHeaders: (res, pathName) => {
+      if (/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(pathName)) {
+        res.setHeader('Cache-Control', 'public, max-age=604800');
+      } else {
+        res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
+      }
+    }
+  });
+
   await fastify.register(fastifyStatic, {
     root: path.join(rootDir, 'public'),
     prefix: '/public/',

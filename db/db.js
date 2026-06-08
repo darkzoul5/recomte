@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { applySchema } from './schema.js';
 import { runMigrations } from './migrations/index.js';
+import { getDbPath, resolveCaravanImagePath } from '../src/utils/storage-paths.js';
 import {
   validateColumnName,
   validateCaravanData,
@@ -14,7 +15,7 @@ import {
 } from '../src/utils/validation.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../data/app.db');
+const DB_PATH = getDbPath();
 
 let db = null;
 
@@ -358,11 +359,10 @@ export const images = {
         try {
           // Convert URL path to filesystem path
           // URL format: /public/images/caravans/5/caravan-5-filename.jpg
-          const urlPath = image.url.replace(/^\//, ''); // Remove leading slash
-          const filePath = path.join(__dirname, '..', urlPath);
+          const filePath = resolveCaravanImagePath(image.url);
           
           // Delete file if it exists
-          if (fs.existsSync(filePath)) {
+          if (filePath && fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
             console.log(`File deleted: ${filePath}`);
           }

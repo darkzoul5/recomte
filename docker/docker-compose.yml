@@ -13,9 +13,10 @@ services:
       - SESSION_SECRET=${SESSION_SECRET} # MUST be set for app to work
       - SITE_URL=https://recomte.ru
       - ADMIN_URL=https://admin.recomte.ru
+      - STORAGE_ROOT=/app/storage
 
       # Optional --------------------------------------------
-      - DB_PATH=/app/data/app.db
+      #- DB_PATH=
       - PORT=${PORT:-3000}
       - ADMIN_PORT=${ADMIN_PORT:-3001}
       #Logging - global level or separate for admin and public
@@ -24,9 +25,7 @@ services:
       - PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-info}
 
     volumes:
-      - ../storage/prod/db:/app/data
-      - ../storage/prod/backups:/app/data/backups
-      - ../storage/prod/images/caravans:/app/public/images/caravans
+      - ../storage/prod:/app/storage
     restart: unless-stopped
     networks:
       - traefik-proxy
@@ -75,9 +74,10 @@ services:
       - SESSION_SECRET=${SESSION_SECRET} # MUST be set for app to work
       - SITE_URL=https://test.recomte.ru
       - ADMIN_URL=https://admin.test.recomte.ru
+      - STORAGE_ROOT=/app/storage
 
       # Optional --------------------------------------------
-      - DB_PATH=/app/data/app.db
+      #- DB_PATH=
       - PORT=${PORT:-3000}
       - ADMIN_PORT=${ADMIN_PORT:-3001}
       #Logging - global level or separate for admin and public
@@ -86,9 +86,7 @@ services:
       - PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-info}
 
     volumes:
-      - ../storage/test/db:/app/data
-      - ../storage/test/backups:/app/data/backups
-      - ../storage/test/images/caravans:/app/public/images/caravans
+      - ../storage/test:/app/storage
     restart: unless-stopped
     networks:
       - traefik-proxy

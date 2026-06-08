@@ -33,9 +33,19 @@ Default ports:
 - Public: `3000` (`PORT`)
 - Admin: `3001` (`ADMIN_PORT`)
 
+## Runtime storage
+
+- Default runtime storage root: `storage`
+- Runtime layout under `STORAGE_ROOT`:
+  - `db/app.db`
+  - `backups/`
+  - `images/caravans/`
+- Override the storage root with `STORAGE_ROOT`
+- Override only the database path with `DB_PATH`
+
 ## Database
 
-- Default DB file: `data/app.db` (override with `DB_PATH`)
+- Default DB file: `storage/db/app.db` (override with `DB_PATH`)
 - Schema is applied on startup (`CREATE TABLE/INDEX IF NOT EXISTS`).
 - Migrations are applied automatically on startup (unless disabled).
 
@@ -43,12 +53,12 @@ Controls:
 
 - Disable auto migrations: `MIGRATIONS_AUTO=0`
 - Run migrations manually: `npm run db:migrations` (forces migrations even if auto is disabled)
-- Create a DB backup: `node scripts/backup-db.js --db ./storage/prod/db/app.db --out ./storage/prod/backups/app-YYYYMMDD.db`
+- Create a DB backup: `npm run db:backup`
 - Initialize/seed:
   - `npm run db:init`
   - `npm run db:seed`
 
 ### Prod -> Test DB sync (Docker Compose)
 
-If you run separate prod/test containers with separate bind mounts (e.g. `./storage/prod` and `./storage/test`),
+If you run separate prod/test containers with separate storage roots (e.g. `./storage/prod` and `./storage/test`),
 you can copy a consistent snapshot from prod into test by running `scripts/sync-prod-db-to-test.sh` on the server.

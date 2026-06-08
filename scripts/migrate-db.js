@@ -1,15 +1,12 @@
 import dotenv from 'dotenv';
 import Database from 'better-sqlite3';
 import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import { applySchema } from '../db/schema.js';
 import { runMigrations } from '../db/migrations/index.js';
+import { getDbPath } from '../src/utils/storage-paths.js';
 
 dotenv.config({ override: false });
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dbPath = process.env.DB_PATH || path.join(__dirname, '../data/app.db');
+const dbPath = getDbPath();
 
 const ensureDir = (filepath) => {
   const dir = path.dirname(filepath);
@@ -37,4 +34,3 @@ main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
-

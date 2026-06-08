@@ -5,7 +5,8 @@ echo "Starting Recomte.ru application..."
 
 # Set default environment variables if not provided
 export NODE_ENV=${NODE_ENV:-production}
-export DB_PATH=${DB_PATH:-./data/app.db}
+export STORAGE_ROOT=${STORAGE_ROOT:-/app/storage}
+export DB_PATH=${DB_PATH:-${STORAGE_ROOT}/db/app.db}
 export SESSION_SECRET=${SESSION_SECRET:-default_secret_change_in_production}
 export LOG_LEVEL=${LOG_LEVEL:-info}
 export ADMIN_LOG_LEVEL=${ADMIN_LOG_LEVEL:-info}
@@ -15,9 +16,10 @@ export ADMIN_PORT=${ADMIN_PORT:-3001}
 export ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
 export ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
 
-# Create data directory if it doesn't exist
-mkdir -p /app/data
-mkdir -p /app/public/images
+# Create runtime storage directories if they don't exist
+mkdir -p "${STORAGE_ROOT}/db"
+mkdir -p "${STORAGE_ROOT}/backups"
+mkdir -p "${STORAGE_ROOT}/images/caravans"
 
 # Initialize database if needed
 if [ ! -f "$DB_PATH" ]; then
@@ -41,6 +43,7 @@ fi
 # Start the application
 echo "Starting Node.js application..."
 echo "Environment: $NODE_ENV"
+echo "Storage root: $STORAGE_ROOT"
 echo "Database path: $DB_PATH"
 echo "Log level: $LOG_LEVEL"
 echo "Admin log level: $ADMIN_LOG_LEVEL"

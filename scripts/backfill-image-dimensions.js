@@ -1,21 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
-import { fileURLToPath } from 'node:url';
 
 import '../src/server/bootstrap-env.js';
 import { initDb, closeDb, images } from '../db/db.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const rootDir = path.resolve(__dirname, '..');
-
-const resolveImagePath = (imageUrl) => {
-  if (typeof imageUrl !== 'string' || !imageUrl.startsWith('/public/')) {
-    return null;
-  }
-
-  return path.join(rootDir, imageUrl.replace(/^\//, '').replaceAll('/', path.sep));
-};
+import { resolveCaravanImagePath } from '../src/utils/storage-paths.js';
 
 const main = async () => {
   await initDb();
@@ -29,7 +18,7 @@ const main = async () => {
         continue;
       }
 
-      const imagePath = resolveImagePath(image.url);
+      const imagePath = resolveCaravanImagePath(image.url);
       if (!imagePath || !fs.existsSync(imagePath)) {
         continue;
       }
