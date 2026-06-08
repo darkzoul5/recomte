@@ -26,6 +26,7 @@
 }, null, 2) %>
 </script>
 <link rel="stylesheet" href="/public/css/caravan-gallery.css">
+<link rel="stylesheet" href="/public/vendor/photoswipe/photoswipe.css">
 
 <%
   const getStatusLabel = (status) => {
@@ -61,7 +62,9 @@
             url: img.url,
             alt: img.alt_text || `Изображение ${index + 1} для ${caravan.title}`,
             title: caravan.title,
-            index: index
+            index: index,
+            width: img.width || null,
+            height: img.height || null
           }))) %></script>
 
           <div class="caravan-gallery__main">
@@ -70,8 +73,9 @@
             </button>
 
             <button type="button" class="caravan-gallery__main-button" data-gallery-open aria-label="Открыть изображение в полном размере">
-              <img class="caravan-gallery__main-image" data-gallery-main-image src="<%= caravan.images && caravan.images.length > 0 ? caravan.images[0].url : 'https://via.placeholder.com/800x600?text=Без+изображений' %>" alt="<%= caravan.title %>">
+              <img class="caravan-gallery__main-image" data-gallery-main-image src="<%= caravan.images && caravan.images.length > 0 ? caravan.images[0].url : 'https://via.placeholder.com/800x600?text=Без+изображений' %>" alt="<%= caravan.title %>"<% if (caravan.images && caravan.images[0] && caravan.images[0].width && caravan.images[0].height) { %> width="<%= caravan.images[0].width %>" height="<%= caravan.images[0].height %>"<% } %>>
             </button>
+            <div class="caravan-gallery__status" data-gallery-status aria-live="polite"></div>
 
             <button type="button" class="caravan-gallery__arrow caravan-gallery__arrow--next" data-gallery-next aria-label="Следующее изображение">
               <i class="fas fa-chevron-right"></i>
@@ -332,6 +336,6 @@
   </div>
 </section>
 
-<script src="/public/js/caravan-gallery.js"></script>
+<script type="module" src="/public/js/caravan-gallery.js"></script>
 
 <%- include('../../components/footer/public') %>

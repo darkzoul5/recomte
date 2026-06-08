@@ -333,7 +333,9 @@ export const createCaravanImage = (caravanId, imageData) => {
     parseInt(caravanId, 10),
     imageData.url,
     imageData.alt_text || '',
-    imageData.sort_order || 0
+    imageData.sort_order || 0,
+    imageData.width || null,
+    imageData.height || null
   );
 };
 

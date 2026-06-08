@@ -29,7 +29,7 @@ const ALLOWED_CARAVAN_COLUMNS = new Set([
 
 // Whitelist of allowed column names for images table
 const ALLOWED_IMAGE_COLUMNS = new Set([
-  'caravan_id', 'url', 'alt_text', 'sort_order'
+  'caravan_id', 'url', 'alt_text', 'sort_order', 'width', 'height'
 ]);
 
 // Whitelist of allowed caravan statuses
@@ -425,6 +425,14 @@ export const validateImageData = (data) => {
 
   if (data.sort_order !== undefined && !validateInteger(data.sort_order, 0, 10000)) {
     errors.push('Sort order must be a valid number');
+  }
+
+  if (data.width !== undefined && data.width !== null && data.width !== '' && !validateInteger(data.width, 1, 50000)) {
+    errors.push('Width must be a valid number');
+  }
+
+  if (data.height !== undefined && data.height !== null && data.height !== '' && !validateInteger(data.height, 1, 50000)) {
+    errors.push('Height must be a valid number');
   }
 
   return {

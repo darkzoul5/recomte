@@ -29,6 +29,21 @@
     object-fit: cover;
 }
 
+.caravan-gallery__status {
+    position: absolute;
+    right: 0.85rem;
+    bottom: 0.85rem;
+    z-index: 2;
+    min-width: 3.5rem;
+    padding: 0.4rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.58);
+    color: #fff;
+    font-size: 0.9rem;
+    text-align: center;
+    backdrop-filter: blur(6px);
+}
+
 .caravan-gallery__arrow {
     position: absolute;
     top: 50%;
@@ -86,117 +101,6 @@
     object-fit: cover;
 }
 
-.caravan-lightbox {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    display: none;
-    align-items: center;
-    justify-content: center;
-}
-
-.caravan-lightbox.is-open {
-    display: flex;
-}
-
-.caravan-lightbox__backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.88);
-}
-
-.caravan-lightbox__panel {
-    position: relative;
-    z-index: 1;
-    width: min(96vw, 1200px);
-    height: min(92vh, 900px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 0.85rem;
-}
-
-.caravan-lightbox__stage {
-    flex: 1;
-    width: 100%;
-    min-height: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    touch-action: none;
-    user-select: none;
-    cursor: grab;
-}
-
-.caravan-lightbox__stage:active {
-    cursor: grabbing;
-}
-
-.caravan-lightbox__image {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    transform-origin: center center;
-    transition: transform 0.08s linear;
-    will-change: transform;
-}
-
-.caravan-lightbox__close,
-.caravan-lightbox__nav {
-    position: absolute;
-    z-index: 2;
-    border: 0;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
-    backdrop-filter: blur(6px);
-    cursor: pointer;
-    transition: background 0.15s ease, transform 0.15s ease;
-}
-
-.caravan-lightbox__close:hover,
-.caravan-lightbox__nav:hover {
-    background: rgba(255, 255, 255, 0.28);
-}
-
-.caravan-lightbox__close {
-    top: 1rem;
-    right: 1rem;
-    width: 3rem;
-    height: 3rem;
-}
-
-.caravan-lightbox__nav {
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3.5rem;
-    height: 3.5rem;
-}
-
-.caravan-lightbox__nav--prev { left: 1rem; }
-.caravan-lightbox__nav--next { right: 1rem; }
-
-.caravan-lightbox__toolbar {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.55rem 0.75rem;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
-}
-
-.caravan-lightbox__toolbar .button {
-    border: 0;
-}
-
-html.is-lightbox-open,
-body.is-lightbox-open {
-    overflow: hidden;
-}
-
 @media screen and (max-width: 768px) {
     .caravan-gallery__arrow {
         width: 2.5rem;
@@ -206,18 +110,4 @@ body.is-lightbox-open {
     .caravan-gallery__thumbnails {
         grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
     }
-
-    .caravan-lightbox__panel {
-        width: 100vw;
-        height: 100vh;
-        padding: 0.75rem;
-    }
-
-    .caravan-lightbox__nav {
-        width: 2.8rem;
-        height: 2.8rem;
-    }
-
-    .caravan-lightbox__nav--prev { left: 0.35rem; }
-    .caravan-lightbox__nav--next { right: 0.35rem; }
 }

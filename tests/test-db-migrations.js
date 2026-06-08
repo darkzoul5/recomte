@@ -51,13 +51,15 @@ const main = async () => {
     applySchema(db);
     const result = await runMigrations(db, { verbose: false, force: true });
 
-    assert.equal(result.to, 3);
+    assert.equal(result.to, 4);
     assert.equal(result.skipped, false);
 
     assert.equal(columnExists(db, 'caravans', 'kitchen_appliances'), true);
     assert.equal(columnExists(db, 'caravans', 'brand'), true);
     assert.equal(columnExists(db, 'caravans', 'length_with_hitch_mm'), true);
     assert.equal(columnExists(db, 'caravans', 'length_without_hitch_mm'), true);
+    assert.equal(columnExists(db, 'images', 'width'), true);
+    assert.equal(columnExists(db, 'images', 'height'), true);
 
     const row = db.prepare('SELECT camper_season, kitchen_appliances, length_with_hitch_mm FROM caravans WHERE id = 1').get();
     assert.equal(row.camper_season, 'all_season');
@@ -65,7 +67,7 @@ const main = async () => {
     assert.equal(row.length_with_hitch_mm, null);
 
     const userVersion = Number(db.pragma('user_version', { simple: true }) || 0);
-    assert.equal(userVersion, 3);
+    assert.equal(userVersion, 4);
 
     console.log('✓ DB migrations test passed');
   } finally {

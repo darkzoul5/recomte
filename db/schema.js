@@ -92,6 +92,8 @@ CREATE TABLE IF NOT EXISTS images (
   url TEXT NOT NULL,
   alt_text TEXT,
   sort_order INTEGER,
+  width INTEGER,
+  height INTEGER,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY(caravan_id) REFERENCES caravans(id) ON DELETE CASCADE
 );

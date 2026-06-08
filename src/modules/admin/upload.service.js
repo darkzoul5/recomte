@@ -56,11 +56,16 @@ export const saveCaravanImageAsWebp = async ({ caravanId, fileBuffer, originalFi
   const webpFilePath = path.join(imagesDir, webpFileName);
 
   await sharp(fileBuffer)
+    .rotate()
     .webp({ quality: 80 })
     .toFile(webpFilePath);
 
+  const metadata = await sharp(webpFilePath).metadata();
+  const imageWidth = Number.isInteger(metadata.width) ? metadata.width : null;
+  const imageHeight = Number.isInteger(metadata.height) ? metadata.height : null;
+
   const imageUrl = `/public/images/caravans/${slug}/${webpFileName}`;
-  const createdImage = images.create(caravanId, imageUrl, originalFilename || '', 0);
+  const createdImage = images.create(caravanId, imageUrl, originalFilename || '', 0, imageWidth, imageHeight);
 
   if (logger && typeof logger.debug === 'function') {
     logger.debug(`Converted and saved image: ${webpFileName}`);

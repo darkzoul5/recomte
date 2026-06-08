@@ -12,6 +12,7 @@
     "db:seed": "node scripts/seed-db.js",
     "db:migrations": "node scripts/migrate-db.js",
     "db:backup": "node scripts/backup-db.js --db ./storage/prod/db/app.db --out ./storage/prod/backups/app-manual.db",
+    "images:backfill-dimensions": "node scripts/backfill-image-dimensions.js",
     "admin:passwd": "node scripts/admin-password-reset.js"
   },
   "author": "dark_zoul",
@@ -33,6 +34,7 @@
     "fastify": "^5.8.5",
     "filepond": "^4.32.12",
     "filepond-plugin-image-preview": "^4.6.12",
+    "photoswipe": "^5.4.4",
     "sharp": "^0.34.5",
     "slugify": "^1.6.9",
     "sortablejs": "^1.15.7",

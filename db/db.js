@@ -319,7 +319,7 @@ export const images = {
     return query('SELECT * FROM images ORDER BY caravan_id ASC, sort_order ASC');
   },
 
-  create: (caravanId, url, altText = '', sortOrder = 0) => {
+  create: (caravanId, url, altText = '', sortOrder = 0, width = null, height = null) => {
     // Validate inputs
     if (!Number.isInteger(caravanId) || caravanId <= 0) {
       throw new Error('Invalid caravan ID');
@@ -329,7 +329,9 @@ export const images = {
       caravan_id: caravanId,
       url,
       alt_text: altText,
-      sort_order: sortOrder
+      sort_order: sortOrder,
+      width,
+      height
     };
 
     const validation = validateImageData(imageData);
@@ -395,7 +397,7 @@ export const images = {
     }
 
     // Only allow updating specific fields
-    const allowedFields = ['url', 'alt_text', 'sort_order'];
+    const allowedFields = ['url', 'alt_text', 'sort_order', 'width', 'height'];
     const updateFields = {};
 
     for (const [key, value] of Object.entries(updates)) {

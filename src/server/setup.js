@@ -269,6 +269,15 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     }
   });
 
+  await fastify.register(fastifyStatic, {
+    root: path.join(rootDir, 'node_modules', 'photoswipe', 'dist'),
+    prefix: '/public/vendor/photoswipe/',
+    decorateReply: false,
+    setHeaders: (res) => {
+      res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
+    }
+  });
+
   const fastifyView = (await import('@fastify/view')).default;
   await fastify.register(fastifyView, {
     engine: {
