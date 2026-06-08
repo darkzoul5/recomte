@@ -3,14 +3,16 @@ import PhotoSwipeLightbox from '/public/vendor/photoswipe/photoswipe-lightbox.es
 function initializeCaravanGallery() {
   const galleryRoot = document.querySelector('[data-caravan-gallery]');
   const dataScript = document.getElementById('caravanImagesData');
+  const mainStage = galleryRoot?.querySelector('.caravan-gallery__main');
   const mainImage = galleryRoot?.querySelector('[data-gallery-main-image]');
+  const backdrop = galleryRoot?.querySelector('[data-gallery-backdrop]');
   const prevButton = galleryRoot?.querySelector('[data-gallery-prev]');
   const nextButton = galleryRoot?.querySelector('[data-gallery-next]');
   const openButton = galleryRoot?.querySelector('[data-gallery-open]');
   const thumbnailsContainer = galleryRoot?.querySelector('[data-gallery-thumbnails]');
   const statusElement = galleryRoot?.querySelector('[data-gallery-status]');
 
-  if (!galleryRoot || !mainImage || !thumbnailsContainer || !openButton) return;
+  if (!galleryRoot || !mainStage || !mainImage || !thumbnailsContainer || !openButton) return;
 
   let images = [];
   if (dataScript) {
@@ -55,6 +57,16 @@ function initializeCaravanGallery() {
     currentIndex = index;
     mainImage.src = image.src;
     mainImage.alt = image.alt;
+    if (backdrop) {
+      backdrop.style.backgroundImage = `url("${image.src}")`;
+    }
+
+    const isPortrait = image.width && image.height
+      ? image.height > image.width
+      : false;
+
+    mainStage.classList.toggle('is-portrait', isPortrait);
+    mainStage.classList.toggle('is-landscape', !isPortrait);
 
     if (image.width && image.height) {
       mainImage.width = image.width;
