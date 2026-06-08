@@ -9,6 +9,12 @@ import path from 'path';
 import fs from 'fs';
 import { getDb } from '../../db/db.js';
 import { createAppLogger } from './logger.js';
+import {
+  getAdminOrigin,
+  getSiteHost,
+  getSiteOrigin,
+  getSiteUrl
+} from '../utils/site-url.js';
 
 const SESSION_MAX_AGE = 60 * 60 * 1000; // 1 hour in milliseconds
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -28,12 +34,7 @@ export const createServer = (isAdminServer = false) => {
 
 const getAllowedPublicFrameAncestors = () => {
   const values = new Set();
-  const configuredOrigins = String(process.env.PUBLIC_FRAME_ANCESTORS || '')
-    .split(',')
-    .map((value) => value.trim())
-    .filter(Boolean);
-
-  configuredOrigins.forEach((origin) => values.add(origin));
+  values.add(getAdminOrigin());
 
   if (process.env.NODE_ENV !== 'production') {
     const adminPort = process.env.ADMIN_PORT || '3001';
@@ -152,6 +153,9 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
   };
 
   const appVersion = loadVersionInfo();
+  const siteUrl = getSiteUrl();
+  const siteHost = getSiteHost();
+  const siteOrigin = getSiteOrigin();
   await fastify.register(fastifyCompress, {
     threshold: 1024,
     encodings: ['gzip', 'deflate']
@@ -185,7 +189,7 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     : ["'self'", ...getAllowedPublicFrameAncestors()];
 
   const frameSrcValues = isAdminServer
-    ? ["'self'", 'https://yandex.ru', 'https://recomte.ru']
+    ? ["'self'", 'https://yandex.ru', siteOrigin]
     : ["'self'", 'https://yandex.ru'];
 
   const cspHeader = [
@@ -315,7 +319,9 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     },
     root: path.join(rootDir, 'views'),
     defaultContext: {
-      appVersion
+      appVersion,
+      siteUrl,
+      siteHost
     }
   });
 };

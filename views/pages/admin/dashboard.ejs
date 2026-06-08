@@ -3,7 +3,7 @@
     <!-- Dashboard Header -->
     <div class="admin-header">
       <h1><i class="fas fa-th-list"></i> Панель управления</h1>
-      <a href="https://webmaster.yandex.ru/siteinfo/?site=https://recomte.ru"><img width="88" height="31" alt="" border="0" border-radius="8" src="https://yandex.ru/cycounter?https://recomte.ru&theme=light&lang=ru"/></a>
+      <a href="https://webmaster.yandex.ru/siteinfo/?site=<%= encodeURIComponent(siteUrl) %>"><img width="88" height="31" alt="" border="0" border-radius="8" src="https://yandex.ru/cycounter?<%= encodeURIComponent(siteUrl) %>&theme=light&lang=ru"/></a>
     </div>
 
     <!-- Stats -->
@@ -83,7 +83,7 @@
                       <span class="icon"><i class="fas fa-edit"></i></span>
                       <span>Редактировать</span>
                     </a>
-                    <a href="https://recomte.ru/caravans/<%= caravan.slug %>" target="_blank" rel="noopener noreferrer" class="button is-success is-light is-small">
+                    <a href="<%= siteUrl %>/caravans/<%= caravan.slug %>" target="_blank" rel="noopener noreferrer" class="button is-success is-light is-small">
                       <span class="icon"><i class="fas fa-external-link-alt"></i></span>
                       <span>Просмотр на сайте</span>
                     </a>

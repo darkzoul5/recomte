@@ -1,8 +1,9 @@
-const SITE_URL = 'https://recomte.ru';
-const SITE_NAME = 'Recomte';
-const DEFAULT_OG_IMAGE = `${SITE_URL}/public/images/top-image.jpg`;
+import { getSiteHost, getSiteUrl } from '../../utils/site-url.js';
 
-const buildAbsoluteUrl = (pathname = '/') => `${SITE_URL}${pathname}`;
+const SITE_NAME = 'Recomte';
+const getDefaultOgImage = () => `${getSiteUrl()}/public/images/top-image.jpg`;
+
+const buildAbsoluteUrl = (pathname = '/') => `${getSiteUrl()}${pathname}`;
 
 const toPlainText = (value, fallback = '') => {
   if (typeof value !== 'string') return fallback;
@@ -22,6 +23,7 @@ const getAvailability = (status) => {
 };
 
 export const buildHomeSeo = (caravans = []) => {
+  const siteUrl = getSiteUrl();
   const description = 'Купить б/у прицеп-дачи, караваны из Европы. прицеп-дачи и караваны с фото и характеристиками.';
   const pathname = '/';
 
@@ -31,21 +33,21 @@ export const buildHomeSeo = (caravans = []) => {
     canonicalUrl: buildAbsoluteUrl(pathname),
     ogImage: caravans[0]?.images?.[0]?.url
       ? buildAbsoluteUrl(caravans[0].images[0].url)
-      : DEFAULT_OG_IMAGE,
+      : getDefaultOgImage(),
     structuredData: [
       {
         '@context': 'https://schema.org',
         '@type': 'WebSite',
         name: SITE_NAME,
-        url: SITE_URL,
+        url: siteUrl,
         inLanguage: 'ru-RU'
       },
       {
         '@context': 'https://schema.org',
         '@type': 'Organization',
         name: SITE_NAME,
-        url: SITE_URL,
-        logo: `${SITE_URL}/public/images/favicon.svg`,
+        url: siteUrl,
+        logo: `${siteUrl}/public/images/favicon.svg`,
         email: 'info@recomte.ru'
       }
     ]
@@ -62,7 +64,7 @@ export const buildCatalogueSeo = (caravans = []) => {
     canonicalUrl: buildAbsoluteUrl(pathname),
     ogImage: caravans[0]?.images?.[0]?.url
       ? buildAbsoluteUrl(caravans[0].images[0].url)
-      : DEFAULT_OG_IMAGE,
+      : getDefaultOgImage(),
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
@@ -85,6 +87,7 @@ export const buildCatalogueSeo = (caravans = []) => {
 };
 
 export const buildContactSeo = () => {
+  const siteUrl = getSiteUrl();
   const description = 'Свяжитесь с нами по вопросам покупки, доставки и просмотра б/у прицепов-дач, караванов из Европы.';
   const pathname = '/contact';
 
@@ -92,7 +95,7 @@ export const buildContactSeo = () => {
     title: 'Контакты',
     description,
     canonicalUrl: buildAbsoluteUrl(pathname),
-    ogImage: DEFAULT_OG_IMAGE,
+    ogImage: getDefaultOgImage(),
     structuredData: [
       {
         '@context': 'https://schema.org',
@@ -106,7 +109,7 @@ export const buildContactSeo = () => {
         '@context': 'https://schema.org',
         '@type': 'Organization',
         name: SITE_NAME,
-        url: SITE_URL,
+        url: siteUrl,
         email: 'info@recomte.ru',
         contactPoint: {
           '@type': 'ContactPoint',
@@ -120,14 +123,14 @@ export const buildContactSeo = () => {
 };
 
 export const buildPrivacySeo = () => {
-  const description = 'Информация о конфиденциальности и защите персональных данных пользователей recomte.ru.';
+  const description = `Информация о конфиденциальности и защите персональных данных пользователей ${getSiteHost()}.`;
   const pathname = '/privacy';
 
   return {
     title: 'Политика конфиденциальности',
     description,
     canonicalUrl: buildAbsoluteUrl(pathname),
-    ogImage: DEFAULT_OG_IMAGE,
+    ogImage: getDefaultOgImage(),
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
@@ -141,6 +144,7 @@ export const buildPrivacySeo = () => {
 
 export const buildCaravanSeo = (caravan) => {
   const pathname = `/caravans/${caravan.slug}`;
+  const defaultOgImage = getDefaultOgImage();
   const plainDescription = toPlainText(
     caravan.description,
     'Б/у прицеп-дача из Европы, в России.'
@@ -148,7 +152,7 @@ export const buildCaravanSeo = (caravan) => {
   const description = truncate(plainDescription, 160);
   const ogImage = caravan.images?.[0]?.url
     ? buildAbsoluteUrl(caravan.images[0].url)
-    : DEFAULT_OG_IMAGE;
+    : defaultOgImage;
 
   const seasonLabel = caravan.camper_season === 'all_season' ? 'Всесезонный' : (caravan.camper_season === 'summer' ? 'Лето' : undefined);
   const additionalProperty = [

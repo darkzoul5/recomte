@@ -11,6 +11,8 @@ services:
       - ADMIN_PASSWORD=${ADMIN_PASSWORD} # MUST be set for admin interface to work
       # Session secret
       - SESSION_SECRET=${SESSION_SECRET} # MUST be set for app to work
+      - SITE_URL=https://recomte.ru
+      - ADMIN_URL=https://admin.recomte.ru
 
       # Optional --------------------------------------------
       - DB_PATH=/app/data/app.db
@@ -71,6 +73,8 @@ services:
       - ADMIN_PASSWORD=${ADMIN_PASSWORD} # MUST be set for admin interface to work
       # Session secret
       - SESSION_SECRET=${SESSION_SECRET} # MUST be set for app to work
+      - SITE_URL=https://test.recomte.ru
+      - ADMIN_URL=https://admin.test.recomte.ru
 
       # Optional --------------------------------------------
       - DB_PATH=/app/data/app.db

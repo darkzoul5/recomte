@@ -8,8 +8,8 @@
     const fallbackDescription = 'Б/у прицепы-дачи из Европы с осмотром, ремонтом и подготовкой к продаже в России.';
     const metaTitle = seo?.title || title || siteName;
     const metaDescription = seo?.description || fallbackDescription;
-    const canonicalUrl = seo?.canonicalUrl || 'https://recomte.ru/';
-    const ogImage = seo?.ogImage || 'https://recomte.ru/public/images/top-image.jpg';
+    const canonicalUrl = seo?.canonicalUrl || `${siteUrl}/`;
+    const ogImage = seo?.ogImage || `${siteUrl}/public/images/top-image.jpg`;
     const structuredData = seo?.structuredData || null;
     const structuredDataJson = structuredData
       ? JSON.stringify(structuredData).replace(/<\//g, '<\\/')
@@ -29,7 +29,7 @@
   <div style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;" aria-hidden="true">
     <a href="https://www.flaticon.com/free-icons/caravan" title="caravan icons">Caravan icons created by xnimrodx - Flaticon</a>
   </div>
-  <title>recomte.ru | <%= metaTitle %></title>
+  <title><%= siteHost %> | <%= metaTitle %></title>
   <meta name="description" content="<%= metaDescription %>">
   <link rel="canonical" href="<%= canonicalUrl %>">
   <meta name="robots" content="index, follow">

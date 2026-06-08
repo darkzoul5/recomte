@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <% const MAIN_SITE_URL = 'https://recomte.ru/'; %>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="<%= csrfToken || '' %>">
-  <title>recomte.ru | <%= title %></title>
+  <title><%= siteHost %> | <%= title %></title>
 
   <link rel="icon" type="image/png" sizes="16x16" href="/public/images/favicons/favicon-orange-16x16.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/public/images/favicons/favicon-orange-32x32.png">
@@ -40,7 +39,7 @@
     <div class="navbar-end">
       <div class="navbar-item">
         <div class="buttons">
-          <a href="<%= MAIN_SITE_URL %>" class="button is-info is-light" id="openMainSiteFrameLink">
+          <a href="<%= siteUrl %>/" class="button is-info is-light" id="openMainSiteFrameLink">
             <span class="icon"><i class="fas fa-home"></i></span>
             <span>На главную</span>
           </a>
@@ -60,13 +59,13 @@
 <section class="admin-section">
   <div class="admin-site-frame" id="adminSiteFrame" hidden>
     <div class="admin-site-frame__toolbar">
-      <div class="admin-site-frame__title">recomte.ru</div>
+      <div class="admin-site-frame__title"><%= siteHost %></div>
       <div class="admin-site-frame__actions">
         <button type="button" class="button is-small is-light" id="reloadMainSiteFrameBtn">
           <span class="icon"><i class="fas fa-rotate-right"></i></span>
           <span>Обновить</span>
         </button>
-        <a href="<%= MAIN_SITE_URL %>" target="_blank" rel="noopener noreferrer" class="button is-small is-success is-light" id="openMainSiteTabLink">
+        <a href="<%= siteUrl %>/" target="_blank" rel="noopener noreferrer" class="button is-small is-success is-light" id="openMainSiteTabLink">
           <span class="icon"><i class="fas fa-external-link-alt"></i></span>
           <span>Вкладка</span>
         </a>

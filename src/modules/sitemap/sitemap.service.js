@@ -2,6 +2,7 @@ import { caravans } from '../../../db/db.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { getSiteUrl } from '../../utils/site-url.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -17,7 +18,7 @@ const escapeXml = (str) => {
 
 export const getRobotsContent = () => {
   const robotsPath = path.join(__dirname, '../../../public/robots.txt');
-  return fs.readFileSync(robotsPath, 'utf-8');
+  return fs.readFileSync(robotsPath, 'utf-8').replace('__SITE_URL__', getSiteUrl());
 };
 
 export const generateSitemap = (baseUrl) => {

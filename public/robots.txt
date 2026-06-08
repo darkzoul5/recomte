@@ -9,7 +9,7 @@ Disallow: /.env
 Disallow: /config/
 Disallow: /private/
 
-Sitemap: https://recomte.ru/sitemap.xml
+Sitemap: __SITE_URL__/sitemap.xml
 
 User-agent: MJ12bot
 Disallow: /
