@@ -12,7 +12,6 @@
     "db:seed": "node scripts/seed-db.js",
     "db:migrations": "node scripts/migrate-db.js",
     "db:backup": "node scripts/backup-db.js",
-    "images:backfill-dimensions": "node scripts/backfill-image-dimensions.js",
     "admin:passwd": "node scripts/admin-password-reset.js"
   },
   "author": "dark_zoul",
