@@ -25,7 +25,7 @@
 <body class="admin-page">
 <nav class="navbar is-light">
   <div class="navbar-brand">
-    <a href="/admin/dash" class="navbar-item">
+    <a href="/admin/dash" class="navbar-item" id="adminHomeLink">
       <h1 class="title is-4 mb-0">
         <i class="fas fa-cog mr-2"></i>Админ Панель
       </h1>
@@ -40,7 +40,7 @@
     <div class="navbar-end">
       <div class="navbar-item">
         <div class="buttons">
-          <a href="<%= MAIN_SITE_URL %>" class="button is-info is-light">
+          <a href="<%= MAIN_SITE_URL %>" class="button is-info is-light" id="openMainSiteFrameLink">
             <span class="icon"><i class="fas fa-home"></i></span>
             <span>На главную</span>
           </a>
@@ -58,4 +58,26 @@
 </nav>
 
 <section class="admin-section">
+  <div class="admin-site-frame" id="adminSiteFrame" hidden>
+    <div class="admin-site-frame__toolbar">
+      <div class="admin-site-frame__title">recomte.ru</div>
+      <div class="admin-site-frame__actions">
+        <button type="button" class="button is-small is-light" id="reloadMainSiteFrameBtn">
+          <span class="icon"><i class="fas fa-rotate-right"></i></span>
+          <span>Обновить</span>
+        </button>
+        <a href="<%= MAIN_SITE_URL %>" target="_blank" rel="noopener noreferrer" class="button is-small is-success is-light" id="openMainSiteTabLink">
+          <span class="icon"><i class="fas fa-external-link-alt"></i></span>
+          <span>Вкладка</span>
+        </a>
+      </div>
+    </div>
+    <iframe
+      id="mainSiteFrame"
+      class="admin-site-frame__view"
+      title="Основной сайт"
+      loading="lazy"
+      referrerpolicy="strict-origin"
+    ></iframe>
+  </div>
   <div class="container">

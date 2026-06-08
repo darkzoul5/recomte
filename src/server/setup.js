@@ -26,6 +26,24 @@ export const createServer = (isAdminServer = false) => {
   });
 };
 
+const getAllowedPublicFrameAncestors = () => {
+  const values = new Set();
+  const configuredOrigins = String(process.env.PUBLIC_FRAME_ANCESTORS || '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  configuredOrigins.forEach((origin) => values.add(origin));
+
+  if (process.env.NODE_ENV !== 'production') {
+    const adminPort = process.env.ADMIN_PORT || '3001';
+    values.add(`http://localhost:${adminPort}`);
+    values.add(`http://127.0.0.1:${adminPort}`);
+  }
+
+  return Array.from(values);
+};
+
 class SqliteSessionStore {
   constructor(maxAge) {
     this.maxAge = maxAge;
@@ -162,6 +180,10 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     }
   });
 
+  const frameAncestors = isAdminServer
+    ? ["'self'"]
+    : ["'self'", ...getAllowedPublicFrameAncestors()];
+
   const cspHeader = [
     "default-src 'self'",
     "img-src 'self' https: data: blob:",
@@ -175,7 +197,7 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
-    "frame-ancestors 'self'" 
+    `frame-ancestors ${frameAncestors.join(' ')}`
   ].join('; ');
 
   const permissionsPolicyHeader = [
@@ -206,7 +228,11 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
   fastify.addHook('onSend', async (request, reply, payload) => {
     reply.removeHeader('server');
     reply.header('X-Content-Type-Options', 'nosniff');
-    reply.header('X-Frame-Options', 'SAMEORIGIN');
+    if (isAdminServer) {
+      reply.header('X-Frame-Options', 'SAMEORIGIN');
+    } else {
+      reply.removeHeader('X-Frame-Options');
+    }
     reply.header('Referrer-Policy', 'strict-origin-when-cross-origin');
     reply.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
     if (shouldSetNoIndex) {

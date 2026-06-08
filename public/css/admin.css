@@ -8,6 +8,11 @@
   min-height: 100vh;
 }
 
+.admin-page.admin-site-frame-open .admin-section .container,
+.admin-page.admin-site-frame-open .footer {
+  display: none;
+}
+
 /* Admin section fills space between navbar and footer */
 .admin-section {
   flex: 1;
@@ -20,6 +25,42 @@
   border-radius: 4px;
   padding: 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.admin-site-frame {
+  background: #fff;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.admin-site-frame__toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #e8e8e8;
+  background: #fafafa;
+}
+
+.admin-site-frame__title {
+  font-weight: 700;
+  color: #363636;
+}
+
+.admin-site-frame__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.admin-site-frame__view {
+  display: block;
+  width: 100%;
+  height: calc(100vh - 11rem);
+  border: 0;
+  background: #fff;
 }
 
 /* Admin navbar */
@@ -769,6 +810,23 @@ body {
 
   .admin-actions .button {
     width: 100%;
+  }
+
+  .admin-site-frame__toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-site-frame__actions {
+    width: 100%;
+  }
+
+  .admin-site-frame__actions .button {
+    width: 100%;
+  }
+
+  .admin-site-frame__view {
+    height: calc(100vh - 15rem);
   }
 
   .form-actions {
