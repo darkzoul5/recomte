@@ -1,5 +1,8 @@
 name: Release - Build, Tag and Deploy
 
+env:
+  TZ: "Europe/Riga"
+  
 on:
   workflow_dispatch:
     inputs:
