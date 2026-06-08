@@ -3,7 +3,7 @@ services:
     image: git.darkzoul.org/dark_zoul/recomte:latest
     container_name: recomte_app
     env_file:
-      - ../.env
+      - .env
     environment:
       - NODE_ENV=production
       # Admin credentials
