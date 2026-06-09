@@ -13,7 +13,8 @@ It includes a public website (catalog + detail pages) and an admin area for mana
 
 1) Install deps
 
-- `npm install`
+- `corepack enable`
+- `pnpm install`
 
 1) Create a `.env` (minimal)
 
@@ -24,9 +25,9 @@ It includes a public website (catalog + detail pages) and an admin area for mana
 
 1) Run
 
-- Public + admin: `npm run start`
-- Public only: `npm run start:public`
-- Admin only: `npm run start:admin`
+- Public + admin: `pnpm start`
+- Public only: `pnpm start:public`
+- Admin only: `pnpm start:admin`
 
 Default ports:
 
@@ -52,11 +53,11 @@ Default ports:
 Controls:
 
 - Disable auto migrations: `MIGRATIONS_AUTO=0`
-- Run migrations manually: `npm run db:migrations` (forces migrations even if auto is disabled)
-- Create a DB backup: `npm run db:backup`
+- Run migrations manually: `pnpm db:migrations` (forces migrations even if auto is disabled)
+- Create a DB backup: `pnpm db:backup`
 - Initialize/seed:
-  - `npm run db:init`
-  - `npm run db:seed`
+  - `pnpm db:init`
+  - `pnpm db:seed`
 
 ### Prod -> Test DB sync (Docker Compose)
 

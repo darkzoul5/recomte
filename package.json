@@ -4,6 +4,7 @@
   "description": "European caravan sales platform",
   "main": "src/server/index.js",
   "type": "module",
+  "packageManager": "pnpm@11.5.2",
   "scripts": {
     "start": "node src/server/index.js",
     "start:public": "node src/server/public.js",
@@ -29,7 +30,7 @@
     "argon2": "^0.44.0",
     "better-sqlite3": "^12.10.0",
     "dotenv": "^17.4.2",
-    "ejs": "^6.0.0",
+    "ejs": "^6.0.1",
     "fastify": "^5.8.5",
     "filepond": "^4.32.12",
     "filepond-plugin-image-preview": "^4.6.12",
