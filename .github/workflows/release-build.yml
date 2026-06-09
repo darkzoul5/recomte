@@ -72,7 +72,6 @@ jobs:
         with:
           images: git.darkzoul.org/dark_zoul/recomte
           tags: |
-            type=raw,value=dev
             type=raw,value=latest
             type=raw,value=${{ steps.version.outputs.version }}
 
@@ -84,6 +83,8 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=registry,ref=git.darkzoul.org/dark_zoul/recomte:buildcache
+          cache-to: type=registry,ref=git.darkzoul.org/dark_zoul/recomte:buildcache,mode=max
           build-args: |
             APP_VERSION=${{ steps.version.outputs.version }}
             APP_COMMIT=${{ github.sha }}

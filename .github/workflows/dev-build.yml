@@ -61,9 +61,11 @@ jobs:
           context: .
           file: docker/Dockerfile
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=git.darkzoul.org/dark_zoul/recomte:buildcache
+          cache-to: type=registry,ref=git.darkzoul.org/dark_zoul/recomte:buildcache,mode=max
           build-args: |
             APP_VERSION=dev
             APP_COMMIT=${{ github.sha }}
