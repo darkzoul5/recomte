@@ -6,22 +6,25 @@ on:
     branches:
       - main
     paths-ignore:
-      - "README.md"
       - "docs/**"
-      - ".env.example"
       - "plans/**"
-      - ".gitignore"
+      - "README.md"
       - "LICENSE"
-      - ".github/workflows/node-deps.yml"
+      - ".env.example"
+      - ".gitignore"
+      - ".dockerignore"
+      - "renovate.json"
+      - ".github/workflows/release-build.yml"
   pull_request:
     paths-ignore:
-      - "README.md"
       - "docs/**"
-      - ".env.example"
       - "plans/**"
-      - ".gitignore"
+      - "README.md"
       - "LICENSE"
-      - ".github/workflows/node-deps.yml"
+      - ".env.example"
+      - ".gitignore"
+      - ".dockerignore"
+      - "renovate.json"
       - ".github/workflows/release-build.yml"
       
 concurrency:
