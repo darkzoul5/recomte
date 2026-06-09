@@ -4,9 +4,10 @@
   "labels": ["deps"], 
   "rebaseWhen": "behind-base-branch", 
   "minimumReleaseAge": "7 days",
-  
+
   "lockFileMaintenance": {
-    "enabled": true
+    "enabled": true,
+    "schedule": ["* 9-11 * * *"]
   },
 
   "packageRules": [
