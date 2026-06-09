@@ -1,7 +1,18 @@
 {
-  "extends": ["config:recommended"],
-  "lockFileMaintenance": {"enabled": true},
+  "extends": ["config:recommended", ":dependencyDashboard"],
+  "timezone": "Europe/Riga",
+  "labels": ["deps"], 
+  "rebaseWhen": "behind-base-branch", 
+
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+
   "packageRules": [
+    {
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    },
     {
       "matchUpdateTypes": [
         "minor",
@@ -9,7 +20,12 @@
         "pin",
         "digest"
       ],
-      "automerge": false
+      "automerge": false,
+      "groupName": "non-major dependencies"
+    },
+    {
+      "matchManagers": ["npm"],
+      "postUpdateOptions": ["pnpmDedupe"]
     }
   ]
 }
