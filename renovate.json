@@ -3,7 +3,8 @@
   "timezone": "Europe/Riga",
   "labels": ["deps"], 
   "rebaseWhen": "behind-base-branch", 
-
+  "minimumReleaseAge": "7 days",
+  
   "lockFileMaintenance": {
     "enabled": true
   },
