@@ -1,0 +1,23 @@
+<%- include('../../components/header/admin', { title: 'Страница не найдена', csrfToken }) %>
+
+    <div class="admin-not-found">
+      <div class="admin-not-found__card">
+        <p class="admin-not-found__eyebrow">404</p>
+        <h1 class="admin-not-found__title">Страница не найдена</h1>
+        <p class="admin-not-found__text">
+          Возможно, адрес введен с ошибкой, страница была перемещена или этот раздел больше не существует.
+        </p>
+        <div class="admin-not-found__actions">
+          <a href="/admin/dash" class="button is-primary">
+            <span class="icon"><i class="fas fa-table-columns"></i></span>
+            <span>К панели управления</span>
+          </a>
+          <a href="<%= siteUrl %>/" class="button is-light">
+            <span class="icon"><i class="fas fa-home"></i></span>
+            <span>На сайт</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+<%- include('../../components/footer/admin') %>

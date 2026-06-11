@@ -9,7 +9,7 @@ import {
   postDeleteCaravan
 } from './admin.controller.js';
 import { redirectByAdminSession } from './admin.helpers.js';
-import { clearAdminSession, isAdminSessionValid } from '../auth/auth.middleware.js';
+import { clearAdminSession, ensureCsrfToken, isAdminSessionValid } from '../auth/auth.middleware.js';
 
 export default async function registerAdminRoutes(fastify, options = {}) {
   // Redirect root admin paths by session status
@@ -71,6 +71,9 @@ export default async function registerAdminRoutes(fastify, options = {}) {
       return reply.redirect('/admin/login');
     }
 
-    return reply.code(404).send({ message: 'Not found' });
+    return reply.code(404).view('pages/admin/404', {
+      title: 'Страница не найдена',
+      csrfToken: ensureCsrfToken(request)
+    });
   });
 }
