@@ -1,8 +1,10 @@
 {
   "extends": ["config:recommended", ":dependencyDashboard"],
   "timezone": "Europe/Riga",
-  "labels": ["deps"], 
-  "rebaseWhen": "behind-base-branch", 
+  "labels": ["deps"],
+  "rebaseWhen": "behind-base-branch",
+  "prCreation": "not-pending",
+  "internalChecksFilter": "strict",
   "minimumReleaseAge": "7 days",
 
   "lockFileMaintenance": {
@@ -28,6 +30,10 @@
     {
       "matchManagers": ["npm"],
       "postUpdateOptions": ["pnpmDedupe"]
+    },
+    {
+      "matchDatasources": ["npm"],
+      "minimumReleaseAge": "7 days"
     }
   ]
 }
