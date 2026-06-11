@@ -9,6 +9,7 @@ import {
   postDeleteCaravan
 } from './admin.controller.js';
 import { redirectByAdminSession } from './admin.helpers.js';
+import { clearAdminSession, isAdminSessionValid } from '../auth/auth.middleware.js';
 
 export default async function registerAdminRoutes(fastify, options = {}) {
   // Redirect root admin paths by session status
@@ -58,5 +59,18 @@ export default async function registerAdminRoutes(fastify, options = {}) {
   // Delete caravan
   fastify.post('/admin/delete/:id', async (request, reply) => {
     return postDeleteCaravan(request, reply);
+  });
+
+  fastify.all('/admin/*', async (request, reply) => {
+    if (request.url.startsWith('/admin/api/')) {
+      return reply.code(404).send({ error: 'Not found' });
+    }
+
+    if (!isAdminSessionValid(request)) {
+      clearAdminSession(request);
+      return reply.redirect('/admin/login');
+    }
+
+    return reply.code(404).send({ message: 'Not found' });
   });
 }
