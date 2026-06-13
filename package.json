@@ -4,7 +4,7 @@
   "description": "European caravan sales platform",
   "main": "src/server/index.js",
   "type": "module",
-  "packageManager": "pnpm@11.5.2",
+  "packageManager": "pnpm@11.5.3",
   "scripts": {
     "start": "node src/server/index.js",
     "start:public": "node src/server/public.js",
@@ -35,7 +35,7 @@
     "filepond": "^4.32.12",
     "filepond-plugin-image-preview": "^4.6.12",
     "photoswipe": "^5.4.4",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.0",
     "slugify": "^1.6.9",
     "sortablejs": "^1.15.7",
     "tailwindcss": "^4.3.0"
