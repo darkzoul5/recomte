@@ -8,7 +8,9 @@
 
   "lockFileMaintenance": {
     "enabled": true,
-    "schedule": ["* 0-12 * * *"]
+    "recreateWhen": "always",
+    "automerge": true,
+    "schedule": ["on monday"]
   },
 
   "packageRules": [
