@@ -251,7 +251,7 @@ export const validateCaravanData = (data, isUpdate = false) => {
         const parsed = JSON.parse(data.heating_type);
         heatingTypes = Array.isArray(parsed) ? parsed : [];
       } catch {
-        heatingTypes = [];
+        // Leave invalid JSON as an empty selection.
       }
     } else {
       heatingTypes = [data.heating_type];
@@ -272,7 +272,7 @@ export const validateCaravanData = (data, isUpdate = false) => {
         const parsed = JSON.parse(data.fridge_type);
         fridgeTypes = Array.isArray(parsed) ? parsed : [];
       } catch {
-        fridgeTypes = [];
+        // Leave invalid JSON as an empty selection.
       }
     } else {
       fridgeTypes = [data.fridge_type];
@@ -302,7 +302,7 @@ export const validateCaravanData = (data, isUpdate = false) => {
         const parsed = JSON.parse(data.kitchen_appliances);
         appliances = Array.isArray(parsed) ? parsed : [];
       } catch {
-        appliances = [];
+        // Leave invalid JSON as an empty selection.
       }
     } else {
       appliances = [data.kitchen_appliances];
@@ -327,7 +327,7 @@ export const validateCaravanData = (data, isUpdate = false) => {
         const parsed = JSON.parse(data.water_heater_type);
         boilerTypes = Array.isArray(parsed) ? parsed : [];
       } catch {
-        boilerTypes = [];
+        // Leave invalid JSON as an empty selection.
       }
     } else {
       boilerTypes = [data.water_heater_type];
@@ -391,7 +391,7 @@ export const deriveCaravanFields = (data) => {
  * @param {boolean} isUpdate - Whether this is an update operation
  * @returns {object} Filtered data with only allowed columns
  */
-export const filterCaravanData = (data, isUpdate = false) => {
+export const filterCaravanData = (data, _isUpdate = false) => {
   if (!data || typeof data !== 'object') return {};
 
   const filtered = {};

@@ -6,12 +6,10 @@ import { applySchema } from './schema.js';
 import { runMigrations } from './migrations/index.js';
 import { getDbPath, resolveCaravanImagePath } from '../src/utils/storage-paths.js';
 import {
-  validateColumnName,
   validateCaravanData,
   deriveCaravanFields,
   filterCaravanData,
-  validateImageData,
-  filterImageData
+  validateImageData
 } from '../src/utils/validation.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

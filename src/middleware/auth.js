@@ -130,7 +130,7 @@ export const ensureInitialAdminUser = async () => {
     try {
       passwordMatches = await argon2.verify(existingUser.password_hash, password);
     } catch {
-      passwordMatches = false;
+      // Keep passwordMatches false when the stored hash cannot be verified.
     }
 
     if (passwordMatches) {

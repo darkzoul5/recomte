@@ -65,7 +65,7 @@ class MultiSelectDropdown {
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     `;
     
-    this.options.forEach((opt, index) => {
+    this.options.forEach((opt) => {
       const label = document.createElement('label');
       label.style.cssText = `
         display: flex;

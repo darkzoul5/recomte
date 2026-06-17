@@ -11,7 +11,7 @@ import {
 import { redirectByAdminSession } from './admin.helpers.js';
 import { clearAdminSession, ensureCsrfToken, isAdminSessionValid } from '../auth/auth.middleware.js';
 
-export default async function registerAdminRoutes(fastify, options = {}) {
+export default async function registerAdminRoutes(fastify, _options = {}) {
   // Redirect root admin paths by session status
   fastify.get('/', async (request, reply) => {
     return redirectByAdminSession(request, reply);

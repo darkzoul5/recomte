@@ -183,14 +183,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // FilePond upload queue
   const fileInput = document.getElementById('fileInput');
-  let filePondInstance = null;
 
   if (fileInput && window.FilePond) {
     if (window.FilePondPluginImagePreview) {
       window.FilePond.registerPlugin(window.FilePondPluginImagePreview);
     }
 
-    filePondInstance = window.FilePond.create(fileInput, {
+    window.FilePond.create(fileInput, {
       allowMultiple: true,
       allowReorder: true,
       instantUpload: false,
@@ -280,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       // sanitize a simple key representation
-      const key = label.replace(/[\n\r=:\/]+/g, ' ').trim();
+      const key = label.replace(/[\n\r=:/]+/g, ' ').trim();
 
       const existing = readCustomFeatures().filter((it) => it.key !== key);
       existing.push({ key, value: '1' });

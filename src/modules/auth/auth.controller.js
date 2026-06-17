@@ -145,7 +145,9 @@ const regenerateSession = (request) => new Promise((resolve, reject) => {
 });
 
 const destroySession = (request) => new Promise((resolve, reject) => {
-  try { clearAdminSession(request); } catch (e) {}
+  try { clearAdminSession(request); } catch {
+    // Session cleanup is best-effort here.
+  }
 
   if (!request.session || typeof request.session.destroy !== 'function') {
     resolve();
@@ -153,7 +155,9 @@ const destroySession = (request) => new Promise((resolve, reject) => {
   }
 
   request.session.destroy((error) => {
-    try { clearAdminSession(request); } catch (e) {}
+    try { clearAdminSession(request); } catch {
+      // Session cleanup is best-effort here.
+    }
     if (error) {
       reject(error);
       return;
@@ -231,9 +235,15 @@ export const postLogout = async (request, reply) => {
   try {
     await destroySession(request);
 
-    try { reply.clearCookie('session'); } catch (e) {}
-    try { reply.clearCookie('sessionId'); } catch (e) {}
-    try { reply.clearCookie('connect.sid'); } catch (e) {}
+    try { reply.clearCookie('session'); } catch {
+      // Cookie cleanup is best-effort after session destruction.
+    }
+    try { reply.clearCookie('sessionId'); } catch {
+      // Cookie cleanup is best-effort after session destruction.
+    }
+    try { reply.clearCookie('connect.sid'); } catch {
+      // Cookie cleanup is best-effort after session destruction.
+    }
   } catch (err) {
     request.server.log.error('Error destroying session during logout', err);
   }
