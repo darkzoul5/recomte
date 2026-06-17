@@ -27,7 +27,11 @@ if [ ! -f "$DB_PATH" ]; then
   node /app/scripts/init-db.js
   echo "✓ Database initialized successfully"
 else
-  echo "Database file exists, validating schema..."
+
+  echo "Running db migrations..."
+  node /app/scripts/migrate-db.js
+  
+  echo "Validating db schema..."
   if node /app/scripts/validate-db.js; then
     echo "✓ Database is properly initialized"
   else
