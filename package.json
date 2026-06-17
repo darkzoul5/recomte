@@ -4,7 +4,7 @@
   "description": "European caravan sales platform",
   "main": "src/server/index.js",
   "type": "module",
-  "packageManager": "pnpm@11.6.0",
+  "packageManager": "pnpm@11.7.0",
   "scripts": {
     "start": "node src/server/index.js",
     "start:public": "node src/server/public.js",
