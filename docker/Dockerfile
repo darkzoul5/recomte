@@ -2,7 +2,7 @@ FROM node:24.16.0-alpine3.23
 
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@11.5.2 --activate
+RUN corepack enable && corepack prepare pnpm@11.7.0 --activate
 
 RUN addgroup -S deploy \
   && adduser -S -G deploy -u 1001 deploy \
