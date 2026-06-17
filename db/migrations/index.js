@@ -41,7 +41,7 @@ const loadMigrations = async () => {
 
   for (const filename of files) {
     const fileUrl = pathToFileURL(path.join(__dirname, filename)).href;
-    // eslint-disable-next-line no-await-in-loop
+     
     const mod = await import(fileUrl);
     const migration = mod?.default ?? mod;
     const name = migration?.name ?? mod?.name ?? filename;
