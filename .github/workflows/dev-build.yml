@@ -21,7 +21,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
   test-dev:
     runs-on: ubuntu-latest
 

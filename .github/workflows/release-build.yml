@@ -15,8 +15,85 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  test-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
+        with:
+          version: 11.7.0
+
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: 24.16.0
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Start server
+      - name: Start server
+        env:
+          NODE_ENV: production
+          ADMIN_USERNAME: test
+          ADMIN_PASSWORD: testtesttest
+          SESSION_SECRET: testqwertyuiopasdfghjklzxcvbnm123456test
+        run: |
+          node src/server/index.js &
+      
+      # Wait until server is reachable 
+      - name: Wait for server
+        run: |
+          for i in {1..10}; do
+            if curl -s http://127.0.0.1:3000 >/dev/null && curl -s http://127.0.0.1:3001 >/dev/null; then
+              echo "Server is up"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Server failed to start"
+          exit 1
+
+      - name: Run admin smoketest
+        env:
+          TEST_PATH: /admin/login
+          TEST_PORT: 3001
+        run: node tests/smoke-http.js
+
+      - name: Run public smoketest
+        env:
+          TEST_PATH: /
+        run: node tests/smoke-http.js
+
+      - name: Run robots.txt smoketest
+        env:
+          TEST_PATH: /robots.txt
+        run: node tests/smoke-http.js
+    
+      - name: Run sitemap smoketest
+        env:
+          TEST_PATH: /sitemap.xml
+        run: node tests/smoke-http.js
+      
+      - name: Run /contact smoketest
+        env:
+          TEST_PATH: /contact
+        run: node tests/smoke-http.js
+
+      - name: Run /caravans smoketest
+        env:
+          TEST_PATH: /caravans
+        run: node tests/smoke-http.js
+
   build-release:
     runs-on: ubuntu-latest
+    needs: test-release
 
     permissions:
       contents: write
