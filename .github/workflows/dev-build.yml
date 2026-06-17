@@ -6,6 +6,8 @@ on:
     branches:
       - main
     paths-ignore:
+      - ".github/workflows/test.yml"
+      - ".github/workflows/lint.yml"
       - "docs/**"
       - "plans/**"
       - "README.md"
