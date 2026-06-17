@@ -41,8 +41,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Start admin server
-      - name: Start admin server
+      # Start server
+      - name: Start server
         env:
           NODE_ENV: production
           ADMIN_USERNAME: test
