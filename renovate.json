@@ -1,5 +1,5 @@
 {
-  "extends": ["config:recommended", ":dependencyDashboard", ":pinGitHubActionDigests"],
+  "extends": ["config:recommended", ":dependencyDashboard"],
   "timezone": "Europe/Riga",
   "labels": ["deps"],
   "rebaseWhen": "behind-base-branch",
@@ -35,6 +35,10 @@
     {
       "matchDatasources": ["npm"],
       "minimumReleaseAge": "2 days"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "pinDigests": true
     }
   ]
 }
