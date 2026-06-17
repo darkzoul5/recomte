@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import Database from 'better-sqlite3';
 import fs from 'fs';
+import path from 'path';
 import { applySchema } from '../db/schema.js';
 import { runMigrations } from '../db/migrations/index.js';
 import { getDbPath } from '../src/utils/storage-paths.js';
