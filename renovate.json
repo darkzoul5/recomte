@@ -1,5 +1,5 @@
 {
-  "extends": ["config:recommended", ":dependencyDashboard"],
+  "extends": ["config:recommended", ":dependencyDashboard", ":pinGitHubActionDigests"],
   "timezone": "Europe/Riga",
   "labels": ["deps"],
   "rebaseWhen": "behind-base-branch",
