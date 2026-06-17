@@ -2,6 +2,9 @@ FROM node:24.16.0-alpine3.24
 
 WORKDIR /app
 
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+
 RUN corepack enable && corepack prepare pnpm@11.7.0 --activate
 
 RUN addgroup -S deploy \
@@ -13,15 +16,18 @@ RUN addgroup -S deploy \
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Install production dependencies only
-RUN pnpm install --frozen-lockfile --prod
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile --prod
 
 # Copy necessary application files
 COPY db/ ./db
+
 COPY public/ ./public
+COPY --chmod=755 docker/entrypoint.sh .
 COPY scripts/ ./scripts
 COPY src/ ./src
 COPY views/ ./views
-COPY --chmod=755 docker/entrypoint.sh .
+
 COPY version.json .
 
 USER 1001:1001
