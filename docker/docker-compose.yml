@@ -1,3 +1,5 @@
+name: recomte
+
 services:
   app:
     image: git.darkzoul.org/dark_zoul/recomte:latest
