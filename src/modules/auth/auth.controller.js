@@ -10,6 +10,17 @@ import {
   verifyCsrfToken,
   isAdminSessionValid
 } from './auth.middleware.js';
+import {
+  buildLoginAttemptKeys,
+  buildLoginAttemptKeySet,
+  buildRateLimitKey,
+  cleanupExpiredThrottleState,
+  consumeRateLimit,
+  deleteThrottleState,
+  getClientIp,
+  getThrottleState,
+  registerFailedLoginAttempt
+} from './auth-throttle.store.js';
 
 const MINUTE_MS = 60 * 1000;
 const AUTH_RATE_LIMIT_WINDOW_MS = parseInt(process.env.AUTH_RATE_LIMIT_WINDOW_MS || `${MINUTE_MS}`, 10);
@@ -17,11 +28,9 @@ const AUTH_RATE_LIMIT_MAX_REQUESTS = parseInt(process.env.AUTH_RATE_LIMIT_MAX_RE
 const LOGIN_ATTEMPT_WINDOW_MS = parseInt(process.env.LOGIN_ATTEMPT_WINDOW_MS || `${10 * MINUTE_MS}`, 10);
 const LOGIN_MAX_FAILED_ATTEMPTS = parseInt(process.env.LOGIN_MAX_FAILED_ATTEMPTS || '10', 10);
 const LOGIN_LOCKOUT_MS = parseInt(process.env.LOGIN_LOCKOUT_MS || `${15 * MINUTE_MS}`, 10);
+const AUTH_THROTTLE_CLEANUP_INTERVAL_MS = parseInt(process.env.AUTH_THROTTLE_CLEANUP_INTERVAL_MS || `${MINUTE_MS}`, 10);
 
-const authRateLimitStore = new Map();
-const loginAttemptStore = new Map();
-
-const getClientIp = (request) => request.ip || request.headers['x-forwarded-for'] || 'unknown';
+let lastAuthThrottleCleanupAt = 0;
 
 const getSubmittedUsername = (username) => {
   if (typeof username !== 'string') {
@@ -32,92 +41,60 @@ const getSubmittedUsername = (username) => {
 
 const cleanupExpiredAuthEntries = () => {
   const now = Date.now();
-
-  for (const [key, entry] of authRateLimitStore.entries()) {
-    if (entry.windowStart + AUTH_RATE_LIMIT_WINDOW_MS <= now) {
-      authRateLimitStore.delete(key);
-    }
+  if (now - lastAuthThrottleCleanupAt < AUTH_THROTTLE_CLEANUP_INTERVAL_MS) {
+    return;
   }
 
-  for (const [key, entry] of loginAttemptStore.entries()) {
-    const lockExpired = !entry.lockUntil || entry.lockUntil <= now;
-    const attemptsExpired = !entry.firstAttemptAt || entry.firstAttemptAt + LOGIN_ATTEMPT_WINDOW_MS <= now;
-    if (lockExpired && attemptsExpired) {
-      loginAttemptStore.delete(key);
-    }
-  }
+  cleanupExpiredThrottleState({ now });
+  lastAuthThrottleCleanupAt = now;
 };
-
-setInterval(cleanupExpiredAuthEntries, MINUTE_MS).unref();
 
 export const createAuthRateLimiter = (routeKey) => async (request, reply) => {
   const now = Date.now();
-  const ip = getClientIp(request);
-  const key = `${routeKey}:${ip}`;
+  cleanupExpiredAuthEntries();
 
-  let state = authRateLimitStore.get(key);
-  if (!state || now - state.windowStart >= AUTH_RATE_LIMIT_WINDOW_MS) {
-    state = {
-      windowStart: now,
-      count: 0
-    };
-  }
-
-  state.count += 1;
-  authRateLimitStore.set(key, state);
+  const key = buildRateLimitKey(routeKey, request);
+  const state = consumeRateLimit({
+    stateKey: key,
+    now,
+    windowMs: AUTH_RATE_LIMIT_WINDOW_MS
+  });
 
   if (state.count > AUTH_RATE_LIMIT_MAX_REQUESTS) {
-    const retryAfterSeconds = Math.ceil((state.windowStart + AUTH_RATE_LIMIT_WINDOW_MS - now) / 1000);
+    const retryAfterSeconds = Math.ceil((state.expiresAt - now) / 1000);
     reply.header('Retry-After', String(Math.max(retryAfterSeconds, 1)));
     return reply.code(429).send({ error: 'Too many authentication requests. Please try again later.' });
   }
 };
 
 const getLoginAttemptState = (username, ip) => {
-  const normalizedUsername = typeof username === 'string' ? username.trim().toLowerCase() : '';
-  const accountKey = `acct:${normalizedUsername}`;
-  const ipKey = `ip:${ip}`;
+  const { accountKey, ipKey } = buildLoginAttemptKeySet(username, ip);
 
   return {
     accountKey,
     ipKey,
-    account: loginAttemptStore.get(accountKey) || null,
-    byIp: loginAttemptStore.get(ipKey) || null
+    account: accountKey ? getThrottleState(accountKey) : null,
+    byIp: ipKey ? getThrottleState(ipKey) : null
   };
 };
 
 const resetLoginAttempts = (username, ip) => {
-  const { accountKey, ipKey } = getLoginAttemptState(username, ip);
-  loginAttemptStore.delete(accountKey);
-  loginAttemptStore.delete(ipKey);
+  for (const key of buildLoginAttemptKeys(username, ip)) {
+    deleteThrottleState(key);
+  }
 };
 
 const registerFailedLogin = (username, ip) => {
   const now = Date.now();
-  const keys = [];
+  cleanupExpiredAuthEntries();
 
-  if (typeof username === 'string' && username.trim()) {
-    keys.push(`acct:${username.trim().toLowerCase()}`);
-  }
-
-  keys.push(`ip:${ip}`);
-
-  for (const key of keys) {
-    const previous = loginAttemptStore.get(key);
-    let attempts = 1;
-    let firstAttemptAt = now;
-
-    if (previous && now - previous.firstAttemptAt < LOGIN_ATTEMPT_WINDOW_MS) {
-      attempts = previous.attempts + 1;
-      firstAttemptAt = previous.firstAttemptAt;
-    }
-
-    const lockUntil = attempts >= LOGIN_MAX_FAILED_ATTEMPTS ? now + LOGIN_LOCKOUT_MS : null;
-
-    loginAttemptStore.set(key, {
-      attempts,
-      firstAttemptAt,
-      lockUntil
+  for (const key of buildLoginAttemptKeys(username, ip)) {
+    registerFailedLoginAttempt({
+      stateKey: key,
+      now,
+      attemptWindowMs: LOGIN_ATTEMPT_WINDOW_MS,
+      maxFailedAttempts: LOGIN_MAX_FAILED_ATTEMPTS,
+      lockoutMs: LOGIN_LOCKOUT_MS
     });
   }
 };

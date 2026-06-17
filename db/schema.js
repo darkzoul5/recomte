@@ -127,6 +127,19 @@ CREATE TABLE IF NOT EXISTS sessions (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- auth throttle state (login rate limits and lockouts)
+CREATE TABLE IF NOT EXISTS auth_throttle_state (
+  state_key TEXT PRIMARY KEY,
+  state_type TEXT NOT NULL CHECK (state_type IN ('rate_limit', 'login_attempt')),
+  count INTEGER NOT NULL DEFAULT 0 CHECK (count >= 0),
+  window_start INTEGER,
+  first_attempt_at INTEGER,
+  lock_until INTEGER,
+  expires_at INTEGER NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Performance indexes (Phase 6)
 CREATE INDEX IF NOT EXISTS idx_caravans_slug ON caravans(slug);
 CREATE INDEX IF NOT EXISTS idx_caravans_status ON caravans(status);
@@ -144,6 +157,10 @@ CREATE INDEX IF NOT EXISTS idx_features_caravan_id ON caravan_features(caravan_i
 CREATE INDEX IF NOT EXISTS idx_features_key_value ON caravan_features(feature_key, feature_value);
 CREATE INDEX IF NOT EXISTS idx_admin_users_username ON admin_users(username);
 CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at);
+CREATE INDEX IF NOT EXISTS idx_auth_throttle_state_type ON auth_throttle_state(state_type);
+CREATE INDEX IF NOT EXISTS idx_auth_throttle_state_window_start ON auth_throttle_state(state_type, window_start);
+CREATE INDEX IF NOT EXISTS idx_auth_throttle_state_lock_until ON auth_throttle_state(state_type, lock_until);
+CREATE INDEX IF NOT EXISTS idx_auth_throttle_state_expires_at ON auth_throttle_state(expires_at);
   `;
 
   return schema;
@@ -154,7 +171,8 @@ export const REQUIRED_TABLES = [
   'images',
   'caravan_features',
   'admin_users',
-  'sessions'
+  'sessions',
+  'auth_throttle_state'
 ];
 
 export const applySchema = (db) => {
