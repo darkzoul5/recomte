@@ -2,6 +2,7 @@ services:
   app:
     image: git.darkzoul.org/dark_zoul/recomte:latest
     container_name: recomte_app
+    user: 1001:1001
     env_file:
       - .env
     environment:
@@ -26,6 +27,14 @@ services:
 
     volumes:
       - ../storage/prod:/app/storage
+    tmpfs:
+      - /tmp
+      - /var/tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    init: true
     restart: unless-stopped
     networks:
       - traefik-proxy
@@ -63,6 +72,7 @@ services:
   app_test:
     image: git.darkzoul.org/dark_zoul/recomte:dev
     container_name: recomte_app_test
+    user: 1001:1001
     env_file:
       - .env
     environment:
@@ -87,6 +97,14 @@ services:
 
     volumes:
       - ../storage/test:/app/storage
+    tmpfs:
+      - /tmp
+      - /var/tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    init: true
     restart: unless-stopped
     networks:
       - traefik-proxy
