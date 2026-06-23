@@ -10,6 +10,8 @@
     "start:public": "node src/server/public.js",
     "start:admin": "node src/server/admin.js",
     "lint": "eslint . --max-warnings=0",
+    "css:build": "tailwindcss -i ./public/css/tailwind.css -o ./public/css/website.css --minify",
+    "css:watch": "tailwindcss -i ./public/css/tailwind.css -o ./public/css/website.css --watch",
     "db:init": "node scripts/init-db.js",
     "db:seed": "node scripts/seed-db.js",
     "db:migrations": "node scripts/migrate-db.js",
