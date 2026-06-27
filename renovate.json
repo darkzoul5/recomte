@@ -5,7 +5,6 @@
   "labels": ["deps"],
   "rebaseWhen": "behind-base-branch",
   "internalChecksFilter": "strict",
-  "minimumReleaseAge": "2 days",
 
   "lockFileMaintenance": {
     "enabled": true,
@@ -17,7 +16,8 @@
   "packageRules": [
     {
       "matchUpdateTypes": ["major"],
-      "dependencyDashboardApproval": true
+      "dependencyDashboardApproval": true,
+      "minimumReleaseAge": "2 days"
     },
     {
       "matchUpdateTypes": [
@@ -26,15 +26,12 @@
         "pin",
         "digest"
       ],
-      "automerge": false
+      "automerge": false,
+      "minimumReleaseAge": "1 days"
     },
     {
       "matchManagers": ["npm"],
       "postUpdateOptions": ["pnpmDedupe"]
-    },
-    {
-      "matchDatasources": ["npm"],
-      "minimumReleaseAge": "2 days"
     },
     {
       "matchManagers": ["github-actions"],
