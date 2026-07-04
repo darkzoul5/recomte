@@ -138,7 +138,6 @@ services:
       - -verbose
       - -port=9000
       - -hotreload #don't need to restart on config changes
-      - -healthcheck
     environment:
       - WEBHOOK_SECRET=${WEBHOOK_SECRET}
     volumes:
@@ -150,7 +149,7 @@ services:
       - "9000:9000"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9000/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9000/"]
       interval: 30s
       timeout: 10s
       retries: 3
