@@ -132,7 +132,7 @@ services:
   webhook:
     image: almir/webhook:latest
     container_name: recomte_webhook
-    user: deploy:deploy
+    user: 1001:1001
     command:
       - -hooks=/etc/webhook/hooks.yaml
       - -verbose
