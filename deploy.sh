@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-LOCK_FILE="/tmp/campersite-deploy.lock"
-DEPLOY_DIR="/home/deploy/docker/campersite"
+LOCK_FILE="/tmp/recomte-deploy.lock"
+DEPLOY_DIR="/home/deploy/docker/recomte"
 COMPOSE_FILE="docker/docker-compose.yml"
 MAX_RETRIES=5
 

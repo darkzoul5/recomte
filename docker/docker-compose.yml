@@ -60,8 +60,8 @@ services:
       traefik.http.middlewares.redirect-www-to-root.redirectregex.regex: "^https://www\\.recomte\\.ru/(.*)"
       traefik.http.middlewares.redirect-www-to-root.redirectregex.replacement: "https://recomte.ru/$${1}"
       traefik.http.middlewares.redirect-www-to-root.redirectregex.permanent: "true"
-      # Service
       traefik.http.services.app.loadbalancer.server.port: "3000"
+      # Admin router
       traefik.http.routers.admin.rule: "Host(`admin.recomte.ru`)"
       traefik.http.routers.admin.entrypoints: "websecure"
       traefik.http.routers.admin.tls.certresolver: "letsencrypt"
@@ -120,8 +120,8 @@ services:
       traefik.http.routers.app-test.tls.certresolver: "letsencrypt"
       traefik.http.routers.app-test.middlewares: "nginx-headers@docker"
       traefik.http.routers.app-test.service: "app-test"
-      # Service
       traefik.http.services.app-test.loadbalancer.server.port: "3000"
+      # Admin router
       traefik.http.routers.app-test-admin.rule: "Host(`admin.test.recomte.ru`)"
       traefik.http.routers.app-test-admin.entrypoints: "websecure"
       traefik.http.routers.app-test-admin.tls.certresolver: "letsencrypt"
@@ -129,6 +129,44 @@ services:
       traefik.http.routers.app-test-admin.service: "app-test-admin"
       traefik.http.services.app-test-admin.loadbalancer.server.port: "3001"
     
+  webhook:
+    image: ghcr.io/adnanh/webhook:latest
+    container_name: recomte_webhook
+    user: deploy:deploy
+    command:
+      - -hooks=/etc/webhook/hooks.json
+      - -verbose
+      - -port=9000
+    environment:
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/deploy/docker/recomte/hooks:/etc/webhook:ro
+      - /home/deploy/docker/recomte/deploy.sh:/recomte/deploy.sh:ro
+      - /home/deploy/docker/recomte/docker/docker-compose.yml:/recomte/docker-compose.yml:ro
+    working_dir: /recomte
+    ports:
+      - "9000:9000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      # traefik
+      traefik.enable: "true"
+      traefik.docker.network: "traefik-proxy"
+      traefik.http.routers.webhook.rule: "Host(`webhook.recomte.ru`)"
+      traefik.http.routers.webhook.entrypoints: "websecure"
+      traefik.http.routers.webhook.tls.certresolver: "letsencrypt"
+      traefik.http.routers.webhook.middlewares: "rate-limit@docker"
+      traefik.http.services.webhook.loadbalancer.server.port: "9000"
+      # rate limit middleware
+      traefik.http.middlewares.rate-limit.rateLimit.average: 10
+      traefik.http.middlewares.rate-limit.rateLimit.burst: 5
+      traefik.http.middlewares.rate-limit.rateLimit.sourceCriterion.ipStrategy.depth: 1
+
 networks:
   traefik-proxy:
     external: true    
