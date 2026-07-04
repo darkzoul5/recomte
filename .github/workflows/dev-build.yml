@@ -167,5 +167,5 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            bash /home/deploy/docker/campersite/deploy.sh
-            bash /home/deploy/docker/campersite/scripts/sync-prod-db-to-test.sh
+            bash /home/deploy/docker/recomte/deploy.sh
+            bash /home/deploy/docker/recomte/scripts/sync-prod-db-to-test.sh
