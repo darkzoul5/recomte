@@ -196,13 +196,43 @@ jobs:
   deploy-release:
     runs-on: ubuntu-latest
     needs: build-release
-
+    if: github.ref == 'refs/heads/main'
+    
     steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            bash /home/deploy/docker/campersite/deploy.sh
+      - name: Trigger Webhook Deployment
+        env:
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+        run: |
+          # Minimal payload - just needs to be signed
+          PAYLOAD='{"trigger": "gitea-actions"}'
+          
+          # Calculate HMAC-SHA256 signature
+          SIGNATURE=$(echo -n "$PAYLOAD" | openssl dgst -sha256 -hmac "$WEBHOOK_SECRET" -hex | cut -d' ' -f2)
+          
+          # Send webhook
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -H "X-Hub-Signature-256: sha256=$SIGNATURE" \
+            -d "$PAYLOAD" \
+            "$WEBHOOK_URL"
+          
+          echo "✅ Deployment webhook triggered!"
+
+      - name: Wait for Deployment to Complete
+        run: |
+          echo "⏳ Waiting for deployment to complete..."
+          sleep 30
+          
+          # Check if app is healthy (adjust URL)
+          for i in {1..20}; do
+            if curl -s -f -o /dev/null "https://recomte.ru/healthcheck"; then
+              echo "✅ App is healthy!"
+              exit 0
+            fi
+            echo "⏳ Waiting for app... ($i/20)"
+            sleep 3
+          done
+          
+          echo "❌ App failed to become healthy"
+          exit 1
