@@ -128,42 +128,6 @@ services:
       traefik.http.routers.app-test-admin.middlewares: "nginx-headers@docker"
       traefik.http.routers.app-test-admin.service: "app-test-admin"
       traefik.http.services.app-test-admin.loadbalancer.server.port: "3001"
-    
-  webhook:
-    image: almir/webhook:latest
-    container_name: recomte_webhook
-    user: 1001:1001
-    command:
-      - -hooks=/etc/webhook/hooks.yaml
-      - -verbose
-      - -port=9000
-      - -hotreload #don't need to restart on config changes
-    environment:
-      - WEBHOOK_SECRET=${WEBHOOK_SECRET}
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /home/deploy/docker/recomte/hooks:/etc/webhook:ro
-      - /home/deploy/docker/recomte:/recomte:ro
-    working_dir: /recomte
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9000/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    labels:
-      # traefik
-      traefik.enable: "true"
-      traefik.docker.network: "traefik-proxy"
-      traefik.http.routers.webhook.rule: "Host(`webhook.recomte.ru`)"
-      traefik.http.routers.webhook.entrypoints: "websecure"
-      traefik.http.routers.webhook.tls.certresolver: "letsencrypt"
-      traefik.http.routers.webhook.middlewares: "rate-limit@docker"
-      traefik.http.services.webhook.loadbalancer.server.port: "9000"
-      # rate limit middleware
-      traefik.http.middlewares.rate-limit.rateLimit.average: 10
-      traefik.http.middlewares.rate-limit.rateLimit.burst: 5
-      traefik.http.middlewares.rate-limit.rateLimit.sourceCriterion.ipStrategy.depth: 1
 
 networks:
   traefik-proxy:
