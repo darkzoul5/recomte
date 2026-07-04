@@ -130,20 +130,20 @@ services:
       traefik.http.services.app-test-admin.loadbalancer.server.port: "3001"
     
   webhook:
-    image: ghcr.io/adnanh/webhook:latest
+    image: almir/webhook:latest
     container_name: recomte_webhook
     user: deploy:deploy
     command:
-      - -hooks=/etc/webhook/hooks.json
+      - -hooks=/etc/webhook/hooks.yaml
       - -verbose
       - -port=9000
+      - -hotreload #don't need to restart on config changes
     environment:
       - WEBHOOK_SECRET=${WEBHOOK_SECRET}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/deploy/docker/recomte/hooks:/etc/webhook:ro
-      - /home/deploy/docker/recomte/deploy.sh:/recomte/deploy.sh:ro
-      - /home/deploy/docker/recomte/docker/docker-compose.yml:/recomte/docker-compose.yml:ro
+      - /home/deploy/docker/recomte:/recomte:ro
     working_dir: /recomte
     ports:
       - "9000:9000"
