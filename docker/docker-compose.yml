@@ -145,8 +145,6 @@ services:
       - /home/deploy/docker/recomte/hooks:/etc/webhook:ro
       - /home/deploy/docker/recomte:/recomte:ro
     working_dir: /recomte
-    ports:
-      - "9000:9000"
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9000/"]
