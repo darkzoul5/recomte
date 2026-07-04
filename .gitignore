@@ -13,3 +13,4 @@ letsencrypt/acme.json
 *.log
 tmp/*
 version.json
+hooks
