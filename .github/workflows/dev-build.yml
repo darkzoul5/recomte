@@ -8,6 +8,7 @@ on:
     paths-ignore:
       - ".github/workflows/test.yml"
       - ".github/workflows/lint.yml"
+      - ".github/workflows/ntfy-on-pr.yml"
       - "docs/**"
       - "plans/**"
       - "README.md"
@@ -17,6 +18,7 @@ on:
       - ".dockerignore"
       - "renovate.json"
       - ".github/workflows/release-build.yml"
+
 
 concurrency:
   group: campersite-dev-build-${{ github.ref }}
