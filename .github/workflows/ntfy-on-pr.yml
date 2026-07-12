@@ -1,0 +1,19 @@
+name: PR Notification
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send ntfy notification
+        run: |
+          curl \
+            -H "Authorization: Bearer ${{ secrets.NTFY_TOKEN }}"
+            -H "Title: New PR in ${{ gitea.repository }}" \
+            -H "Click: ${{ gitea.event.pull_request.html_url }}" \
+            -H "Tags: git,pull_request" \
+            -d "${{ gitea.event.pull_request.title }}" \
+            https://ntfy.darkzoul.org/1JOnSGcVyMGcjzw9
