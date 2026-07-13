@@ -39,7 +39,7 @@ export const listCaravans = async (request, reply) => {
 
     return { caravans: caravansWithImages };
   } catch (error) {
-    request.server.log.error(error);
+    request.log.error({ err: error }, 'Failed to fetch caravans');
     return reply.status(500).send({ error: 'Failed to fetch caravans' });
   }
 };
@@ -61,7 +61,7 @@ export const getCaravan = async (request, reply) => {
 
     return hydrateCaravan(caravan);
   } catch (error) {
-    request.server.log.error(error);
+    request.log.error({ err: error }, 'Failed to fetch caravan');
     return reply.status(500).send({ error: 'Failed to fetch caravan' });
   }
 };
@@ -83,7 +83,7 @@ export const getFeaturedCatalog = async (request, reply) => {
 
     return { caravans: caravansWithImages };
   } catch (error) {
-    request.server.log.error(error);
+    request.log.error({ err: error }, 'Failed to fetch featured caravans');
     return reply.status(500).send({ error: 'Failed to fetch featured caravans' });
   }
 };

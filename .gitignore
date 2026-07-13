@@ -14,3 +14,4 @@ letsencrypt/acme.json
 tmp/*
 version.json
 hooks
+.vscode

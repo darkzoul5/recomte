@@ -19,7 +19,7 @@ export default async function registerAdminApiRoutes(fastify) {
     try {
       return { caravans: getAllCaravansForAdmin() };
     } catch (error) {
-      fastify.log.error(error);
+      request.log.error({ err: error }, 'Failed to fetch caravans');
       return reply.status(500).send({ error: 'Failed to fetch caravans' });
     }
   });
@@ -38,7 +38,7 @@ export default async function registerAdminApiRoutes(fastify) {
 
       return caravan;
     } catch (error) {
-      fastify.log.error(error);
+      request.log.error({ err: error }, 'Failed to fetch caravan');
       return reply.status(500).send({ error: 'Failed to fetch caravan' });
     }
   });
@@ -54,7 +54,7 @@ export default async function registerAdminApiRoutes(fastify) {
       const caravan = createCaravan(data);
       return { success: true, caravan };
     } catch (error) {
-      fastify.log.error(error);
+      request.log.error({ err: error }, 'Failed to create caravan');
       return reply.status(500).send({ error: error.message || 'Failed to create caravan' });
     }
   });
@@ -79,7 +79,7 @@ export default async function registerAdminApiRoutes(fastify) {
 
       return { success: true, caravan: getCaravanById(id) };
     } catch (error) {
-      fastify.log.error(error);
+      request.log.error({ err: error }, 'Failed to update caravan');
       return reply.status(500).send({ error: error.message || 'Failed to update caravan' });
     }
   });
@@ -94,7 +94,7 @@ export default async function registerAdminApiRoutes(fastify) {
       deleteCaravan(id);
       return { success: true, message: 'Caravan deleted' };
     } catch (error) {
-      fastify.log.error(error);
+      request.log.error({ err: error }, 'Failed to delete caravan');
       return reply.status(500).send({ error: error.message || 'Failed to delete caravan' });
     }
   });
@@ -120,7 +120,7 @@ export default async function registerAdminApiRoutes(fastify) {
       const image = createCaravanImage(id, imageData);
       return { success: true, image };
     } catch (error) {
-      fastify.log.error(error);
+      request.log.error({ err: error }, 'Failed to create image');
       return reply.status(500).send({ error: error.message || 'Failed to create image' });
     }
   });
@@ -135,7 +135,7 @@ export default async function registerAdminApiRoutes(fastify) {
       deleteCaravanImage(id, true);
       return { success: true, message: 'Image deleted' };
     } catch (error) {
-      fastify.log.error(error);
+      request.log.error({ err: error }, 'Failed to delete image');
       return reply.status(500).send({ error: error.message || 'Failed to delete image' });
     }
   });
@@ -160,7 +160,7 @@ export default async function registerAdminApiRoutes(fastify) {
       reorderCaravanImage(id, sort_order);
       return { success: true, message: 'Image reordered' };
     } catch (error) {
-      fastify.log.error(error);
+      request.log.error({ err: error }, 'Failed to reorder image');
       return reply.status(500).send({ error: error.message || 'Failed to reorder image' });
     }
   });

@@ -1,4 +1,4 @@
-import Fastify from 'fastify';
+import Fastify, { LogController } from 'fastify';
 import fastifyCookie from '@fastify/cookie';
 import fastifySession from '@fastify/session';
 import fastifyStatic from '@fastify/static';
@@ -8,7 +8,6 @@ import fastifyCompress from '@fastify/compress';
 import path from 'path';
 import fs from 'fs';
 import { getDb } from '../../db/db.js';
-import { createAppLogger } from './logger.js';
 import {
   getAdminOrigin,
   getSiteHost,
@@ -21,14 +20,32 @@ const SESSION_MAX_AGE = 60 * 60 * 1000; // 1 hour in milliseconds
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 const SESSION_CLEANUP_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes
 
+const buildLoggerOptions = (level) => {
+  if (process.env.NODE_ENV === 'production') {
+    return { level };
+  }
+
+  return {
+    level,
+    transport: {
+      target: 'pino-pretty',
+      options: {
+        colorize: true,
+        translateTime: 'SYS:standard',
+        ignore: 'pid,hostname'
+      }
+    }
+  };
+};
+
 export const createServer = (isAdminServer = false) => {
   const logLevel = isAdminServer
     ? (process.env.ADMIN_LOG_LEVEL || process.env.LOG_LEVEL || 'info')
     : (process.env.PUBLIC_LOG_LEVEL || process.env.LOG_LEVEL || 'info');
 
   return Fastify({
-    loggerInstance: createAppLogger(logLevel, { scope: isAdminServer ? 'admin' : 'public' }),
-    disableRequestLogging: true,
+    logger: buildLoggerOptions(logLevel),
+    logController: new LogController({ disableRequestLogging: true }),
     trustProxy: true
   });
 };
@@ -257,11 +274,7 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     const url = request.raw.url || request.url || '';
     const statusCode = reply.statusCode || 0;
 
-    if (url === '/healthcheck') {
-      return;
-    }
-
-    if (url.startsWith('/public/') && statusCode < 400) {
+    if (statusCode < 400 && (url === '/healthcheck' || url.startsWith('/public/'))) {
       return;
     }
 
@@ -272,16 +285,16 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     const message = `${request.method} ${url} ${statusCode}${responseTime ? ` ${responseTime}` : ''}`;
 
     if (statusCode >= 500) {
-      fastify.log.error(message);
+      request.log.error(message);
       return;
     }
 
     if (statusCode >= 400) {
-      fastify.log.warn(message);
+      request.log.warn(message);
       return;
     }
 
-    fastify.log.info(message);
+    request.log.debug(message);
   });
 
   await fastify.register(fastifyStatic, {

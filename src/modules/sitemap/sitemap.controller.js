@@ -7,7 +7,7 @@ export const getRobots = async (request, reply) => {
     reply.header('Cache-Control', 'public, max-age=604800'); // 7 days
     return reply.send(robotsContent);
   } catch (error) {
-    request.server.log.error('Robots.txt error:', error);
+    request.log.error({ err: error }, 'Robots.txt error');
     return reply.code(404).send('Not Found');
   }
 };
@@ -21,7 +21,7 @@ export const getSitemap = async (request, reply) => {
     reply.header('Cache-Control', 'public, max-age=86400'); // 24 hours
     return reply.send(xmlContent);
   } catch (error) {
-    request.server.log.error('Sitemap generation error:', error);
+    request.log.error({ err: error }, 'Sitemap generation error');
     return reply.code(500).send({ error: 'Failed to generate sitemap' });
   }
 };
@@ -35,7 +35,7 @@ export const getSitemapIndex = async (request, reply) => {
     reply.header('Cache-Control', 'public, max-age=86400');
     return reply.send(xmlContent);
   } catch (error) {
-    request.server.log.error('Sitemap index generation error:', error);
+    request.log.error({ err: error }, 'Sitemap index generation error');
     return reply.code(500).send({ error: 'Failed to generate sitemap index' });
   }
 };

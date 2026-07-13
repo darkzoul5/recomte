@@ -48,9 +48,9 @@ export const buildAdminServer = async () => {
 
   const bootstrapResult = await ensureInitialAdminUser();
   if (bootstrapResult.created) {
-    fastify.log.warn(`Bootstrap admin user created: ${bootstrapResult.username}`);
+    fastify.log.warn({ username: bootstrapResult.username }, 'Bootstrap admin user created');
   } else if (bootstrapResult.updated) {
-    fastify.log.warn(`Bootstrap admin password updated from ADMIN_PASSWORD for: ${bootstrapResult.username}`);
+    fastify.log.warn({ username: bootstrapResult.username }, 'Bootstrap admin password updated from ADMIN_PASSWORD');
   }
 
   fastify.get('/healthcheck', { logLevel: 'silent' }, async () => ({ status: 'ok' }));
@@ -71,7 +71,7 @@ export const startAdminServer = async () => {
   const port = parseInt(process.env.ADMIN_PORT || '3001', 10);
 
   await fastify.listen({ host, port });
-  fastify.log.info(`Admin server running at http://${host}:${port}`);
+  fastify.log.info({ host, port }, `Admin server running at http://${host}:${port}`);
 
   return fastify;
 };

@@ -221,7 +221,7 @@ export const postLogin = async (request, reply) => {
 
     return renderLoginPage(request, reply, 'Неверный логин или пароль', username);
   } catch (error) {
-    request.server.log.error(error);
+    request.log.error({ err: error }, 'Failed to authenticate admin user');
     registerFailedLogin(username, getClientIp(request));
     return renderLoginPage(request, reply, 'Ошибка сервера', username);
   }
@@ -245,7 +245,7 @@ export const postLogout = async (request, reply) => {
       // Cookie cleanup is best-effort after session destruction.
     }
   } catch (err) {
-    request.server.log.error('Error destroying session during logout', err);
+    request.log.error({ err }, 'Error destroying session during logout');
   }
 
   return reply.redirect('/admin/login');

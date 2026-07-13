@@ -50,7 +50,7 @@ export const renderEditPage = async (request, reply, title, caravan, isNew, erro
   csrfToken: ensureCsrfToken(request)
 });
 
-export const getDashboard = async (request, reply, fastify) => {
+export const getDashboard = async (request, reply) => {
   if (!requireAdminSession(request, reply)) {
     return;
   }
@@ -62,7 +62,7 @@ export const getDashboard = async (request, reply, fastify) => {
       csrfToken: ensureCsrfToken(request)
     });
   } catch (error) {
-    fastify.log.error(error);
+    request.log.error({ err: error }, 'Failed to load admin dashboard');
     return reply.view('pages/admin/dashboard', {
       title: ADMIN_TITLE,
       caravans: [],
@@ -71,7 +71,7 @@ export const getDashboard = async (request, reply, fastify) => {
   }
 };
 
-export const getEditPage = async (request, reply, fastify) => {
+export const getEditPage = async (request, reply) => {
   if (!requireAdminSession(request, reply)) {
     return;
   }
@@ -92,7 +92,7 @@ export const getEditPage = async (request, reply, fastify) => {
       csrfToken: ensureCsrfToken(request)
     });
   } catch (error) {
-    fastify.log.error(error);
+    request.log.error({ err: error }, 'Failed to load caravan edit page');
     return reply.code(500).send({ message: 'Error loading caravan' });
   }
 };
@@ -105,7 +105,7 @@ export const getNewPage = async (request, reply) => {
   return renderEditPage(request, reply, ADD_TITLE, buildEmptyCaravan(), true, null);
 };
 
-export const postCreateCaravan = async (request, reply, fastify) => {
+export const postCreateCaravan = async (request, reply) => {
   if (!requireAdminSession(request, reply)) {
     return;
   }
@@ -124,16 +124,16 @@ export const postCreateCaravan = async (request, reply, fastify) => {
     const processedForm = processFeatures({ ...formData });
     const newCaravan = createCaravan(mapFormToCaravanData(processedForm));
 
-    await handleImageUploads(newCaravan.id, uploadedFiles, fastify.log);
+    await handleImageUploads(newCaravan.id, uploadedFiles, request.log);
 
     return reply.redirect('/admin/dash');
   } catch (error) {
-    fastify.log.error(error);
+    request.log.error({ err: error }, 'Failed to create caravan');
     return renderEditPage(request, reply, ADD_TITLE, buildEmptyCaravan(), true, `${CREATE_ERROR_PREFIX}: ${error.message}`);
   }
 };
 
-export const postUpdateCaravan = async (request, reply, fastify) => {
+export const postUpdateCaravan = async (request, reply) => {
   if (!requireAdminSession(request, reply)) {
     return;
   }
@@ -174,11 +174,11 @@ export const postUpdateCaravan = async (request, reply, fastify) => {
     }
 
     applyImageOrder(parseInt(id, 10), formData.image_order);
-    await handleImageUploads(parseInt(id, 10), uploadedFiles, fastify.log);
+    await handleImageUploads(parseInt(id, 10), uploadedFiles, request.log);
 
     return reply.redirect(`/admin/edit/${id}`);
   } catch (error) {
-    fastify.log.error(error);
+    request.log.error({ err: error }, 'Failed to update caravan');
     const { id } = request.params;
     const caravan = getCaravanById(id);
 
@@ -211,7 +211,7 @@ export const postDelistCaravan = async (request, reply) => {
     updateCaravanStatus(id, 'hidden');
     return reply.redirect(`/admin/edit/${id}`);
   } catch (error) {
-    request.server.log.error(error);
+    request.log.error({ err: error }, 'Failed to delist caravan');
     return reply.code(500).send({ error: 'Failed to delist caravan' });
   }
 };
@@ -231,7 +231,7 @@ export const postRelistCaravan = async (request, reply) => {
     updateCaravanStatus(id, 'available');
     return reply.redirect(`/admin/edit/${id}`);
   } catch (error) {
-    request.server.log.error(error);
+    request.log.error({ err: error }, 'Failed to relist caravan');
     return reply.code(500).send({ error: 'Failed to relist caravan' });
   }
 };
@@ -251,7 +251,7 @@ export const postDeleteCaravan = async (request, reply) => {
     deleteCaravan(id);
     return reply.redirect('/admin/dash');
   } catch (error) {
-    request.server.log.error(error);
+    request.log.error({ err: error }, 'Failed to delete caravan');
     return reply.code(500).send({ error: 'Failed to delete caravan' });
   }
 };

@@ -23,12 +23,12 @@ export default async function registerAdminRoutes(fastify, _options = {}) {
 
   // Dashboard
   fastify.get('/admin/dash', async (request, reply) => {
-    return getDashboard(request, reply, fastify);
+    return getDashboard(request, reply);
   });
 
   // Edit caravan form
   fastify.get('/admin/edit/:id', async (request, reply) => {
-    return getEditPage(request, reply, fastify);
+    return getEditPage(request, reply);
   });
 
   // New caravan form
@@ -38,12 +38,12 @@ export default async function registerAdminRoutes(fastify, _options = {}) {
 
   // Create caravan
   fastify.post('/admin/new', async (request, reply) => {
-    return postCreateCaravan(request, reply, fastify);
+    return postCreateCaravan(request, reply);
   });
 
   // Update caravan
   fastify.post('/admin/edit/:id', async (request, reply) => {
-    return postUpdateCaravan(request, reply, fastify);
+    return postUpdateCaravan(request, reply);
   });
 
   // Delist caravan (hide)

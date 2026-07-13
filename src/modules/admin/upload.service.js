@@ -35,7 +35,7 @@ const ensureImagesDir = (slug) => {
   return imagesDir;
 };
 
-export const saveCaravanImageAsWebp = async ({ caravanId, fileBuffer, originalFilename, mimetype, logger }) => {
+export const saveCaravanImageAsWebp = async ({ caravanId, fileBuffer, originalFilename, mimetype, log }) => {
   if (!Number.isInteger(caravanId) || caravanId <= 0) {
     throw new Error('Invalid caravan ID');
   }
@@ -68,8 +68,8 @@ export const saveCaravanImageAsWebp = async ({ caravanId, fileBuffer, originalFi
   const imageUrl = `${getPublicCaravanImagesUrlPrefix()}/${slug}/${webpFileName}`;
   const createdImage = images.create(caravanId, imageUrl, originalFilename || '', 0, imageWidth, imageHeight);
 
-  if (logger && typeof logger.debug === 'function') {
-    logger.debug(`Converted and saved image: ${webpFileName}`);
+  if (log && typeof log.debug === 'function') {
+    log.debug({ caravanId, fileName: webpFileName }, 'Converted and saved image');
   }
 
   return createdImage;
@@ -115,7 +115,7 @@ export const parseMultipartForm = async (request) => {
   return { formData, uploadedFiles };
 };
 
-export const handleImageUploads = async (caravanId, uploadedFiles, logger) => {
+export const handleImageUploads = async (caravanId, uploadedFiles, log) => {
   if (uploadedFiles.length === 0) {
     return;
   }
@@ -126,7 +126,7 @@ export const handleImageUploads = async (caravanId, uploadedFiles, logger) => {
       fileBuffer: file.buffer,
       originalFilename: file.filename,
       mimetype: file.mimetype,
-      logger
+      log
     });
   }
 };

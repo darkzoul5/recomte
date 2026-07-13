@@ -15,7 +15,7 @@ export const getHomePage = async (request, reply) => {
       seo: buildHomeSeo(caravans)
     });
   } catch (error) {
-    request.server.log.error(error);
+    request.log.error({ err: error }, 'Failed to load home page');
     return reply.view('pages/home/index', {
       title: 'Главная',
       caravans: [],
@@ -39,7 +39,7 @@ export const getCatalogPage = async (request, reply) => {
       seo: buildCatalogueSeo(caravans)
     });
   } catch (error) {
-    request.server.log.error(error);
+    request.log.error({ err: error }, 'Failed to load catalog page');
     return reply.view('pages/catalog/index', {
       title: 'Каталог прицепов-дач',
       caravans: [],
@@ -66,7 +66,7 @@ export const getCaravanPage = async (request, reply) => {
       seo: buildCaravanSeo(caravan)
     });
   } catch (error) {
-    request.server.log.error(error);
+    request.log.error({ err: error }, 'Failed to load caravan page');
     return reply.code(500).send({ message: 'Error loading caravan' });
   }
 };
