@@ -1,7 +1,7 @@
 import './bootstrap-env.js';
 import { initDb, closeDb } from '../../db/db.js';
-import { validatePublicServerEnv, buildPublicServer } from './public.js';
-import { validateAdminServerEnv, buildAdminServer } from './admin.js';
+import { startPublicServer } from './public.js';
+import { startAdminServer } from './admin.js';
 
 const DEFAULT_MODE = 'all';
 const getServerMode = () => (process.env.SERVER_MODE || DEFAULT_MODE).toLowerCase();
@@ -40,37 +40,17 @@ const start = async () => {
   const mode = getServerMode();
   const servers = [];
 
-  if (mode === 'public' || mode === 'all') {
-    validatePublicServerEnv();
-  }
-
-  if (mode === 'admin' || mode === 'all') {
-    validateAdminServerEnv();
-  }
-
   attachSignalHandlers(servers);
 
   try {
     if (mode === 'public' || mode === 'all') {
-      const publicServer = await buildPublicServer();
+      const publicServer = await startPublicServer();
       servers.push(publicServer);
-      const publicHost = process.env.HOST || '0.0.0.0';
-      const publicPort = parseInt(process.env.PORT || '3000', 10);
-      await publicServer.listen({ host: publicHost, port: publicPort });
-      publicServer.log.info({ host: publicHost, port: publicPort }, `Public server running at http://${publicHost}:${publicPort}`);
     }
 
     if (mode === 'admin' || mode === 'all') {
-      const adminServer = await buildAdminServer();
+      const adminServer = await startAdminServer();
       servers.push(adminServer);
-      const adminHost = process.env.ADMIN_HOST || '0.0.0.0';
-      const adminPort = parseInt(process.env.ADMIN_PORT || '3001', 10);
-      await adminServer.listen({ host: adminHost, port: adminPort });
-      adminServer.log.info({ host: adminHost, port: adminPort }, `Admin server running at http://${adminHost}:${adminPort}`);
-    }
-
-    if (mode === 'all') {
-      getBootstrapLogger(servers).info('Both public and admin servers are started.');
     }
   } catch (error) {
     getBootstrapLogger(servers).error({ err: error }, 'Failed to start server(s)');

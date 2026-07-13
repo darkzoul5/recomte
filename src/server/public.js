@@ -58,8 +58,16 @@ export const startPublicServer = async () => {
   const host = process.env.HOST || '0.0.0.0';
   const port = parseInt(process.env.PORT || '3000', 10);
 
-  await fastify.listen({ host, port });
-  fastify.log.info({ host, port }, `Public server running at http://${host}:${port}`);
+  const baseLevel = fastify.log.level;
+  fastify.log.level = 'silent';
+
+  try {
+    await fastify.listen({ host, port });
+  } finally {
+    fastify.log.level = baseLevel;
+  }
+
+  fastify.log.info({ host, port }, 'Public server started');
 
   return fastify;
 };

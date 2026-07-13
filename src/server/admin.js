@@ -70,8 +70,16 @@ export const startAdminServer = async () => {
   const host = process.env.ADMIN_HOST || '0.0.0.0';
   const port = parseInt(process.env.ADMIN_PORT || '3001', 10);
 
-  await fastify.listen({ host, port });
-  fastify.log.info({ host, port }, `Admin server running at http://${host}:${port}`);
+  const baseLevel = fastify.log.level;
+  fastify.log.level = 'silent';
+
+  try {
+    await fastify.listen({ host, port });
+  } finally {
+    fastify.log.level = baseLevel;
+  }
+
+  fastify.log.info({ host, port }, 'Admin server started');
 
   return fastify;
 };

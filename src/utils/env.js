@@ -5,6 +5,8 @@ const DEFAULT_VALIDATORS = {
 
 DEFAULT_VALIDATORS.oneOf = (allowed) => (v) => typeof v === 'string' && allowed.includes(v);
 
+let hasLoggedValidationSuccess = false;
+
 export function validateEnv(required = []) {
   const errors = [];
 
@@ -32,13 +34,9 @@ export function validateEnv(required = []) {
     process.exit(1);
   }
 
-  // Log success for debug visibility
-  for (const spec of required) {
-    if (spec.log !== false) {
-      const val = process.env[spec.name];
-      const display = spec.sensitive ? '***' : (val === undefined ? '(unset)' : String(val));
-      console.info(`ENV OK: ${spec.name}=${display}`);
-    }
+  if (!hasLoggedValidationSuccess) {
+    console.info('Configuration validated successfully.');
+    hasLoggedValidationSuccess = true;
   }
 }
 
