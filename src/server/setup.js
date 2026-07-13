@@ -174,6 +174,16 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
   const siteUrl = getSiteUrl();
   const siteHost = getSiteHost();
   const siteOrigin = getSiteOrigin();
+  const setCacheControlHeader = (res, value) => {
+    if (typeof res?.header === 'function') {
+      res.header('Cache-Control', value);
+      return;
+    }
+
+    if (typeof res?.setHeader === 'function') {
+      res.setHeader('Cache-Control', value);
+    }
+  };
   fs.mkdirSync(getCaravanImagesDir(), { recursive: true });
   await fastify.register(fastifyCompress, {
     threshold: 1024,
@@ -303,9 +313,9 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     decorateReply: false,
     setHeaders: (res, pathName) => {
       if (/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(pathName)) {
-        res.setHeader('Cache-Control', 'public, max-age=604800');
+        setCacheControlHeader(res, 'public, max-age=604800');
       } else {
-        res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
+        setCacheControlHeader(res, 'public, max-age=3600, must-revalidate');
       }
     }
   });
@@ -316,16 +326,16 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     setHeaders: (res, pathName) => {
       // Cache images for 7 days (can be updated by changing file)
       if (/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(pathName)) {
-        res.setHeader('Cache-Control', 'public, max-age=604800');
+        setCacheControlHeader(res, 'public, max-age=604800');
       } else if (/\.(woff|woff2|ttf|eot)$/i.test(pathName)) {
         // Fonts: 1 year (rarely change)
-        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        setCacheControlHeader(res, 'public, max-age=31536000, immutable');
       } else if (/\.(css|js)$/i.test(pathName)) {
         // Cache CSS/JS for 1 hour (not versioned, changes should deploy quickly)
-        res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
+        setCacheControlHeader(res, 'public, max-age=3600, must-revalidate');
       } else {
         // HTML and other files: shorter cache with revalidation
-        res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
+        setCacheControlHeader(res, 'public, max-age=3600, must-revalidate');
       }
     }
   });
@@ -335,7 +345,7 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     prefix: '/public/vendor/photoswipe/',
     decorateReply: false,
     setHeaders: (res) => {
-      res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
+      setCacheControlHeader(res, 'public, max-age=3600, must-revalidate');
     }
   });
 
