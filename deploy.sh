@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 LOCK_FILE="/tmp/recomte-deploy.lock"
-DEPLOY_DIR="/home/deploy/docker/recomte"
+DEPLOY_DIR="/recomte"
 COMPOSE_FILE="docker/compose.yml"
 MAX_RETRIES=5
 
