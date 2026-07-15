@@ -167,30 +167,18 @@ jobs:
             APP_COMMIT=${{ github.sha }}
       
       - name: Generate release notes
-        id: release_notes
-        run: |
-          PREVIOUS_TAG=$(git tag --sort=-creatordate | sed -n '2p')
-
-          if [ -z "$PREVIOUS_TAG" ]; then
-            COMMITS=$(git log --pretty=format:"- %s (%h)")
-          else
-            COMMITS=$(git log ${PREVIOUS_TAG}..HEAD --pretty=format:"- %s (%h)")
-          fi
-
-          {
-            echo "notes<<EOF"
-            echo "## Changes"
-            echo ""
-            echo "$COMMITS"
-            echo "EOF"
-          } >> $GITHUB_OUTPUT
+        id: git-cliff
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --latest --strip header
 
       - name: Create release
         uses: softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b # v3
         with:
           tag_name: ${{ steps.version.outputs.version }}
           name: ${{ steps.version.outputs.version }}
-          body: ${{ steps.release_notes.outputs.notes }}
+          body: ${{ steps.git-cliff.outputs.content }}
           generate_release_notes: false
 
   deploy-release:
