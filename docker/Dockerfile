@@ -5,7 +5,7 @@ WORKDIR /app
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
 
-RUN corepack enable && corepack prepare pnpm@11.7.0 --activate
+RUN corepack enable
 
 RUN addgroup -S deploy \
   && adduser -S -G deploy -u 1001 deploy \
