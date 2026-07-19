@@ -1,4 +1,4 @@
-FROM node:24.18.0-alpine3.24
+FROM node:24.18.0-alpine
 
 WORKDIR /app
 
@@ -22,11 +22,11 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 # Copy necessary application files
 COPY db/ ./db
 
-COPY public/ ./public
+COPY --chown=deploy:deploy public/ ./public
 COPY --chmod=755 docker/entrypoint.sh .
-COPY scripts/ ./scripts
-COPY src/ ./src
-COPY views/ ./views
+COPY --chown=deploy:deploy scripts/ ./scripts
+COPY --chown=deploy:deploy src/ ./src
+COPY --chown=deploy:deploy views/ ./views
 
 COPY version.json .
 
