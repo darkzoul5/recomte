@@ -3,7 +3,7 @@
  */
 
 // Whitelist of allowed column names for caravans table
-const ALLOWED_CARAVAN_COLUMNS = new Set([
+export const ALLOWED_CARAVAN_COLUMNS = new Set([
   'title', 'brand', 'slug', 'description', 'year', 'price', 'status', 'featured',
   // Sleeping & Basic
   'beds_count', 'shower_type', 'has_toilet', 'toilet_type', 'windows_count', 'door_position', 'manufacturer_country',
@@ -28,12 +28,12 @@ const ALLOWED_CARAVAN_COLUMNS = new Set([
 ]);
 
 // Whitelist of allowed column names for images table
-const ALLOWED_IMAGE_COLUMNS = new Set([
+export const ALLOWED_IMAGE_COLUMNS = new Set([
   'caravan_id', 'url', 'alt_text', 'sort_order', 'width', 'height'
 ]);
 
 // Whitelist of allowed caravan statuses
-const ALLOWED_STATUSES = new Set(['available', 'sold', 'reserved', 'hidden']);
+export const ALLOWED_STATUSES = new Set(['available', 'sold', 'reserved', 'hidden']);
 
 /**
  * Validate column name against whitelist
