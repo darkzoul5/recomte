@@ -1,4 +1,5 @@
-FROM node:24.18.0-alpine
+# ============= Builder Stage =============
+FROM node:24.18.0-slim as builder
 
 WORKDIR /app
 
@@ -7,17 +8,30 @@ ENV PATH=$PNPM_HOME:$PATH
 
 RUN corepack enable
 
-RUN addgroup -S deploy \
-  && adduser -S -G deploy -u 1001 deploy \
-  && mkdir -p /app/storage/db /app/storage/backups /app/storage/images/caravans \
-  && chown -R deploy:deploy /app/storage
-
 # Copy package files for dependency installation
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Install production dependencies only
+# Install and prune production dependencies
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
-    pnpm install --frozen-lockfile --prod
+    pnpm install --frozen-lockfile --prod && \
+    pnpm store prune
+
+# ============= Runtime Stage =============
+FROM node:24.18.0-slim
+
+WORKDIR /app
+
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+
+RUN corepack enable && \
+    addgroup --system deploy && \
+    adduser --system --group deploy --uid deploy && \
+    mkdir -p /app/storage/db /app/storage/backups /app/storage/images/caravans && \
+    chown -R deploy:deploy /app/storage
+
+# Copy pre-built node_modules from builder stage
+COPY --from=builder --chown=deploy:deploy /app/node_modules ./node_modules
 
 # Copy necessary application files
 COPY db/ ./db
@@ -29,6 +43,11 @@ COPY --chown=deploy:deploy src/ ./src
 COPY --chown=deploy:deploy views/ ./views
 
 COPY version.json .
+
+# Security hardening: remove setuid/setgid binaries and clean temp files
+RUN chmod 700 /app/storage && \
+    rm -rf /tmp/* /var/tmp/* && \
+    find / -xdev -type f -perm /6000 2>/dev/null | xargs chmod a-s 2>/dev/null || true
 
 USER 1001:1001
 
