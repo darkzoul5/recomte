@@ -146,6 +146,18 @@ const getSessionSecret = () => {
   return secret;
 };
 
+const getSessionCookieSecure = () => {
+  const override = process.env.SESSION_COOKIE_SECURE;
+  if (override === 'true') {
+    return true;
+  }
+  if (override === 'false') {
+    return false;
+  }
+
+  return process.env.NODE_ENV === 'production';
+};
+
 export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = false }) => {
   const loadVersionInfo = () => {
     try {
@@ -196,7 +208,7 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     saveUninitialized: false,
     cookie: {
       maxAge: SESSION_MAX_AGE,
-      secure: process.env.NODE_ENV !== 'development',
+      secure: getSessionCookieSecure(),
       httpOnly: true,
       sameSite: 'lax',
       path: '/'
