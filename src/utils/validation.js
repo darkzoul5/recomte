@@ -73,18 +73,35 @@ export const validateInteger = (value, min = Number.MIN_SAFE_INTEGER, max = Numb
 
 /**
  * Validate URL format
+ * Safe protocols: http, https, and relative paths only
  * @param {string} url - URL to validate
  * @returns {boolean} True if URL is valid
  */
 export const validateUrl = (url) => {
   if (typeof url !== 'string' || url.length === 0) return false;
-  try {
-    new URL(url);
-    return true;
-  } catch {
-    // Allow relative URLs for images
-    return /^[a-zA-Z0-9\-_.~:/?#[\]@!$&'()*+,;=%]+$/.test(url);
+
+  const lowerUrl = url.toLowerCase();
+
+  // Whitelist: Only allow http/https for absolute URLs
+  if (lowerUrl.startsWith('http://') || lowerUrl.startsWith('https://')) {
+    try {
+      const urlObj = new URL(url);
+      // Double-check the protocol is safe (catches edge cases)
+      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+    } catch {
+      return false;
+    }
   }
+
+  // Relative paths: must not contain any protocol-like pattern
+  // Valid: /path, ./file.jpg, ../images/pic.png, path/to/file
+  // Invalid: anything:something, /path:attack
+  if (/^[a-z][a-z0-9+\-.]*:/i.test(url)) {
+    return false;
+  }
+
+  // Allow relative paths with safe characters only
+  return /^[a-zA-Z0-9\-_.~/?#@!$&'()*+,;=%]+$/.test(url);
 };
 
 /**
