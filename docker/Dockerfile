@@ -13,7 +13,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Install and prune production dependencies
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
-    pnpm install --frozen-lockfile --prod && \
+    pnpm ci --frozen-lockfile --prod && \
     pnpm store prune
 
 # ============= Runtime Stage =============
