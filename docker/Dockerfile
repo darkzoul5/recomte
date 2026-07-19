@@ -13,8 +13,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Install and prune production dependencies
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
-    pnpm ci --frozen-lockfile --prod && \
-    pnpm store prune
+    pnpm ci --prod
 
 # ============= Runtime Stage =============
 FROM node:24.18.0-slim
