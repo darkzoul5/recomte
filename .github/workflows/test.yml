@@ -60,6 +60,7 @@ jobs:
           ADMIN_USERNAME: test
           ADMIN_PASSWORD: testtesttest
           SESSION_SECRET: testqwertyuiopasdfghjklzxcvbnm123456test
+          SESSION_COOKIE_SECURE: false
         run: |
           node src/server/index.js &
       
