@@ -35,11 +35,11 @@ COPY --from=builder --chown=deploy:deploy /app/node_modules ./node_modules
 # Copy necessary application files
 COPY db/ ./db
 
-COPY --chown=deploy:deploy public/ ./public
+COPY public/ ./public
 COPY --chmod=755 docker/entrypoint.sh .
-COPY --chown=deploy:deploy scripts/ ./scripts
-COPY --chown=deploy:deploy src/ ./src
-COPY --chown=deploy:deploy views/ ./views
+COPY scripts/ ./scripts
+COPY src/ ./src
+COPY views/ ./views
 
 COPY version.json .
 
