@@ -26,7 +26,7 @@ ENV PATH=$PNPM_HOME:$PATH
 
 RUN corepack enable && \
     addgroup --system deploy && \
-    adduser --system --group deploy --uid deploy && \
+    adduser --system --group deploy --uid 1001 && \
     mkdir -p /app/storage/db /app/storage/backups /app/storage/images/caravans && \
     chown -R deploy:deploy /app/storage
 
