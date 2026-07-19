@@ -17,7 +17,7 @@ const testCases = [
 	{ name: 'SQL injection: UNION SELECT', input: "title UNION SELECT * FROM admin_users; --", allowed: ALLOWED_CARAVAN_COLUMNS, expected: false },
 	{ name: 'SQL injection: OR 1=1', input: "title OR 1=1 --", allowed: ALLOWED_CARAVAN_COLUMNS, expected: false },
 	{ name: 'SQL injection: DELETE', input: "title; DELETE FROM caravans; --", allowed: ALLOWED_CARAVAN_COLUMNS, expected: false },
-	{ name: 'SQL injection: UPDATE', input: "title; UPDATE admin_users SET role=\'admin\'; --", allowed: ALLOWED_CARAVAN_COLUMNS, expected: false },
+	{ name: 'SQL injection: UPDATE', input: "title; UPDATE admin_users SET role='admin'; --", allowed: ALLOWED_CARAVAN_COLUMNS, expected: false },
 
 	// Edge cases
 	{ name: 'Empty string', input: '', allowed: ALLOWED_CARAVAN_COLUMNS, expected: false },
