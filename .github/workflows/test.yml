@@ -2,6 +2,7 @@ name: Run Tests
 
 on:
   workflow_dispatch:
+  workflow_call:
   pull_request:
     paths-ignore:
       - ".github/workflows/test.yml"
@@ -105,7 +106,7 @@ jobs:
         env:
           TEST_PATH: /caravans
         run: node tests/smoke-http.js
-        
+
       - name: Run CSRF protection tests
         run: node tests/test-csrf-protection.js
 
