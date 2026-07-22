@@ -18,6 +18,7 @@ on:
       - ".dockerignore"
       - "renovate.json"
       - ".github/workflows/release-build.yml"
+      - "cliff.toml"
 
 
 concurrency:
