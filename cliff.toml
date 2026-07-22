@@ -26,8 +26,8 @@ commit_parsers = [
     { message = "^test", group = "🧪 Tests" },
     { message = "^ci", group = "🚀 CI/CD" },
     { message = "^build", group = "🔨 Build System" },
+    { message = "^chore(deps):|*(deps)*", group = "📦 Dependencies" },
     { message = "^chore", group = "🧹 Maintenance" },
-    { message = "^deps", group = "📦 Dependencies" },
     { message = ".*", group = "🔹 Other Changes" }
 ]
 
