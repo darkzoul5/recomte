@@ -10,6 +10,7 @@
     "start:public": "node --experimental-strip-types src/server/public.ts",
     "start:admin": "node --experimental-strip-types src/server/admin.ts",
     "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
     "css:build": "tailwindcss -i ./public/css/tailwind.css -o ./public/css/website.css --minify",
     "css:watch": "tailwindcss -i ./public/css/tailwind.css -o ./public/css/website.css --watch",
     "db:init": "node --experimental-strip-types scripts/init-db.ts",
