@@ -46,13 +46,13 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run SQL injection tests
-        run: node tests/test-sql-injection.js
+        run: node --experimental-strip-types tests/test-sql-injection.ts
 
       - name: Run XSS protection tests
-        run: node tests/test-xss-protection.js
+        run: node --experimental-strip-types tests/test-xss-protection.ts
 
       - name: Run database migration tests
-        run: node tests/test-db-migrations.js
+        run: node --experimental-strip-types tests/test-db-migrations.ts
 
       # Start server
       - name: Start server
@@ -63,7 +63,7 @@ jobs:
           SESSION_SECRET: testqwertyuiopasdfghjklzxcvbnm123456test
           SESSION_COOKIE_SECURE: false
         run: |
-          node src/server/index.js &
+          node --experimental-strip-types src/server/index.ts &
       
       # Wait until server is reachable 
       - name: Wait for server
@@ -82,35 +82,35 @@ jobs:
         env:
           TEST_PATH: /admin/login
           TEST_PORT: 3001
-        run: node tests/smoke-http.js
+        run: node --experimental-strip-types tests/smoke-http.ts
 
       - name: Run public smoketest
         env:
           TEST_PATH: /
-        run: node tests/smoke-http.js
+        run: node --experimental-strip-types tests/smoke-http.ts
 
       - name: Run robots.txt smoketest
         env:
           TEST_PATH: /robots.txt
-        run: node tests/smoke-http.js
+        run: node --experimental-strip-types tests/smoke-http.ts
     
       - name: Run sitemap smoketest
         env:
           TEST_PATH: /sitemap.xml
-        run: node tests/smoke-http.js
+        run: node --experimental-strip-types tests/smoke-http.ts
       
       - name: Run /contact smoketest
         env:
           TEST_PATH: /contact
-        run: node tests/smoke-http.js
+        run: node --experimental-strip-types tests/smoke-http.ts
 
       - name: Run /caravans smoketest
         env:
           TEST_PATH: /caravans
-        run: node tests/smoke-http.js
+        run: node --experimental-strip-types tests/smoke-http.ts
 
       - name: Run CSRF protection tests
-        run: node tests/test-csrf-protection.js
+        run: node --experimental-strip-types tests/test-csrf-protection.ts
 
       - name: Run authentication protection tests
-        run: node tests/test-auth-protection.js
+        run: node --experimental-strip-types tests/test-auth-protection.ts

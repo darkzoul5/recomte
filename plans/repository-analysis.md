@@ -33,19 +33,19 @@
   - `pnpm css:build` builds `public/css/website.css` from `public/css/tailwind.css`.
   - Docker image builds are defined in `.github/workflows/dev-build.yml` and `.github/workflows/release-build.yml` using `docker/Dockerfile`.
 - Dev commands:
-  - `pnpm start` runs `src/server/index.js`.
+  - `pnpm start` runs `src/server/index.ts`.
   - `pnpm start:public` runs the public server only.
   - `pnpm start:admin` runs the admin server only.
   - `pnpm css:watch` rebuilds the CSS bundle in watch mode.
 - Test commands:
   - No `test` script is defined in `package.json`.
   - The repository includes standalone test scripts under `tests/` and CI runs them directly with `node`, including:
-    - `node tests/test-sql-injection.js`
-    - `node tests/test-xss-protection.js`
-    - `node tests/test-db-migrations.js`
-    - `node tests/test-csrf-protection.js`
-    - `node tests/test-auth-protection.js`
-    - `node tests/smoke-http.js`
+    - `node tests/test-sql-injection.ts`
+    - `node tests/test-xss-protection.ts`
+    - `node tests/test-db-migrations.ts`
+    - `node tests/test-csrf-protection.ts`
+    - `node tests/test-auth-protection.ts`
+    - `node tests/smoke-http.ts`
 - Linters:
   - ESLint is configured in `eslint.config.js`.
   - `pnpm lint` runs `eslint . --max-warnings=0`.
@@ -90,10 +90,10 @@
   - Both servers share common plugin setup, shared SQLite storage, and shared runtime storage paths.
   - Public pages are rendered from EJS templates and also expose JSON endpoints for caravan data.
 - Main components:
-  - Public server: `src/server/public.js`
-  - Admin server: `src/server/admin.js`
-  - Shared server setup: `src/server/setup.js`
-  - Database layer: `db/db.js`, `db/schema.js`, `db/migrations/`
+  - Public server: `src/server/public.ts`
+  - Admin server: `src/server/admin.ts`
+  - Shared server setup: `src/server/setup.ts`
+  - Database layer: `db/db.ts`, `db/schema.ts`, `db/migrations/`
   - Domain modules: caravans, pages, sitemap, auth, admin
 - Database:
   - SQLite is used through `better-sqlite3`.
@@ -136,7 +136,7 @@
     - `/admin/api/images/:id`
     - `/admin/api/images/:id/reorder`
 - External services:
-  - Yandex Metrika is referenced in `public/js/yandex-metrika.js` and `views/components/header/public.ejs`.
+  - Yandex Metrika is referenced in `public/js/yandex-metrika.ts` and `views/components/header/public.ejs`.
   - Yandex Maps embed is used on the contact page.
   - Yandex Webmaster and Yandex counter links appear in the admin dashboard template.
   - Font Awesome is loaded from a CDN in templates.
@@ -187,7 +187,7 @@ Only conventions that are directly visible in the repository are listed here.
 - Build or watch the CSS bundle with `pnpm css:build` or `pnpm css:watch`.
 - Initialize, migrate, seed, or back up the database with the `pnpm db:*` scripts.
 - Reset an admin password with `pnpm admin:passwd`.
-- Run repository tests directly with `node tests/*.js` scripts; CI does this explicitly.
+- Run repository tests directly with `node tests/*.ts` scripts; CI does this explicitly.
 - Use `docker compose -f docker/compose.yml up -d`-style deployment on the server side, as reflected by `deploy.sh` and the Compose file.
 - Sync a production SQLite snapshot into the test environment with `scripts/sync-prod-db-to-test.sh`.
 

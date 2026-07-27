@@ -21,10 +21,10 @@ Migrate the project from JavaScript to TypeScript without changing runtime behav
 - [ ] Add types for environment handling, storage paths, database access, and migration flow.
 - [ ] Keep SQLite schema and migration behavior stable.
 - [ ] Migrate server bootstrap code next:
-  - [ ] `src/server/setup.js`
-  - [ ] `src/server/public.js`
-  - [ ] `src/server/admin.js`
-  - [ ] `src/server/index.js`
+  - [ ] `src/server/setup.ts`
+  - [ ] `src/server/public.ts`
+  - [ ] `src/server/admin.ts`
+  - [ ] `src/server/index.ts`
 - [ ] Migrate feature modules one domain at a time:
   - [ ] `auth`
   - [ ] `admin`
@@ -33,13 +33,13 @@ Migrate the project from JavaScript to TypeScript without changing runtime behav
   - [ ] `sitemap`
 - [ ] Preserve public/admin separation throughout the migration.
 - [ ] Convert operational scripts as needed:
-  - [ ] `scripts/init-db.js`
-  - [ ] `scripts/migrate-db.js`
-  - [ ] `scripts/seed-db.js`
-  - [ ] `scripts/backup-db.js`
-  - [ ] `scripts/admin-password-reset.js`
-  - [ ] `scripts/validate-db.js`
-  - [ ] `scripts/start-all.js`
+  - [ ] `scripts/init-db.ts`
+  - [ ] `scripts/migrate-db.ts`
+  - [ ] `scripts/seed-db.ts`
+  - [ ] `scripts/backup-db.ts`
+  - [ ] `scripts/admin-password-reset.ts`
+  - [ ] `scripts/validate-db.ts`
+  - [ ] `scripts/start-all.ts`
 - [ ] Update tests as needed while keeping existing coverage intact:
   - [ ] DB migrations
   - [ ] auth and CSRF protection
@@ -58,4 +58,3 @@ Migrate the project from JavaScript to TypeScript without changing runtime behav
 - [ ] Existing tests pass.
 - [ ] No behavior regressions in auth, database migrations, or public pages.
 - [ ] The codebase is migrated to TypeScript with a clear, maintainable structure.
-

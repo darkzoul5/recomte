@@ -34,7 +34,7 @@ export default [
   },
   {
     files: [
-      'public/js/**/*.js'
+      'public/js/**/*.ts'
     ],
     languageOptions: {
       globals: {

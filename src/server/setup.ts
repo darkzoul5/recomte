@@ -331,11 +331,15 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
       // Cache images for 7 days (can be updated by changing file)
       if (/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(pathName)) {
         reply.header('Cache-Control', 'public, max-age=604800');
+      } else if (/\.(js|ts)$/i.test(pathName)) {
+        // Browser scripts are served directly from public/js and need a JS MIME type.
+        reply.header('Content-Type', 'application/javascript; charset=utf-8');
+        reply.header('Cache-Control', 'public, max-age=3600, must-revalidate');
       } else if (/\.(woff|woff2|ttf|eot)$/i.test(pathName)) {
         // Fonts: 1 year (rarely change)
         reply.header('Cache-Control', 'public, max-age=31536000, immutable');
-      } else if (/\.(css|js)$/i.test(pathName)) {
-        // Cache CSS/JS for 1 hour (not versioned, changes should deploy quickly)
+      } else if (/\.(css)$/i.test(pathName)) {
+        // Cache CSS for 1 hour (not versioned, changes should deploy quickly)
         reply.header('Cache-Control', 'public, max-age=3600, must-revalidate');
       } else {
         // HTML and other files: shorter cache with revalidation

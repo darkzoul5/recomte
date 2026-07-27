@@ -24,15 +24,15 @@ mkdir -p "${STORAGE_ROOT}/images/caravans"
 # Initialize database if needed
 if [ ! -f "$DB_PATH" ]; then
   echo "Database file not found at $DB_PATH, initializing..."
-  node /app/scripts/init-db.js
+  node --experimental-strip-types /app/scripts/init-db.ts
   echo "✓ Database initialized successfully"
 else
 
   echo "Running db migrations..."
-  node /app/scripts/migrate-db.js
+  node --experimental-strip-types /app/scripts/migrate-db.ts
   
   echo "Validating db schema..."
-  if node /app/scripts/validate-db.js; then
+  if node --experimental-strip-types /app/scripts/validate-db.ts; then
     echo "✓ Database is properly initialized"
   else
     echo "✗ FATAL: Database is corrupted or incomplete!"
@@ -53,7 +53,7 @@ echo "Log level: $LOG_LEVEL"
 echo "Admin log level: $ADMIN_LOG_LEVEL"
 echo "Public log level: $PUBLIC_LOG_LEVEL"
 
-SERVER_MODE=all node /app/src/server/index.js &
+SERVER_MODE=all node --experimental-strip-types /app/src/server/index.ts &
 SERVER_PID=$!
 
 trap 'kill $SERVER_PID 2>/dev/null || true' INT TERM

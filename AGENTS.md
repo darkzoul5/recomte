@@ -36,7 +36,7 @@
 - Keep browser JavaScript under `public/js/`.
 - Keep the codebase in ESM JavaScript unless the TypeScript migration changes it.
 - Respect the existing ESLint rule that allows `_`-prefixed unused variables.
-- Treat `ym` as a read-only browser global in `public/js/**/*.js`.
+- Treat `ym` as a read-only browser global in `public/js/**/*.ts`.
 
 ## Architecture
 - Use the existing Fastify, EJS, and SQLite structure.
@@ -58,11 +58,11 @@
 
 ## Testing
 - There is no `pnpm test` script.
-- Run repository tests directly with `node tests/*.js`.
-- Use `tests/test-db-migrations.js` when changing migrations.
-- Use `tests/test-auth-protection.js` and `tests/test-csrf-protection.js` when changing auth or admin flows.
-- Use `tests/test-sql-injection.js` and `tests/test-xss-protection.js` when changing input handling or rendered output.
-- Use `tests/smoke-http.js` for smoke coverage.
+- Run repository tests directly with `node tests/*.ts`.
+- Use `tests/test-db-migrations.ts` when changing migrations.
+- Use `tests/test-auth-protection.ts` and `tests/test-csrf-protection.ts` when changing auth or admin flows.
+- Use `tests/test-sql-injection.ts` and `tests/test-xss-protection.ts` when changing input handling or rendered output.
+- Use `tests/smoke-http.ts` for smoke coverage.
 
 ## Documentation
 - Read `README.md` before changing repo behavior or setup.

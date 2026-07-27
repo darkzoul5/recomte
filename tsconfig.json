@@ -13,6 +13,7 @@
     "types": ["node"]
   },
   "include": [
+    "public/js/**/*.ts",
     "src/**/*.ts",
     "db/**/*.ts",
     "scripts/**/*.ts",
@@ -20,7 +21,7 @@
   ],
   "exclude": [
     "node_modules",
-    "public",
+    "public/vendor/**",
     "storage"
   ]
 }

@@ -120,7 +120,7 @@
       <div class="form-group" style="flex: 2;">
         <label>Типы кроватей</label>
         <div id="bedTypesContainer" style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem;">
-          <!-- Bed rows are rendered by bed-types.js -->
+          <!-- Bed rows are rendered by bed-types.ts -->
         </div>
         <button type="button" id="addBedRowBtn" class="button is-info is-light is-small">
           <span class="icon"><i class="fas fa-plus"></i></span>
@@ -516,11 +516,11 @@
 <% } %>
 
 <!-- Page-specific logic: deletion toggles, ordering, FilePond setup -->
-<script src="/public/js/bed-types.js"></script>
-<script src="/public/js/multi-select.js"></script>
+<script src="/public/js/bed-types.ts"></script>
+<script src="/public/js/multi-select.ts"></script>
 <script src="/public/vendor/filepond/filepond.min.js"></script>
 <script src="/public/vendor/filepond-plugin-image-preview/filepond-plugin-image-preview.min.js"></script>
 <script src="/public/vendor/sortablejs/Sortable.min.js"></script>
-<script src="/public/js/admin-edit.js"></script>
+<script src="/public/js/admin-edit.ts"></script>
 
 <%- include('../../components/footer/admin') %>
