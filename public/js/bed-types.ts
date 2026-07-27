@@ -7,7 +7,7 @@ const BED_OPTIONS = [
 const MAX_BED_ROWS = 4;
 
 function parseBedTypes() {
-  const input = document.getElementById('bedTypesInput');
+  const input = document.getElementById('bedTypesInput') as HTMLInputElement | null;
   if (!input) return [];
 
   try {
@@ -78,8 +78,8 @@ function getCurrentBedValues() {
   const container = document.getElementById('bedTypesContainer');
   if (!container) return [];
 
-  return Array.from(container.querySelectorAll('[data-bed-select="1"]'))
-    .map((select) => select.value)
+  return Array.from(container.querySelectorAll('select[data-bed-select="1"]'))
+    .map((select) => (select as HTMLSelectElement).value)
     .filter(Boolean);
 }
 
@@ -87,14 +87,14 @@ function getCurrentBedValuesRaw() {
   const container = document.getElementById('bedTypesContainer');
   if (!container) return [];
 
-  return Array.from(container.querySelectorAll('[data-bed-select="1"]')).map((select) => select.value);
+  return Array.from(container.querySelectorAll('select[data-bed-select="1"]')).map((select) => (select as HTMLSelectElement).value);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
   const container = document.getElementById('bedTypesContainer');
   const addBtn = document.getElementById('addBedRowBtn');
   const form = document.querySelector('.admin-form');
-  const hiddenInput = document.getElementById('bedTypesInput');
+  const hiddenInput = document.getElementById('bedTypesInput') as HTMLInputElement | null;
   if (!container || !addBtn || !form || !hiddenInput) return;
 
   const initialValues = parseBedTypes();
@@ -114,14 +114,14 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   container.addEventListener('click', function(event) {
-    const removeButton = event.target.closest('[data-remove-bed="1"]');
+    const removeButton = (event.target as HTMLElement | null)?.closest('[data-remove-bed="1"]');
     if (!removeButton) return;
 
-    const row = removeButton.closest('.bed-row');
+    const row = removeButton.closest('.bed-row') as HTMLElement | null;
     if (!row) return;
 
     const rowIndex = Number(row.dataset.index);
-    const currentRaw = Array.from(container.querySelectorAll('[data-bed-select="1"]')).map((select) => select.value);
+    const currentRaw = Array.from(container.querySelectorAll('select[data-bed-select="1"]')).map((select) => (select as HTMLSelectElement).value);
     currentRaw.splice(rowIndex, 1);
     renderBedRows(currentRaw);
     syncAddButtonState();

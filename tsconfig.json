@@ -3,11 +3,13 @@
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    "allowImportingTsExtensions": true,
     "allowJs": false,
     "checkJs": false,
     "noEmit": true,
     "strict": false,
     "skipLibCheck": true,
+    "lib": ["ES2022", "DOM"],
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
     "types": ["node"]
@@ -17,7 +19,8 @@
     "src/**/*.ts",
     "db/**/*.ts",
     "scripts/**/*.ts",
-    "tests/**/*.ts"
+    "tests/**/*.ts",
+    "types/**/*.d.ts"
   ],
   "exclude": [
     "node_modules",

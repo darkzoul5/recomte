@@ -111,7 +111,9 @@ export const postCreateCaravan = async (request, reply) => {
   }
 
   try {
-    const { formData, uploadedFiles } = await parseMultipartForm(request);
+    const parsed = await parseMultipartForm(request);
+    const formData = parsed.formData as Record<string, any>;
+    const uploadedFiles = parsed.uploadedFiles;
 
     if (rejectInvalidCsrf(request, reply, formData)) {
       return renderEditPage(request, reply, ADD_TITLE, buildEmptyCaravan(), true, INVALID_CSRF_MESSAGE);
@@ -139,14 +141,16 @@ export const postUpdateCaravan = async (request, reply) => {
   }
 
   try {
-    const { id } = request.params;
+    const { id } = request.params as { id: string };
     const caravan = getCaravanById(id);
 
     if (!caravan) {
       return reply.code(404).send({ message: 'Caravan not found' });
     }
 
-    const { formData, uploadedFiles } = await parseMultipartForm(request);
+    const parsed = await parseMultipartForm(request);
+    const formData = parsed.formData as Record<string, any>;
+    const uploadedFiles = parsed.uploadedFiles;
 
     if (rejectInvalidCsrf(request, reply, formData)) {
       return reply.view('pages/admin/edit', {
@@ -179,7 +183,7 @@ export const postUpdateCaravan = async (request, reply) => {
     return reply.redirect(`/admin/edit/${id}`);
   } catch (error) {
     request.log.error({ err: error }, 'Failed to update caravan');
-    const { id } = request.params;
+    const { id } = request.params as { id: string };
     const caravan = getCaravanById(id);
 
     if (!caravan) {
@@ -202,7 +206,7 @@ export const postDelistCaravan = async (request, reply) => {
   }
 
   try {
-    const { id } = request.params;
+    const { id } = request.params as { id: string };
 
     if (rejectInvalidCsrf(request, reply)) {
       return reply.code(403).send({ error: 'Invalid CSRF token' });
@@ -222,7 +226,7 @@ export const postRelistCaravan = async (request, reply) => {
   }
 
   try {
-    const { id } = request.params;
+    const { id } = request.params as { id: string };
 
     if (rejectInvalidCsrf(request, reply)) {
       return reply.code(403).send({ error: 'Invalid CSRF token' });

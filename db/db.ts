@@ -15,7 +15,14 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_PATH = getDbPath();
 
-let db = null;
+let db: any = null;
+
+type CaravanFilters = {
+  status?: string;
+  featured?: boolean;
+  winter_rated?: boolean;
+  camper_season?: string;
+};
 
 
 
@@ -64,7 +71,7 @@ export const closeDb = () => {
 };
 
 // Helper function to run SELECT queries
-const query = (sql, params = []) => {
+const query = (sql: string, params: any[] = []) => {
   try {
     const stmt = db.prepare(sql);
     return stmt.all(...params);
@@ -75,7 +82,7 @@ const query = (sql, params = []) => {
 };
 
 // Helper function to run INSERT/UPDATE/DELETE
-const run = (sql, params = []) => {
+const run = (sql: string, params: any[] = []) => {
   try {
     const stmt = db.prepare(sql);
     const result = stmt.run(...params);
@@ -131,7 +138,7 @@ const normalizeFeaturesInput = (featuresInput) => {
 };
 
 // Dynamic INSERT builder
-const buildInsert = (table, data) => {
+const buildInsert = (table: string, data: Record<string, any>) => {
   const keys = Object.keys(data);
   if (keys.length === 0) throw new Error('No data provided for INSERT');
   
@@ -143,7 +150,7 @@ const buildInsert = (table, data) => {
 };
 
 // Dynamic UPDATE builder
-const buildUpdate = (table, data, whereClause, whereValues = []) => {
+const buildUpdate = (table: string, data: Record<string, any>, whereClause: string, whereValues: any[] = []) => {
   const keys = Object.keys(data).filter(k => k !== 'id' && k !== 'created_at' && k !== 'updated_at');
   if (keys.length === 0) throw new Error('No data provided for UPDATE');
   
@@ -157,7 +164,7 @@ const buildUpdate = (table, data, whereClause, whereValues = []) => {
 
 // Caravans queries
 export const caravans = {
-  getAll: (filters = {}) => {
+  getAll: (filters: CaravanFilters = {}) => {
     let sql = 'SELECT * FROM caravans WHERE 1=1';
     const params = [];
     
@@ -254,9 +261,10 @@ export const caravans = {
     const filteredData = filterCaravanData(dataWithoutFeatures, true);
 
     // Remove system fields that shouldn't be updated
-    delete filteredData.id;
-    delete filteredData.created_at;
-    delete filteredData.updated_at;
+    const mutableFilteredData = filteredData as Record<string, any>;
+    delete mutableFilteredData.id;
+    delete mutableFilteredData.created_at;
+    delete mutableFilteredData.updated_at;
 
     // Build UPDATE statement if there are fields to update
     if (Object.keys(filteredData).length > 0) {

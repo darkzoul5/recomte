@@ -1,9 +1,8 @@
 const DEFAULT_VALIDATORS = {
   requiredNonEmpty: (v) => typeof v === 'string' && v.trim().length > 0,
-  minLength: (min) => (v) => typeof v === 'string' && v.trim().length >= min
+  minLength: (min) => (v) => typeof v === 'string' && v.trim().length >= min,
+  oneOf: (allowed) => (v) => typeof v === 'string' && allowed.includes(v)
 };
-
-DEFAULT_VALIDATORS.oneOf = (allowed) => (v) => typeof v === 'string' && allowed.includes(v);
 
 let hasLoggedValidationSuccess = false;
 

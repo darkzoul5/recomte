@@ -1,16 +1,16 @@
 import PhotoSwipeLightbox from '/public/vendor/photoswipe/photoswipe-lightbox.esm.min.js';
 
 function initializeCaravanGallery() {
-  const galleryRoot = document.querySelector('[data-caravan-gallery]');
+  const galleryRoot = document.querySelector('[data-caravan-gallery]') as HTMLElement | null;
   const dataScript = document.getElementById('caravanImagesData');
-  const mainStage = galleryRoot?.querySelector('.caravan-gallery__main');
-  const mainImage = galleryRoot?.querySelector('[data-gallery-main-image]');
-  const backdrop = galleryRoot?.querySelector('[data-gallery-backdrop]');
-  const prevButton = galleryRoot?.querySelector('[data-gallery-prev]');
-  const nextButton = galleryRoot?.querySelector('[data-gallery-next]');
-  const openButton = galleryRoot?.querySelector('[data-gallery-open]');
-  const thumbnailsContainer = galleryRoot?.querySelector('[data-gallery-thumbnails]');
-  const statusElement = galleryRoot?.querySelector('[data-gallery-status]');
+  const mainStage = galleryRoot?.querySelector('.caravan-gallery__main') as HTMLElement | null;
+  const mainImage = galleryRoot?.querySelector('[data-gallery-main-image]') as HTMLImageElement | null;
+  const backdrop = galleryRoot?.querySelector('[data-gallery-backdrop]') as HTMLElement | null;
+  const prevButton = galleryRoot?.querySelector('[data-gallery-prev]') as HTMLButtonElement | null;
+  const nextButton = galleryRoot?.querySelector('[data-gallery-next]') as HTMLButtonElement | null;
+  const openButton = galleryRoot?.querySelector('[data-gallery-open]') as HTMLButtonElement | null;
+  const thumbnailsContainer = galleryRoot?.querySelector('[data-gallery-thumbnails]') as HTMLElement | null;
+  const statusElement = galleryRoot?.querySelector('[data-gallery-status]') as HTMLElement | null;
 
   if (!galleryRoot || !mainStage || !mainImage || !thumbnailsContainer || !openButton) return;
 

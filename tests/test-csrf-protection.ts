@@ -17,7 +17,7 @@ const extractCookieHeader = (setCookieHeaders = []) => {
   return cookies.join('; ');
 };
 
-const requestHttp = ({ method, headers = {}, body = '' }) => new Promise((resolve, reject) => {
+const requestHttp = ({ method, headers = {}, body = '' }) => new Promise<{ statusCode: number; body: string; headers: http.IncomingHttpHeaders }>((resolve, reject) => {
   const request = http.request({
     protocol: loginUrl.protocol,
     hostname: loginUrl.hostname,

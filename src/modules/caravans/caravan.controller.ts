@@ -9,7 +9,7 @@ import {
 
 export const listCaravans = async (request, reply) => {
   try {
-    const filters = {};
+    const filters: Record<string, any> = {};
     
     if (request.query.winter_rated === 'true') {
       filters.camper_season = 'all_season';
@@ -46,7 +46,7 @@ export const listCaravans = async (request, reply) => {
 
 export const getCaravan = async (request, reply) => {
   try {
-    const { slug } = request.params;
+    const { slug } = request.params as { slug: string };
 
     // Validate slug format
     if (!validateSlug(slug)) {
