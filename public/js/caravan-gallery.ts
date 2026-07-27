@@ -1,4 +1,4 @@
-import PhotoSwipeLightbox from '/public/vendor/photoswipe/photoswipe-lightbox.esm.min.js';
+import PhotoSwipeLightbox from 'photoswipe/photoswipe-lightbox.esm.min';
 
 function initializeCaravanGallery() {
   const galleryRoot = document.querySelector('[data-caravan-gallery]') as HTMLElement | null;
@@ -143,7 +143,7 @@ function initializeCaravanGallery() {
 
     lightbox = new PhotoSwipeLightbox({
       dataSource: normalizedImages,
-      pswpModule: () => import('/public/vendor/photoswipe/photoswipe.esm.min.js'),
+      pswpModule: () => import('photoswipe/photoswipe.esm.min'),
       bgOpacity: 0.92,
       showHideAnimationType: 'zoom',
       wheelToZoom: true,
@@ -211,3 +211,4 @@ function initializeCaravanGallery() {
 }
 
 document.addEventListener('DOMContentLoaded', initializeCaravanGallery);
+

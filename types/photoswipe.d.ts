@@ -1,9 +1,9 @@
-declare module '/public/vendor/photoswipe/photoswipe-lightbox.esm.min.js' {
+declare module 'photoswipe/photoswipe-lightbox.esm.min' {
   const PhotoSwipeLightbox: any;
   export default PhotoSwipeLightbox;
 }
 
-declare module '/public/vendor/photoswipe/photoswipe.esm.min.js' {
+declare module 'photoswipe/photoswipe.esm.min' {
   const PhotoSwipe: any;
   export default PhotoSwipe;
 }
