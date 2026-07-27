@@ -1,6 +1,6 @@
 # Suggestions Plan
 
-## 0. Add next.js and tailwind
+## 0. add tailwind
 
 ## 1. Public Website Fixes
 
