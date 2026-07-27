@@ -12,7 +12,8 @@ export default [
   js.configs.recommended,
   {
     files: [
-      '**/*.js'
+      '**/*.js',
+      '**/*.ts'
     ],
     languageOptions: {
       ecmaVersion: 'latest',

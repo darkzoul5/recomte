@@ -62,7 +62,7 @@ echo "[sync] Stopping test service (${TEST_SERVICE})..."
 docker compose -f "${COMPOSE_FILE}" stop "${TEST_SERVICE}"
 
 echo "[sync] Creating prod backup inside ${PROD_CONTAINER}..."
-docker exec "${PROD_CONTAINER}" node ./scripts/backup-db.js --out "${backup_in_container}"
+docker exec "${PROD_CONTAINER}" node --experimental-strip-types ./scripts/backup-db.ts --out "${backup_in_container}"
 
 echo "[sync] Copying backup into test DB bind mount..."
 mkdir -p "$(dirname "${TEST_DB_LOCAL}")" "${TEST_IMAGES_DIR_LOCAL}" "${TEST_BACKUPS_DIR_LOCAL}" "${PROD_BACKUPS_DIR_LOCAL}"
