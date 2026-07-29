@@ -15,12 +15,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  test-release:
     uses: ./.github/workflows/test.yml
 
 
   build-release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-js
     needs: test-release
 
     permissions:
