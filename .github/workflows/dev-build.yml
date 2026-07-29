@@ -9,6 +9,8 @@ on:
       - ".github/workflows/test.yml"
       - ".github/workflows/lint.yml"
       - ".github/workflows/ntfy-on-pr.yml"
+      - ".github/workflows/release-build.yml"
+      - ".github/workflows/security.yml"
       - "docs/**"
       - "plans/**"
       - "README.md"
@@ -17,7 +19,6 @@ on:
       - ".gitignore"
       - ".dockerignore"
       - "renovate.json"
-      - ".github/workflows/release-build.yml"
       - "cliff.toml"
 
 
