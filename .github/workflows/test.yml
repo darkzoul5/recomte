@@ -24,7 +24,7 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-js
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout

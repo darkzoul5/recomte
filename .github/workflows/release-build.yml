@@ -20,7 +20,7 @@ jobs:
 
 
   build-release:
-    runs-on: ubuntu-js
+    runs-on: ubuntu-latest
     needs: test-release
 
     permissions:
