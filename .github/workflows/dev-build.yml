@@ -11,6 +11,7 @@ on:
       - ".github/workflows/ntfy-on-pr.yml"
       - ".github/workflows/release-build.yml"
       - ".github/workflows/security.yml"
+      - ".github/workflows/security-report.yml"
       - "docs/**"
       - "plans/**"
       - "README.md"

@@ -1,0 +1,125 @@
+name: Semgrep Security Report
+
+on:
+  schedule:
+    - cron: "0 3 * * 1"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  semgrep:
+    name: Semgrep SAST
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache Semgrep venv
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/semgrep-venv
+          key: semgrep-${{ runner.os }}
+
+      - name: Install Semgrep
+        run: |
+          if [ ! -x "$HOME/.cache/semgrep-venv/bin/semgrep" ]; then
+            python3 -m venv "$HOME/.cache/semgrep-venv"
+            "$HOME/.cache/semgrep-venv/bin/pip" install --upgrade pip
+            "$HOME/.cache/semgrep-venv/bin/pip" install semgrep
+          fi
+
+          echo "$HOME/.cache/semgrep-venv/bin" >> "$GITHUB_PATH"
+
+      - name: Run Semgrep
+        continue-on-error: true
+        run: |
+          semgrep scan \
+            --config=p/security-audit \
+            --config=p/nodejs \
+            --config=p/typescript \
+            --json \
+            --output=semgrep.json
+
+      - name: Generate issue body
+        run: |
+          python3 <<'PY'
+          import json
+          from datetime import datetime, timezone
+
+          with open("semgrep.json") as f:
+              data = json.load(f)
+
+          results = data.get("results", [])
+
+          with open("issue.md", "w") as f:
+              f.write("# Semgrep Security Scan\n\n")
+              f.write(
+                  f"Last scan: "
+                  f"{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}\n\n"
+              )
+
+              if not results:
+                  f.write("## Status\n\n")
+                  f.write("No findings detected.\n")
+              else:
+                  f.write(f"## Findings: {len(results)}\n\n")
+
+                  for index, result in enumerate(results, 1):
+                      extra = result.get("extra", {})
+
+                      f.write(f"## {index}. {result.get('check_id')}\n\n")
+                      f.write(
+                          f"- File: `{result.get('path')}`\n"
+                          f"- Line: `{result.get('start', {}).get('line')}`\n\n"
+                      )
+                      f.write(
+                          extra.get("message", "No description available")
+                      )
+                      f.write("\n\n---\n\n")
+          PY
+
+      - name: Create or update Gitea issue
+        env:
+          REPO_W_TOKEN: ${{ secrets.REPO_W_TOKEN }}
+        run: |
+          OWNER="${{ github.repository_owner }}"
+          REPO="${{ github.event.repository.name }}"
+          API="https://git.darkzoul.org/api/v1/repos/${OWNER}/${REPO}"
+
+          EXISTING=$(curl -sf \
+            -H "Authorization: token ${REPO_W_TOKEN }" \
+            "${API}/issues?state=open&labels=security" \
+            | jq '.[0].number // empty')
+
+          BODY=$(jq -Rs . < issue.md)
+
+          if [ -n "$EXISTING" ]; then
+            echo "Updating existing issue #${EXISTING}"
+
+            curl \
+              -X PATCH \
+              -H "Authorization: token ${REPO_W_TOKEN }" \
+              -H "Content-Type: application/json" \
+              "${API}/issues/${EXISTING}" \
+              -d "{
+                \"body\": ${BODY},
+                \"title\": \"Semgrep Security Scan\"
+              }"
+          else
+            echo "Creating new security issue"
+
+            curl \
+              -X POST \
+              -H "Authorization: token ${REPO_W_TOKEN }" \
+              -H "Content-Type: application/json" \
+              "${API}/issues" \
+              -d "{
+                \"title\": \"Semgrep Security Scan\",
+                \"body\": ${BODY},
+                \"labels\": [\"security\"]
+              }"
+          fi
