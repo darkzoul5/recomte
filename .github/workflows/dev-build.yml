@@ -31,7 +31,7 @@ jobs:
     uses: ./.github/workflows/test.yml
 
   build-dev:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-js
     needs: test
 
     permissions:
