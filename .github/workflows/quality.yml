@@ -17,7 +17,7 @@ on:
       - "cliff.toml"
 
 concurrency:
-  group: campersite-lint-${{ github.ref }}
+  group: campersite-quality-check-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

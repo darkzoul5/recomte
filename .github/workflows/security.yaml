@@ -6,6 +6,11 @@ on:
 
   workflow_dispatch:
 
+concurrency:
+  group: campersite-security-scan-${{ github.ref }}
+  cancel-in-progress: true
+
+
 jobs:
   semgrep:
     name: Semgrep SAST
@@ -18,14 +23,15 @@ jobs:
       - name: Run Semgrep
         run: |
           docker run --rm \
-            -v "$PWD:/src" \
+            -v "${{ github.workspace }}:/src" \
             semgrep/semgrep:latest \
             semgrep scan \
             --config=p/security-audit \
             --config=p/nodejs \
             --config=p/typescript \
             --json \
-            --output=/src/semgrep.json
+            --output=/src/semgrep.json \
+            /src
 
       - name: Upload Semgrep report
         uses: actions/upload-artifact@v4
