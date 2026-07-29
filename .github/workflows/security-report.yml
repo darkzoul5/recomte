@@ -83,15 +83,13 @@ jobs:
           PY
 
       - name: Create or update Gitea issue
-        env:
-          REPO_W_TOKEN: ${{ secrets.REPO_W_TOKEN }}
         run: |
           OWNER="${{ github.repository_owner }}"
           REPO="${{ github.event.repository.name }}"
           API="https://git.darkzoul.org/api/v1/repos/${OWNER}/${REPO}"
 
           EXISTING=$(curl -sf \
-            -H "Authorization: token ${REPO_W_TOKEN}" \
+            -H "Authorization: token ${{ secrets.REPO_W_TOKEN }}" \
             "${API}/issues?state=open&labels=security" \
             | jq '.[0].number // empty')
 
@@ -102,7 +100,7 @@ jobs:
 
             curl \
               -X PATCH \
-              -H "Authorization: token ${REPO_W_TOKEN}" \
+              -H "Authorization: token ${{ secrets.REPO_W_TOKEN }}" \
               -H "Content-Type: application/json" \
               "${API}/issues/${EXISTING}" \
               -d "{
@@ -114,7 +112,7 @@ jobs:
 
             curl \
               -X POST \
-              -H "Authorization: token ${REPO_W_TOKEN}" \
+              -H "Authorization: token ${{ secrets.REPO_W_TOKEN }}" \
               -H "Content-Type: application/json" \
               "${API}/issues" \
               -d "{
