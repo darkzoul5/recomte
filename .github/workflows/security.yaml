@@ -11,24 +11,24 @@ jobs:
     name: Semgrep SAST
     runs-on: ubuntu-latest
 
-    container:
-      image: semgrep/semgrep:latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Run Semgrep
         run: |
-          semgrep scan \
+          docker run --rm \
+            -v "$PWD:/src" \
+            semgrep/semgrep:latest \
+            semgrep scan \
             --config=p/security-audit \
             --config=p/nodejs \
             --config=p/typescript \
             --json \
-            --output semgrep.json
+            --output=/src/semgrep.json
 
       - name: Upload Semgrep report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: semgrep-report
           path: semgrep.json
@@ -38,9 +38,6 @@ jobs:
     name: Gitleaks Secret Scan
     runs-on: ubuntu-latest
 
-    container:
-      image: ghcr.io/gitleaks/gitleaks:latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,13 +46,16 @@ jobs:
 
       - name: Run Gitleaks
         run: |
-          gitleaks git \
-            --source . \
-            --report-format json \
-            --report-path gitleaks.json
+          docker run --rm \
+            -v "$PWD:/repo" \
+            ghcr.io/gitleaks/gitleaks:latest \
+            git \
+            --source=/repo \
+            --report-format=json \
+            --report-path=/repo/gitleaks.json
 
       - name: Upload Gitleaks report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: gitleaks-report
           path: gitleaks.json
@@ -65,23 +65,23 @@ jobs:
     name: Trivy Vulnerability Scan
     runs-on: ubuntu-latest
 
-    container:
-      image: aquasec/trivy:latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Run Trivy filesystem scan
         run: |
-          trivy fs \
+          docker run --rm \
+            -v "$PWD:/src" \
+            aquasec/trivy:latest \
+            fs \
             --scanners vuln,secret,misconfig \
             --format json \
-            --output trivy.json \
-            .
+            --output /src/trivy.json \
+            /src
 
       - name: Upload Trivy report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: trivy-report
           path: trivy.json
