@@ -15,81 +15,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test-release:
-    runs-on: ubuntu-latest
+  test:
+    uses: ./.github/workflows/test.yml
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
-        with:
-          version: 11.17.0
-
-      - name: Setup Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
-        with:
-          node-version: 24.16.0
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      # Start server
-      - name: Start server
-        env:
-          NODE_ENV: production
-          ADMIN_USERNAME: test
-          ADMIN_PASSWORD: testtesttest
-          SESSION_SECRET: testqwertyuiopasdfghjklzxcvbnm123456test
-        run: |
-          node --experimental-strip-types src/server/index.ts &
-      
-      # Wait until server is reachable 
-      - name: Wait for server
-        run: |
-          for i in {1..10}; do
-            if curl -s http://127.0.0.1:3000 >/dev/null && curl -s http://127.0.0.1:3001 >/dev/null; then
-              echo "Server is up"
-              exit 0
-            fi
-            sleep 1
-          done
-          echo "Server failed to start"
-          exit 1
-
-      - name: Run admin smoketest
-        env:
-          TEST_PATH: /admin/login
-          TEST_PORT: 3001
-        run: node --experimental-strip-types tests/smoke-http.ts
-
-      - name: Run public smoketest
-        env:
-          TEST_PATH: /
-        run: node --experimental-strip-types tests/smoke-http.ts
-
-      - name: Run robots.txt smoketest
-        env:
-          TEST_PATH: /robots.txt
-        run: node --experimental-strip-types tests/smoke-http.ts
-    
-      - name: Run sitemap smoketest
-        env:
-          TEST_PATH: /sitemap.xml
-        run: node --experimental-strip-types tests/smoke-http.ts
-      
-      - name: Run /contact smoketest
-        env:
-          TEST_PATH: /contact
-        run: node --experimental-strip-types tests/smoke-http.ts
-
-      - name: Run /caravans smoketest
-        env:
-          TEST_PATH: /caravans
-        run: node --experimental-strip-types tests/smoke-http.ts
 
   build-release:
     runs-on: ubuntu-latest
