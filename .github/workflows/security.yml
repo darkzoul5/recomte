@@ -53,12 +53,12 @@ jobs:
       - name: Run Gitleaks
         run: |
           docker run --rm \
-            -v "$PWD:/repo" \
+            -v "${{ github.workspace }}:/repo" \
             ghcr.io/gitleaks/gitleaks:latest \
             git \
-            --source=/repo \
             --report-format=json \
-            --report-path=/repo/gitleaks.json
+            --report-path=/repo/gitleaks.json \
+            /repo
 
       - name: Upload Gitleaks report
         uses: actions/upload-artifact@v4
