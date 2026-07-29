@@ -20,21 +20,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Cache Semgrep
+      - name: Cache Semgrep venv
         uses: actions/cache@v4
         with:
-          path: ~/.local
-          key: semgrep-${{ runner.os }}
+          path: ~/.cache/semgrep-venv
+          key: semgrep-8.30.1-${{ runner.os }}
 
       - name: Install Semgrep
         run: |
-          if ! command -v semgrep >/dev/null 2>&1; then
-            python3 -m pip install --user semgrep
+          if [ ! -x "$HOME/.cache/semgrep-venv/bin/semgrep" ]; then
+            python3 -m venv "$HOME/.cache/semgrep-venv"
+            "$HOME/.cache/semgrep-venv/bin/pip" install --upgrade pip
+            "$HOME/.cache/semgrep-venv/bin/pip" install semgrep
           fi
+
+          echo "$HOME/.cache/semgrep-venv/bin" >> "$GITHUB_PATH"
+
+      - name: Verify Semgrep
+        run: |
+          semgrep --version
 
       - name: Run Semgrep
         run: |
-          ~/.local/bin/semgrep scan \
+          semgrep scan \
             --config=p/security-audit \
             --config=p/nodejs \
             --config=p/typescript \
@@ -62,25 +70,31 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.local/bin
-          key: gitleaks-${{ runner.os }}
+          key: gitleaks-8.30.1-${{ runner.os }}
 
       - name: Install Gitleaks
         run: |
-          if ! command -v gitleaks >/dev/null 2>&1; then
-            mkdir -p ~/.local/bin
+          VERSION=8.30.1
+
+          if [ ! -x "$HOME/.local/bin/gitleaks" ]; then
+            mkdir -p "$HOME/.local/bin"
 
             curl -sSfL \
-              https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_linux_x64.tar.gz \
+              "https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz" \
               -o /tmp/gitleaks.tar.gz
 
             tar -xzf /tmp/gitleaks.tar.gz \
-              -C ~/.local/bin \
+              -C "$HOME/.local/bin" \
               gitleaks
 
-            chmod +x ~/.local/bin/gitleaks
+            chmod +x "$HOME/.local/bin/gitleaks"
           fi
 
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Verify Gitleaks
+        run: |
+          gitleaks version
 
       - name: Run Gitleaks
         run: |
@@ -107,20 +121,28 @@ jobs:
       - name: Cache Trivy
         uses: actions/cache@v4
         with:
-          path: ~/.cache/trivy
+          path: |
+            ~/.cache/trivy
+            ~/.local/bin/trivy
           key: trivy-${{ runner.os }}
 
       - name: Install Trivy
         run: |
-          if ! command -v trivy >/dev/null 2>&1; then
+          if [ ! -x "$HOME/.local/bin/trivy" ]; then
+            mkdir -p "$HOME/.local/bin"
+
             curl -sfL \
               https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
-              | sh -s -- -b ~/.local/bin
+              | sh -s -- -b "$HOME/.local/bin"
           fi
 
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-      - name: Run Trivy
+      - name: Verify Trivy
+        run: |
+          trivy --version
+
+      - name: Run Trivy filesystem scan
         run: |
           trivy fs \
             --scanners vuln,secret,misconfig \
