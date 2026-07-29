@@ -19,6 +19,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      
+      - name: tmp Debug Docker mount
+        run: |
+          echo "Runner workspace:"
+          pwd
+          ls -la
+
+          echo "Container view:"
+          docker run --rm \
+            -v "${PWD}:/repo" \
+            alpine \
+            sh -c "ls -la /repo && ls -la /repo/.git"
 
       - name: Run Semgrep
         run: |
@@ -50,6 +62,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: tmp Debug Docker mount
+        run: |
+          echo "Runner workspace:"
+          pwd
+          ls -la
+
+          echo "Container view:"
+          docker run --rm \
+            -v "${PWD}:/repo" \
+            alpine \
+            sh -c "ls -la /repo && ls -la /repo/.git"
+
       - name: Run Gitleaks
         run: |
           docker run --rm \
@@ -74,6 +98,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: tmp Debug Docker mount
+        run: |
+          echo "Runner workspace:"
+          pwd
+          ls -la
+
+          echo "Container view:"
+          docker run --rm \
+            -v "${PWD}:/repo" \
+            alpine \
+            sh -c "ls -la /repo && ls -la /repo/.git"
 
       - name: Run Trivy filesystem scan
         run: |
