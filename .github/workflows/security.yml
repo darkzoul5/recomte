@@ -19,31 +19,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
-      - name: tmp Debug Docker mount
-        run: |
-          echo "Runner workspace:"
-          pwd
-          ls -la
-
-          echo "Container view:"
-          docker run --rm \
-            -v "${PWD}:/repo" \
-            alpine \
-            sh -c "ls -la /repo && ls -la /repo/.git"
 
       - name: Run Semgrep
-        run: |
-          docker run --rm \
-            -v "${{ github.workspace }}:/src" \
-            semgrep/semgrep:latest \
-            semgrep scan \
-            --config=p/security-audit \
-            --config=p/nodejs \
-            --config=p/typescript \
-            --json \
-            --output=/src/semgrep.json \
-            /src
+        uses: docker://semgrep/semgrep:latest
+        with:
+          args: >
+            scan
+            --config=p/security-audit
+            --config=p/nodejs
+            --config=p/typescript
+            --json
+            --output=semgrep.json
 
       - name: Upload Semgrep report
         uses: actions/upload-artifact@v4
@@ -62,27 +48,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: tmp Debug Docker mount
-        run: |
-          echo "Runner workspace:"
-          pwd
-          ls -la
-
-          echo "Container view:"
-          docker run --rm \
-            -v "${PWD}:/repo" \
-            alpine \
-            sh -c "ls -la /repo && ls -la /repo/.git"
-
       - name: Run Gitleaks
-        run: |
-          docker run --rm \
-            -v "${{ github.workspace }}:/repo" \
-            ghcr.io/gitleaks/gitleaks:latest \
-            git \
-            --report-format=json \
-            --report-path=/repo/gitleaks.json \
-            /repo
+        uses: docker://ghcr.io/gitleaks/gitleaks:latest
+        with:
+          args: >
+            git
+            --report-format=json
+            --report-path=gitleaks.json
+            .
 
       - name: Upload Gitleaks report
         uses: actions/upload-artifact@v4
@@ -99,28 +72,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: tmp Debug Docker mount
-        run: |
-          echo "Runner workspace:"
-          pwd
-          ls -la
-
-          echo "Container view:"
-          docker run --rm \
-            -v "${PWD}:/repo" \
-            alpine \
-            sh -c "ls -la /repo && ls -la /repo/.git"
-
-      - name: Run Trivy filesystem scan
-        run: |
-          docker run --rm \
-            -v "$PWD:/src" \
-            aquasec/trivy:latest \
-            fs \
-            --scanners vuln,secret,misconfig \
-            --format json \
-            --output /src/trivy.json \
-            /src
+      - name: Run Trivy
+        uses: docker://aquasec/trivy:latest
+        with:
+          args: >
+            fs
+            --scanners vuln,secret,misconfig
+            --format json
+            --output trivy.json
+            .
 
       - name: Upload Trivy report
         uses: actions/upload-artifact@v4
