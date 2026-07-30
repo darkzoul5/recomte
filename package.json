@@ -4,7 +4,7 @@
   "description": "European caravan sales platform",
   "main": "src/server/index.ts",
   "type": "module",
-  "packageManager": "pnpm@11.17.0",
+  "packageManager": "pnpm@11.18.0",
   "scripts": {
     "start": "node --experimental-strip-types src/server/index.ts",
     "start:public": "node --experimental-strip-types src/server/public.ts",
