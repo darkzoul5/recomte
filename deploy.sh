@@ -85,3 +85,6 @@ done < <(
 		echo "$CONTAINER_NAME $IMAGE_ID"
 	done
 )
+
+cd "${DEPLOY_DIR}"
+./scripts/sync-test-db.sh
