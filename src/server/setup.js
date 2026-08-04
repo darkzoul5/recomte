@@ -331,7 +331,7 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
       // Cache images for 7 days (can be updated by changing file)
       if (/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(pathName)) {
         reply.header('Cache-Control', 'public, max-age=604800');
-      } else if (/\.(js|ts)$/i.test(pathName)) {
+      } else if (/\.(js)$/i.test(pathName)) {
         // Browser scripts are served directly from public/js and need a JS MIME type.
         reply.header('Content-Type', 'application/javascript; charset=utf-8');
         reply.header('Cache-Control', 'public, max-age=3600, must-revalidate');
