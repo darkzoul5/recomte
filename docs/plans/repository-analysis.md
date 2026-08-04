@@ -136,7 +136,7 @@
     - `/admin/api/images/:id`
     - `/admin/api/images/:id/reorder`
 - External services:
-  - Yandex Metrika is referenced in `public/js/yandex-metrika.js` and `views/components/header/public.ejs`.
+  - Yandex Metrika is referenced in `public/vendor/yandex-metrika/yandex-metrika.js` and `views/components/header/public.ejs`.
   - Yandex Maps embed is used on the contact page.
   - Yandex Webmaster and Yandex counter links appear in the admin dashboard template.
   - Font Awesome is loaded from a CDN in templates.
