@@ -34,8 +34,8 @@ Given the Node.js stack, testing tools should prioritize developer experience (D
 
 | Category | Recommended Tool(s) | Why It Fits This Project |
 |---|---|---|
-| Unit / Integration Testing | Jest | Industry-standard Node.js testing framework. Provides built-in mocking, assertions (`expect`), and snapshot testing. Suitable for testing service layers such as `src/modules/caravans/caravan.service.ts` and controllers in isolation. |
-| HTTP / API Testing | Supertest | Designed specifically for testing HTTP endpoints in Node.js without requiring a running server instance. Works well with Jest for testing routes such as `src/modules/*/*.routes.ts`. |
+| Unit / Integration Testing | Jest | Industry-standard Node.js testing framework. Provides built-in mocking, assertions (`expect`), and snapshot testing. Suitable for testing service layers such as `src/modules/caravans/caravan.service.js` and controllers in isolation. |
+| HTTP / API Testing | Supertest | Designed specifically for testing HTTP endpoints in Node.js without requiring a running server instance. Works well with Jest for testing routes such as `src/modules/*/*.routes.js`. |
 | End-to-End (E2E) Testing | Playwright | Better suited than Selenium for modern web applications. Supports Chromium, Firefox, and WebKit, includes reliable async handling, and provides automatic waiting. Ideal for testing full user flows. |
 | Database Testing | Knex/Objection.js Migrations + Jest | Uses existing migration infrastructure. Jest manages the lifecycle: migrate → run tests → rollback. |
 | Test Database Strategy | SQLite In-Memory Database | Running tests against SQLite `:memory:` provides fast execution and full isolation. Every test run starts with a clean database state. |
