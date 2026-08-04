@@ -1,29 +1,16 @@
 // Multi-select dropdown with checkboxes
-type SelectOption = {
-  value: string;
-  label: string;
-  selected: boolean;
-  optionElement: HTMLOptionElement;
-};
-
 class MultiSelectDropdown {
-  select: HTMLSelectElement;
-  name: string;
-  options: SelectOption[];
-  button!: HTMLButtonElement;
-  menu!: HTMLDivElement;
-
-  constructor(selectElement: HTMLSelectElement) {
+  constructor(selectElement) {
     this.select = selectElement;
     this.name = selectElement.name;
     // Skip the first empty option if it exists
     this.options = Array.from(selectElement.options)
-      .filter((opt) => opt.value)
-      .map((opt) => ({
+      .filter(opt => opt.value)
+      .map(opt => ({
         value: opt.value,
-        label: opt.textContent || '',
+        label: opt.textContent,
         selected: opt.selected,
-        optionElement: opt as HTMLOptionElement
+        optionElement: opt
       }));
     
     this.render();
@@ -90,7 +77,7 @@ class MultiSelectDropdown {
       label.onmouseover = () => label.style.backgroundColor = '#f9f9f9';
       label.onmouseout = () => label.style.backgroundColor = 'transparent';
       
-      const checkbox = document.createElement('input') as HTMLInputElement;
+      const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
       checkbox.value = opt.value;
       checkbox.checked = opt.selected;
@@ -110,31 +97,31 @@ class MultiSelectDropdown {
     
     // Close menu when clicking outside
     document.addEventListener('click', (e) => {
-      if (!container.contains(e.target as Node)) {
+      if (!container.contains(e.target)) {
         menu.style.display = 'none';
       }
     });
     
     container.appendChild(button);
     container.appendChild(menu);
-    this.select.parentNode?.insertBefore(container, this.select);
+    this.select.parentNode.insertBefore(container, this.select);
     
     this.button = button;
     this.menu = menu;
   }
   
   getButtonText() {
-    const selected = this.options.filter((opt) => opt.selected);
+    const selected = this.options.filter(opt => opt.selected);
     if (selected.length === 0) return '-- Не выбрано --';
     if (selected.length === 1) return selected[0].label;
     return `Выбрано: ${selected.length}`;
   }
   
   updateValues() {
-      const checkboxes = this.menu.querySelectorAll<HTMLInputElement>('input[type="checkbox"]');
-      checkboxes.forEach((checkbox, index) => {
-        if (this.options[index]) {
-          this.options[index].selected = checkbox.checked;
+    const checkboxes = this.menu.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach((checkbox, index) => {
+      if (this.options[index]) {
+        this.options[index].selected = checkbox.checked;
         this.options[index].optionElement.selected = checkbox.checked;
       }
     });
@@ -144,8 +131,8 @@ class MultiSelectDropdown {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-  const multiSelects = document.querySelectorAll<HTMLSelectElement>('select[multiple]');
-  multiSelects.forEach((select) => {
+  const multiSelects = document.querySelectorAll('select[multiple]');
+  multiSelects.forEach(select => {
     new MultiSelectDropdown(select);
   });
 });

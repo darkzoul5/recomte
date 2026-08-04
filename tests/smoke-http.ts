@@ -14,7 +14,7 @@ const buildTargetUrl = () => {
 };
 
 const fetchUrl = (urlObj) =>
-	new Promise<{ statusCode: number }>((resolve, reject) => {
+	new Promise((resolve, reject) => {
 		const protocol = urlObj.protocol === 'https:' ? https : http;
 
 		const req = protocol.request(

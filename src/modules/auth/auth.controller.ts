@@ -129,7 +129,7 @@ const renderLoginPage = (request, reply, error = null, username = '') => reply.v
   csrfToken: ensureCsrfToken(request)
 });
 
-const regenerateSession = (request) => new Promise<void>((resolve, reject) => {
+const regenerateSession = (request) => new Promise((resolve, reject) => {
   if (!request.session || typeof request.session.regenerate !== 'function') {
     resolve();
     return;
@@ -144,7 +144,7 @@ const regenerateSession = (request) => new Promise<void>((resolve, reject) => {
   });
 });
 
-const destroySession = (request) => new Promise<void>((resolve, reject) => {
+const destroySession = (request) => new Promise((resolve, reject) => {
   try { clearAdminSession(request); } catch {
     // Session cleanup is best-effort here.
   }

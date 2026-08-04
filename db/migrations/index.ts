@@ -57,7 +57,7 @@ const loadMigrations = async () => {
   return migrations;
 };
 
-export const runMigrations = async (db, options: { force?: boolean; verbose?: boolean } = {}) => {
+export const runMigrations = async (db, options = {}) => {
   if (!db) throw new Error('runMigrations(db) requires a database handle');
 
   if (!options.force && isMigrationsDisabled()) {

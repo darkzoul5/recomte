@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   const body = document.body;
-  document.querySelectorAll<HTMLElement>('.navbar-burger').forEach((burger) => {
+  document.querySelectorAll('.navbar-burger').forEach((burger) => {
     burger.addEventListener('click', () => {
       const targetId = burger.dataset.target;
       const target = targetId ? document.getElementById(targetId) : null;
@@ -10,16 +10,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  document.querySelectorAll<HTMLElement>('.error-message .delete, .admin-error .delete').forEach((button) => {
+  document.querySelectorAll('.error-message .delete, .admin-error .delete').forEach((button) => {
     button.addEventListener('click', (event) => {
-      (event.target as HTMLElement | null)?.closest('.error-message, .admin-error')?.remove();
+      event.target.closest('.error-message, .admin-error')?.remove();
     });
   });
 
-  const passwordInput = document.getElementById('admin-password') as HTMLInputElement | null;
-  const capsLockHint = document.getElementById('caps-lock-hint') as HTMLElement | null;
+  const passwordInput = document.getElementById('admin-password');
+  const capsLockHint = document.getElementById('caps-lock-hint');
   if (passwordInput && capsLockHint) {
-    const updateCapsLockHint = (event: KeyboardEvent) => {
+    const updateCapsLockHint = (event) => {
       const isCapsLockOn = event.getModifierState?.('CapsLock') || false;
       capsLockHint.hidden = !isCapsLockOn;
     };
@@ -31,12 +31,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  const homeLink = document.getElementById('adminHomeLink') as HTMLAnchorElement | null;
-  const mainSiteLink = document.getElementById('openMainSiteFrameLink') as HTMLAnchorElement | null;
-  const mainSiteFrameWrap = document.getElementById('adminSiteFrame') as HTMLElement | null;
-  const mainSiteFrame = document.getElementById('mainSiteFrame') as HTMLIFrameElement | null;
-  const reloadMainSiteFrameBtn = document.getElementById('reloadMainSiteFrameBtn') as HTMLButtonElement | null;
-  const openMainSiteTabLink = document.getElementById('openMainSiteTabLink') as HTMLAnchorElement | null;
+  const homeLink = document.getElementById('adminHomeLink');
+  const mainSiteLink = document.getElementById('openMainSiteFrameLink');
+  const mainSiteFrameWrap = document.getElementById('adminSiteFrame');
+  const mainSiteFrame = document.getElementById('mainSiteFrame');
+  const reloadMainSiteFrameBtn = document.getElementById('reloadMainSiteFrameBtn');
+  const openMainSiteTabLink = document.getElementById('openMainSiteTabLink');
 
   const getMainSiteUrl = () => (
     mainSiteLink?.getAttribute('href')
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     || '/'
   );
 
-  const setFrameOpen = (isOpen: boolean) => {
+  const setFrameOpen = (isOpen) => {
     if (!mainSiteFrameWrap) return;
 
     if (isOpen) {

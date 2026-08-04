@@ -20,7 +20,7 @@ const extractCookieHeader = (setCookieHeaders = []) => {
   return cookies.join('; ');
 };
 
-const fetchLoginPage = () => new Promise<{ statusCode: number; csrfToken: string; cookieHeader: string }>((resolve, reject) => {
+const fetchLoginPage = () => new Promise((resolve, reject) => {
   const request = http.request({
     protocol: target.protocol,
     hostname: target.hostname,
@@ -51,7 +51,7 @@ const fetchLoginPage = () => new Promise<{ statusCode: number; csrfToken: string
   request.end();
 });
 
-const postLoginAttempt = ({ csrfToken, cookieHeader }) => new Promise<{ statusCode: number; retryAfter: string | null; body: string }>((resolve, reject) => {
+const postLoginAttempt = ({ csrfToken, cookieHeader }) => new Promise((resolve, reject) => {
   const body = new URLSearchParams({ username, password, _csrf: csrfToken }).toString();
 
   const request = http.request({

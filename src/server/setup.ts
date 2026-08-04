@@ -64,14 +64,6 @@ const getAllowedPublicFrameAncestors = () => {
 };
 
 class SqliteSessionStore {
-  maxAge;
-  db;
-  upsertStmt;
-  selectStmt;
-  deleteStmt;
-  cleanupStmt;
-  cleanupTimer;
-
   constructor(maxAge) {
     this.maxAge = maxAge;
     this.db = getDb();

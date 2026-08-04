@@ -1,9 +1,9 @@
 import { caravans, images, features } from '../../../db/db.ts';
 
-export const hydrateCaravan = (caravan: any) => {
+export const hydrateCaravan = (caravan) => {
   const caravanImages = images.getByCaravanId(caravan.id);
   const featureRows = features.getByCaravanId(caravan.id);
-  const featureMap: Record<string, any> = {};
+  const featureMap = {};
 
   for (const row of featureRows) {
     featureMap[row.feature_key] = row.feature_value;
@@ -52,7 +52,7 @@ export const hydrateCaravan = (caravan: any) => {
   };
 };
 
-export const getAllCaravans = (filters: Record<string, any> = {}) => {
+export const getAllCaravans = (filters = {}) => {
   const allCaravans = caravans.getAll(filters);
   return allCaravans.filter((caravan) => caravan.status !== 'hidden');
 };

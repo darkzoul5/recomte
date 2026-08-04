@@ -14,7 +14,7 @@ const RESERVED_FEATURE_KEYS = new Set([
   'kitchen_appliances'
 ]);
 
-const collectCustomFeatureItems = (featureMap: Record<string, any>) => {
+const collectCustomFeatureItems = (featureMap) => {
   if (!featureMap || typeof featureMap !== 'object') return [];
 
   return Object.entries(featureMap)
@@ -22,12 +22,12 @@ const collectCustomFeatureItems = (featureMap: Record<string, any>) => {
     .map(([key, value]) => ({ key, value }));
 };
 
-export const hydrateAdminCaravan = (caravan: any) => {
+export const hydrateAdminCaravan = (caravan) => {
   if (!caravan) return null;
 
   const caravanImages = images.getByCaravanId(caravan.id);
   const featureRows = features.getByCaravanId(caravan.id);
-  const featureMap: Record<string, any> = {};
+  const featureMap = {};
   const featureFlags = [];
 
   for (const row of featureRows) {
@@ -82,8 +82,8 @@ export const hydrateAdminCaravan = (caravan: any) => {
 };
 
 // Feature processing: converts form field names to database feature objects
-export const processFeatures = (data: Record<string, any>) => {
-  const features: Record<string, any> = {};
+export const processFeatures = (data) => {
+  const features = {};
   const reservedFeatureKeys = new Set([
     'air_conditioning',
     'awning',
@@ -195,7 +195,7 @@ export const processFeatures = (data: Record<string, any>) => {
 };
 
 // Convert form data to caravan database model
-export const mapFormToCaravanData = (formData: Record<string, any>) => {
+export const mapFormToCaravanData = (formData) => {
   const normalizeMultiSelect = (value, allowedValues) => {
     const values = Array.isArray(value) ? value : (value ? [value] : []);
     return values

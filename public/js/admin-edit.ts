@@ -1,11 +1,9 @@
 // Toggle image deletion marking
 function toggleImageDelete(imageId) {
-  const imageCard = document.querySelector(`.image-card[data-image-id="${imageId}"]`) as HTMLElement | null;
-  const deleteInput = document.querySelector(`.image-delete-input[data-image-id="${imageId}"]`) as HTMLInputElement | null;
-  if (!imageCard || !deleteInput) return;
-  const deleteMarker = imageCard.querySelector('.delete-marker') as HTMLElement | null;
-  const deleteBtn = imageCard.querySelector('.delete-image-btn') as HTMLButtonElement | null;
-  if (!deleteMarker || !deleteBtn) return;
+  const imageCard = document.querySelector(`.image-card[data-image-id="${imageId}"]`);
+  const deleteInput = document.querySelector(`.image-delete-input[data-image-id="${imageId}"]`);
+  const deleteMarker = imageCard.querySelector('.delete-marker');
+  const deleteBtn = imageCard.querySelector('.delete-image-btn');
   
   // Toggle the disabled attribute - only enabled inputs are submitted
   if (deleteInput.disabled) {
@@ -30,14 +28,14 @@ function toggleImageDelete(imageId) {
 }
 
 function updateImageOrderInput() {
-  const orderInput = document.getElementById('imageOrderInput') as HTMLInputElement | null;
-  const grid = document.getElementById('imagesGrid') as HTMLElement | null;
+  const orderInput = document.getElementById('imageOrderInput');
+  const grid = document.getElementById('imagesGrid');
   if (!orderInput || !grid) return;
 
-  const ids = Array.from(grid.querySelectorAll<HTMLElement>('.image-card'))
+  const ids = Array.from(grid.querySelectorAll('.image-card'))
     .filter((card) => {
       const imageId = card.getAttribute('data-image-id');
-      const deleteInput = document.querySelector(`.image-delete-input[data-image-id="${imageId}"]`) as HTMLInputElement | null;
+      const deleteInput = document.querySelector(`.image-delete-input[data-image-id="${imageId}"]`);
       return deleteInput ? deleteInput.disabled : true;
     })
     .map((card) => card.getAttribute('data-image-id'))
@@ -75,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Save scroll position before form submission
-  const adminForm = document.querySelector('.admin-form') as HTMLFormElement | null;
+  const adminForm = document.querySelector('.admin-form');
   if (adminForm) {
     let isSubmitting = false;
     let hasUnsavedChanges = false;
@@ -83,28 +81,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const getFormSnapshot = () => {
       const state = {};
 
-      for (const element of Array.from(adminForm.elements) as Array<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
+      for (const element of adminForm.elements) {
         if (!element || !element.name || element.disabled) continue;
+        if (element.type === 'file') continue;
         if (element.name === '_csrf' || element.name === 'images' || element.name === 'images_to_delete' || element.name === 'image_order') {
           continue;
         }
 
-        if (element instanceof HTMLInputElement) {
-          if (element.type === 'file') continue;
+        if (element.type === 'checkbox') {
+          state[element.name] = element.checked;
+          continue;
+        }
 
-          if (element.type === 'checkbox') {
-            state[element.name] = element.checked;
-            continue;
+        if (element.type === 'radio') {
+          if (element.checked) {
+            state[element.name] = element.value;
           }
+          continue;
+        }
 
-          if (element.type === 'radio') {
-            if (element.checked) {
-              state[element.name] = element.value;
-            }
-            continue;
-          }
-        } else if (element instanceof HTMLSelectElement && element.multiple) {
-          state[element.name] = Array.from(element.selectedOptions).map((option: HTMLOptionElement) => option.value);
+        if (element.tagName === 'SELECT' && element.multiple) {
+          state[element.name] = Array.from(element.selectedOptions).map((option) => option.value);
           continue;
         }
 
@@ -132,8 +129,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Some browsers limit beforeunload dialogs; this confirms navigation for in-page links too.
-    document.addEventListener('click', (event: MouseEvent) => {
-      const link = ((event.target as HTMLElement | null)?.closest('a[href]') as HTMLAnchorElement | null);
+    document.addEventListener('click', (event) => {
+      const link = event.target.closest('a[href]');
       if (!link) return;
       if (link.target === '_blank' || link.hasAttribute('download')) return;
 
@@ -151,22 +148,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     adminForm.addEventListener('submit', function() {
       updateImageOrderInput();
-      localStorage.setItem('adminEditScrollPosition', String(window.scrollY));
+      localStorage.setItem('adminEditScrollPosition', window.scrollY);
       isSubmitting = true;
     });
   }
 
   // Attach click handlers to delete buttons
-  document.querySelectorAll<HTMLElement>('.delete-image-btn').forEach(btn => {
+  document.querySelectorAll('.delete-image-btn').forEach(btn => {
     btn.addEventListener('click', function(e) {
       e.preventDefault();
-      const imageId = String((this as HTMLElement).getAttribute('data-image-id') || '');
+      const imageId = this.getAttribute('data-image-id');
       toggleImageDelete(imageId);
     });
   });
 
-    document.addEventListener('click', (event) => {
-    const confirmButton = (event.target as HTMLElement | null)?.closest('[data-confirm]');
+  document.addEventListener('click', (event) => {
+    const confirmButton = event.target.closest('[data-confirm]');
     if (!confirmButton) return;
 
     const message = confirmButton.getAttribute('data-confirm') || '';
@@ -178,14 +175,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }, true);
 
-  const imagesGrid = document.getElementById('imagesGrid') as HTMLElement | null;
+  const imagesGrid = document.getElementById('imagesGrid');
   if (imagesGrid) {
     initializeImageSortable(imagesGrid);
     updateImageOrderInput();
   }
 
   // FilePond upload queue
-  const fileInput = document.getElementById('fileInput') as HTMLInputElement | null;
+  const fileInput = document.getElementById('fileInput');
 
   if (fileInput && window.FilePond) {
     if (window.FilePondPluginImagePreview) {
@@ -208,16 +205,16 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Attach close handlers to error messages
-  document.querySelectorAll<HTMLElement>('.admin-error .delete').forEach(btn => {
+  document.querySelectorAll('.admin-error .delete').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      (e.target as HTMLElement | null)?.closest('.admin-error')?.remove();
+      e.target.closest('.admin-error')?.remove();
     });
   });
 
-  const customFeatureLabel = document.getElementById('customFeatureLabel') as HTMLInputElement | null;
-  const addCustomFeatureBtn = document.getElementById('addCustomFeatureBtn') as HTMLButtonElement | null;
-  const customFeaturesJson = document.getElementById('customFeaturesJson') as HTMLInputElement | null;
-  const customFeatureCheckboxes = document.getElementById('customFeatureCheckboxes') as HTMLElement | null;
+  const customFeatureLabel = document.getElementById('customFeatureLabel');
+  const addCustomFeatureBtn = document.getElementById('addCustomFeatureBtn');
+  const customFeaturesJson = document.getElementById('customFeaturesJson');
+  const customFeatureCheckboxes = document.getElementById('customFeatureCheckboxes');
 
   const readCustomFeatures = () => {
     if (!customFeaturesJson || !customFeaturesJson.value) return [];
@@ -254,9 +251,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
       customFeatureCheckboxes.appendChild(row);
 
-      const checkbox = row.querySelector('.custom-feature-checkbox') as HTMLInputElement | null;
-      const removeBtn = row.querySelector('.custom-feature-remove') as HTMLButtonElement | null;
-      if (!checkbox || !removeBtn) return;
+      const checkbox = row.querySelector('.custom-feature-checkbox');
+      const removeBtn = row.querySelector('.custom-feature-remove');
 
       checkbox.addEventListener('change', () => {
         const current = readCustomFeatures().filter((it) => it.key !== key);
