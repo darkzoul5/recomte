@@ -1,5 +1,5 @@
 # ============= Builder Stage =============
-FROM node:24.18.1-slim as builder
+FROM node:24.19.0-slim as builder
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
     pnpm ci --prod
 
 # ============= Runtime Stage =============
-FROM node:24.18.1-slim
+FROM node:24.19.0-slim
 
 WORKDIR /app
 
