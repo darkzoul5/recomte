@@ -1,3 +1,6 @@
+![Status](https://uptime.darkzoul.org/api/badge/1/status?style=for-the-badge)
+![Uptime](https://uptime.darkzoul.org/api/badge/1/uptime?style=for-the-badge)
+![Cert-exp](https://uptime.darkzoul.org/api/badge/1/cert-exp?style=for-the-badge)
 # Recomte
 
 Recomte is a small Node.js + Fastify web app for managing and listing European caravans for sale.
