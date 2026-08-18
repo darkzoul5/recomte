@@ -10,7 +10,7 @@
     "enabled": true,
     "recreateWhen": "always",
     "automerge": true,
-    "schedule": ["on monday"]
+    "schedule": ["0 3-5 * * 1"]
   },
 
   "packageRules": [
