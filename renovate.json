@@ -10,7 +10,7 @@
     "enabled": true,
     "recreateWhen": "always",
     "automerge": true,
-    "schedule": ["0 3-5 * * 1"]
+    "schedule": ["* 3-5 * * 1"]
   },
 
   "packageRules": [
