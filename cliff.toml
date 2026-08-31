@@ -1,13 +1,21 @@
+```toml
 [changelog]
-header = ""
+header = "What's Changed"
+
 body = """
 {% for group, commits in commits | group_by(attribute="group") %}
 
 ## {{ group }}
 
+{% if group == "📦 Dependencies" %}
+{% for commit in commits | unique(attribute="scope") %}
+- {{ commit.message | upper_first }} ({{ commit.id | truncate(length=7, end="") }})
+{% endfor %}
+{% else %}
 {% for commit in commits %}
 - {{ commit.message | upper_first }} ({{ commit.id | truncate(length=7, end="") }})
 {% endfor %}
+{% endif %}
 {% endfor %}
 """
 
@@ -16,8 +24,39 @@ trim = true
 [git]
 conventional_commits = true
 filter_unconventional = false
+sort_commits = "newest"
 
 commit_parsers = [
+    # Renovate dependency updates.
+    # These must come before the generic fix/chore parsers because Renovate
+    # can use "fix:" for major dependency updates.
+    {
+        message = "^(?:fix|chore\\(deps\\)|deps(?:\\([^)]*\\))?): Update (?:dependency )?(.+?) to v.+$",
+        group = "📦 Dependencies",
+        scope = "${1}"
+    },
+
+    # Renovate action digest updates.
+    {
+        message = "^(?:fix|chore\\(deps\\)|deps(?:\\([^)]*\\))?): Update (.+?) digest to .+$",
+        group = "📦 Dependencies",
+        scope = "${1}"
+    },
+
+    # Renovate lock file maintenance.
+    {
+        message = "^(?:fix|chore\\(deps\\)|deps(?:\\([^)]*\\))?): Lock file maintenance$",
+        group = "📦 Dependencies",
+        scope = "lock-file-maintenance"
+    },
+
+    # Other Renovate dependency commits.
+    {
+        message = "^(?:fix|chore\\(deps\\)|deps(?:\\([^)]*\\))?):",
+        group = "📦 Dependencies"
+    },
+
+    # Normal conventional commits.
     { message = "^feat", group = "✨ Features" },
     { message = "^fix", group = "🐛 Bug Fixes" },
     { message = "^perf", group = "⚡ Performance" },
@@ -26,9 +65,10 @@ commit_parsers = [
     { message = "^test", group = "🧪 Tests" },
     { message = "^ci", group = "🚀 CI/CD" },
     { message = "^build", group = "🔨 Build System" },
-    { message = "^(chore\\(deps\\)|deps(?:\\([^)]*\\))?):", group = "📦 Dependencies" },
     { message = "^chore", group = "🧹 Maintenance" },
+
     { message = ".*", group = "🔹 Other Changes" }
 ]
 
 tag_pattern = "v.*"
+```
