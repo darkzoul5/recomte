@@ -29,31 +29,16 @@ commit_parsers = [
     # Renovate dependency updates.
     # These must come before the generic fix/chore parsers because Renovate
     # can use "fix:" for major dependency updates.
-    {
-        message = "^(?:fix|chore\\(deps\\)|deps(?:\\([^)]*\\))?): Update (?:dependency )?(.+?) to v.+$",
-        group = "📦 Dependencies",
-        scope = "${1}"
-    },
+    { message = "^(?:fix|chore\\(deps\\)|deps(?:\\([^)]*\\))?): Update (?:dependency )?(.+?) to v.+$", group = "📦 Dependencies", scope = "${1}" },
 
     # Renovate action digest updates.
-    {
-        message = "^(?:fix|chore\\(deps\\)|deps(?:\\([^)]*\\))?): Update (.+?) digest to .+$",
-        group = "📦 Dependencies",
-        scope = "${1}"
-    },
+    { message = "^(?:fix|chore\\(deps\\)|deps(?:\\([^)]*\\))?): Update (.+?) digest to .+$", group = "📦 Dependencies", scope = "${1}" },
 
     # Renovate lock file maintenance.
-    {
-        message = "^(?:fix|chore\\(deps\\)|deps(?:\\([^)]*\\))?): Lock file maintenance$",
-        group = "📦 Dependencies",
-        scope = "lock-file-maintenance"
-    },
+    { message = "^(?:fix|chore\\(deps\\)|deps(?:\\([^)]*\\))?): Lock file maintenance$", group = "📦 Dependencies", scope = "lock-file-maintenance" },
 
     # Other Renovate dependency commits.
-    {
-        message = "^(?:fix|chore\\(deps\\)|deps(?:\\([^)]*\\))?):",
-        group = "📦 Dependencies"
-    },
+    { message = "^(?:fix|chore\\(deps\\)|deps(?:\\([^)]*\\))?):", group = "📦 Dependencies" },
 
     # Normal conventional commits.
     { message = "^feat", group = "✨ Features" },
