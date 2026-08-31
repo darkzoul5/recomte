@@ -17,7 +17,7 @@
     {
       "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": true,
-      "minimumReleaseAge": "2 days"
+      "minimumReleaseAge": "7 days"
     },
     {
       "matchUpdateTypes": [
@@ -27,7 +27,24 @@
         "digest"
       ],
       "automerge": false,
-      "minimumReleaseAge": "1 days"
+      "minimumReleaseAge": "2 days"
+    },
+    {
+      "matchUpdateTypes": ["lockFileMaintenance"],
+      "commitMessagePrefix": "deps:",
+      "commitMessageAction": "update",
+      "commitMessageTopic": "lock file"
+    },
+    {
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
+      "commitMessagePrefix": "deps:",
+      "commitMessageAction": "update"
     },
     {
       "matchManagers": ["npm"],
