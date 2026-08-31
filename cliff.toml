@@ -1,4 +1,3 @@
-```toml
 [changelog]
 header = "What's Changed"
 
@@ -71,4 +70,3 @@ commit_parsers = [
 ]
 
 tag_pattern = "v.*"
-```
