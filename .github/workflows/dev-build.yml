@@ -32,7 +32,7 @@ jobs:
     uses: ./.github/workflows/test.yml
 
   build-dev:
-    runs-on: ubuntu-latest
+    runs-on: local-ubuntu-latest
     needs: test
 
     permissions:
@@ -91,7 +91,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-dev
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
       - name: Trigger Webhook Deployment
         env:
@@ -100,24 +100,24 @@ jobs:
         run: |
           # Minimal payload - just needs to be signed
           PAYLOAD='{"trigger": "gitea-actions"}'
-          
+
           # Calculate HMAC-SHA256 signature
           SIGNATURE=$(echo -n "$PAYLOAD" | openssl dgst -sha256 -hmac "$WEBHOOK_SECRET" -hex | cut -d' ' -f2)
-          
+
           # Send webhook
           curl -X POST \
             -H "Content-Type: application/json" \
             -H "X-Gitea-Signature: $SIGNATURE" \
             -d "$PAYLOAD" \
             "$WEBHOOK_URL"
-          
+
           echo "✅ Deployment webhook triggered!"
 
       - name: Wait for Deployment to Complete
         run: |
           echo "⏳ Waiting for deployment to complete..."
           sleep 30
-          
+
           # Check if app is healthy (adjust URL)
           for i in {1..20}; do
             if curl -s -f -o /dev/null "https://test.recomte.ru/healthcheck"; then
@@ -127,6 +127,6 @@ jobs:
             echo "⏳ Waiting for app... ($i/20)"
             sleep 3
           done
-          
+
           echo "❌ App failed to become healthy"
           exit 1

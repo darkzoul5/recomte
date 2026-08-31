@@ -20,7 +20,7 @@ jobs:
 
 
   build-release:
-    runs-on: ubuntu-latest
+    runs-on: local-ubuntu-latest
     needs: test-release
 
     permissions:
