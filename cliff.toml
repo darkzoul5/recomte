@@ -6,15 +6,9 @@ body = """
 
 ## {{ group }}
 
-{% if group == "📦 Dependencies" %}
 {% for commit in commits | unique(attribute="scope") %}
 - {{ commit.message | upper_first }} ({{ commit.id | truncate(length=7, end="") }})
 {% endfor %}
-{% else %}
-{% for commit in commits %}
-- {{ commit.message | upper_first }} ({{ commit.id | truncate(length=7, end="") }})
-{% endfor %}
-{% endif %}
 {% endfor %}
 """
 
@@ -25,11 +19,19 @@ conventional_commits = true
 filter_unconventional = false
 sort_commits = "newest"
 
+processing_order = [
+    "commit_preprocessors",
+    "commit_parsers",
+    "split_commits",
+    "conventional_commits",
+    "link_parsers",
+]
+
 commit_parsers = [
-    { message = "^Update dependency (.+?) to v.+$", group = "📦 Dependencies", scope = "${1}" },
-    { message = "^Update (.+?) to v.+$", group = "📦 Dependencies", scope = "${1}" },
-    { message = "^Update (.+?) digest to .+$", group = "📦 Dependencies", scope = "${1}" },
-    { message = "^Lock file maintenance$", group = "📦 Dependencies", scope = "lock-file-maintenance" },
+    { message = "^(?:chore\\(deps\\)|deps): Update dependency (.+?) to v.+$", group = "📦 Dependencies", scope = "${1}" },
+    { message = "^(?:chore\\(deps\\)|deps): Update (.+?) to v.+$", group = "📦 Dependencies", scope = "${1}" },
+    { message = "^(?:chore\\(deps\\)|deps): Update (.+?) digest to .+$", group = "📦 Dependencies", scope = "${1}" },
+    { message = "^(?:chore\\(deps\\)|deps): Lock file maintenance$", group = "📦 Dependencies", scope = "lock-file-maintenance" },
 
     { message = "^feat", group = "✨ Features" },
     { message = "^fix", group = "🐛 Bug Fixes" },
@@ -40,7 +42,7 @@ commit_parsers = [
     { message = "^ci", group = "🚀 CI/CD" },
     { message = "^build", group = "🔨 Build System" },
     { message = "^chore", group = "🧹 Maintenance" },
-
+    
     { message = ".*", group = "🔹 Other Changes" }
 ]
 
