@@ -6,7 +6,7 @@ body = """
 
 ## {{ group }}
 
-{% for commit in commits | unique(attribute="scope") %}
+{% for commit in commits %}
 - {{ commit.message | upper_first }} ({{ commit.id | truncate(length=7, end="") }})
 {% endfor %}
 {% endfor %}
@@ -19,31 +19,19 @@ conventional_commits = true
 filter_unconventional = false
 sort_commits = "newest"
 
-processing_order = [
-    "commit_preprocessors",
-    "commit_parsers",
-    "split_commits",
-    "conventional_commits",
-    "link_parsers",
-]
-
 commit_parsers = [
-    { message = "^(?:chore\\(deps\\)|deps): Update dependency (.+?) to v.+$", group = "📦 Dependencies", scope = "${1}" },
-    { message = "^(?:chore\\(deps\\)|deps): Update (.+?) to v.+$", group = "📦 Dependencies", scope = "${1}" },
-    { message = "^(?:chore\\(deps\\)|deps): Update (.+?) digest to .+$", group = "📦 Dependencies", scope = "${1}" },
-    { message = "^(?:chore\\(deps\\)|deps): Lock file maintenance$", group = "📦 Dependencies", scope = "lock-file-maintenance" },
-
-    { message = "^feat", group = "✨ Features" },
-    { message = "^fix", group = "🐛 Bug Fixes" },
-    { message = "^perf", group = "⚡ Performance" },
-    { message = "^refactor", group = "♻️ Refactoring" },
-    { message = "^docs", group = "📚 Documentation" },
-    { message = "^test", group = "🧪 Tests" },
-    { message = "^ci", group = "🚀 CI/CD" },
-    { message = "^build", group = "🔨 Build System" },
-    { message = "^chore", group = "🧹 Maintenance" },
-    
-    { message = ".*", group = "🔹 Other Changes" }
+    { message = "^feat:", group = "<!-- 00 -->✨ Features" },
+    { message = "^fix:", group = "<!-- 01 -->🐛 Bug Fixes" },
+    { message = "^perf:", group = "<!-- 02 -->⚡ Performance" },
+    { message = "^refactor:", group = "<!-- 03 -->♻️ Refactoring" },
+    { message = "^revert:", group = "<!-- 04 -->⏪ Reverts" },
+    { message = "^ci:", group = "<!-- 05 -->🚀 CI/CD" },
+    { message = "^build:", group = "<!-- 06 -->🔨 Build System" },
+    { message = "^docs:", group = "<!-- 07 -->📚 Documentation" },
+    { message = "^test:", group = "<!-- 08 -->🧪 Tests" },
+    { message = "^chore:", group = "<!-- 09 -->🧹 Maintenance" },
+    { message = "^deps:", group = "<!-- 10 -->📦 Dependencies" },
+    { message = ".*", group = "<!-- 11 -->🔹 Other Changes" }
 ]
 
 tag_pattern = "v.*"
