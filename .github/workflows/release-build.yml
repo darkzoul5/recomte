@@ -102,7 +102,7 @@ jobs:
 
           wget -q "https://github.com/orhun/git-cliff/releases/download/v${VERSION}/${FILE}"
           tar -xf "${FILE}"
-          sudo mv git-cliff-${ARCH}-unknown-linux-gnu/git-cliff /usr/local/bin/git-cliff
+          sudo mv git-cliff-${VERSION}-${ARCH}-unknown-linux-gnu/git-cliff /usr/local/bin/git-cliff
 
       - name: Generate release notes
         id: git-cliff
