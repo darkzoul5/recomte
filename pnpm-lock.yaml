@@ -21,7 +21,7 @@ importers:
         specifier: ^10.1.1
         version: 10.1.1
       '@fastify/session':
-        specifier: ^11.1.1
+        specifier: ^11.1.2
         version: 11.1.2
       '@fastify/static':
         specifier: ^10.1.3
