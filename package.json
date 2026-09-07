@@ -38,7 +38,7 @@
     "filepond": "^4.32.12",
     "filepond-plugin-image-preview": "^4.6.12",
     "photoswipe": "^5.4.4",
-    "sharp": "^0.35.0",
+    "sharp": "^0.35.4",
     "slugify": "^1.6.9",
     "sortablejs": "^1.15.7",
     "tailwindcss": "^4.3.3"
