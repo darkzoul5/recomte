@@ -152,4 +152,4 @@ views/               EJS templates
 
 ## Repository status
 
-This GitHub repository is a public mirror of the canonical Gitea repository. It is provided for portfolio and source-code review; deployment and project operations remain on the canonical repository.
+This GitHub repository is a public mirror of the canonical Gitea repository. Deployment and project operations remain on the canonical repository.
