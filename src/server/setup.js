@@ -183,6 +183,8 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
   };
 
   const appVersion = loadVersionInfo();
+  const fallbackAssetVersion = appVersion.version === 'dev' ? `${appVersion.version}-${Date.now()}` : appVersion.version;
+  const assetVersion = encodeURIComponent(appVersion.commit || fallbackAssetVersion || 'dev');
   const siteUrl = getSiteUrl();
   const siteHost = getSiteHost();
   const siteOrigin = getSiteOrigin();
@@ -318,7 +320,7 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
       if (/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(pathName)) {
         reply.header('Cache-Control', 'public, max-age=604800');
       } else {
-        reply.header('Cache-Control', 'public, max-age=3600, must-revalidate');
+        reply.header('Cache-Control', 'public, max-age=31536000, immutable');
       }
     }
   });
@@ -339,8 +341,7 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
         // Fonts: 1 year (rarely change)
         reply.header('Cache-Control', 'public, max-age=31536000, immutable');
       } else if (/\.(css)$/i.test(pathName)) {
-        // Cache CSS for 1 hour (not versioned, changes should deploy quickly)
-        reply.header('Cache-Control', 'public, max-age=3600, must-revalidate');
+        reply.header('Cache-Control', 'public, max-age=31536000, immutable');
       } else {
         // HTML and other files: shorter cache with revalidation
         reply.header('Cache-Control', 'public, max-age=3600, must-revalidate');
@@ -366,6 +367,7 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     root: path.join(rootDir, 'views'),
     defaultContext: {
       appVersion,
+      assetVersion,
       siteUrl,
       siteHost
     }

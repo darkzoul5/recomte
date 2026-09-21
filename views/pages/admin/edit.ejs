@@ -1,7 +1,7 @@
 <%- include('../../components/header/admin', { title: isNew ? 'Новая Прицеп-дача' : 'Редактировать' }) %>
 
-<link rel="stylesheet" href="/public/vendor/filepond/filepond.min.css">
-<link rel="stylesheet" href="/public/vendor/filepond-plugin-image-preview/filepond-plugin-image-preview.min.css">
+<link rel="stylesheet" href="/public/vendor/filepond/filepond.min.css?v=<%= assetVersion %>">
+<link rel="stylesheet" href="/public/vendor/filepond-plugin-image-preview/filepond-plugin-image-preview.min.css?v=<%= assetVersion %>">
 
 <div class="admin-header">
   <h1><i class="fas fa-edit"></i> <%= isNew ? 'Новая Прицеп-дача' : 'Редактировать: ' + caravan.title %></h1>
@@ -516,11 +516,11 @@
 <% } %>
 
 <!-- Page-specific logic: deletion toggles, ordering, FilePond setup -->
-<script src="/public/js/bed-types.js"></script>
-<script src="/public/js/multi-select.js"></script>
-<script src="/public/vendor/filepond/filepond.min.js"></script>
-<script src="/public/vendor/filepond-plugin-image-preview/filepond-plugin-image-preview.min.js"></script>
-<script src="/public/vendor/sortablejs/Sortable.min.js"></script>
-<script src="/public/js/admin-edit.js"></script>
+<script src="/public/js/bed-types.js?v=<%= assetVersion %>"></script>
+<script src="/public/js/multi-select.js?v=<%= assetVersion %>"></script>
+<script src="/public/vendor/filepond/filepond.min.js?v=<%= assetVersion %>"></script>
+<script src="/public/vendor/filepond-plugin-image-preview/filepond-plugin-image-preview.min.js?v=<%= assetVersion %>"></script>
+<script src="/public/vendor/sortablejs/Sortable.min.js?v=<%= assetVersion %>"></script>
+<script src="/public/js/admin-edit.js?v=<%= assetVersion %>"></script>
 
 <%- include('../../components/footer/admin') %>
