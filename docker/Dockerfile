@@ -11,9 +11,17 @@ RUN corepack enable
 # Copy package files for dependency installation
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Install and prune production dependencies
+# Install build and runtime dependencies
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
-    pnpm ci --prod
+    pnpm install --frozen-lockfile
+
+# Build generated CSS while the source templates are available
+COPY public/ ./public
+COPY views/ ./views
+RUN pnpm css:build
+
+# Keep only runtime dependencies in the final image
+RUN pnpm prune --prod
 
 # ============= Runtime Stage =============
 FROM node:24.20.0-slim
@@ -35,7 +43,7 @@ COPY --from=builder --chown=deploy:deploy /app/node_modules ./node_modules
 # Copy necessary application files
 COPY db/ ./db
 
-COPY public/ ./public
+COPY --from=builder --chown=deploy:deploy /app/public ./public
 COPY --chmod=755 docker/entrypoint.sh .
 COPY scripts/ ./scripts
 COPY src/ ./src

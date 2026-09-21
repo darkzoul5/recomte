@@ -5,6 +5,7 @@ data/app.db
 storage
 docker/.env
 public/images/caravans
+public/css/website.css
 campersite.code-workspace
 # Docker & Deployment
 letsencrypt/
