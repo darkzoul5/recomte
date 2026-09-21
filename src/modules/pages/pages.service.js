@@ -22,6 +22,17 @@ const getAvailability = (status) => {
   return 'https://schema.org/InStock';
 };
 
+const buildCaravanTitle = (caravan) => {
+  const brand = toPlainText(caravan.brand);
+  const model = toPlainText(caravan.title, 'Прицеп-дача');
+  const name = brand && !model.toLowerCase().startsWith(brand.toLowerCase())
+    ? `${brand} ${model}`
+    : model;
+  const year = caravan.year ? ` ${caravan.year}` : '';
+
+  return `${name}${year} — прицеп-дача б/у`;
+};
+
 export const buildHomeSeo = (caravans = []) => {
   const siteUrl = getSiteUrl();
   const description = 'Купить б/у прицеп-дачи, караваны из Европы. прицеп-дачи и караваны с фото и характеристиками.';
@@ -167,7 +178,7 @@ export const buildCaravanSeo = (caravan) => {
   ].filter(Boolean);
 
   return {
-    title: caravan.title,
+    title: buildCaravanTitle(caravan),
     description,
     canonicalUrl: buildAbsoluteUrl(pathname),
     ogImage,

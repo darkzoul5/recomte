@@ -3,7 +3,7 @@
 <!-- Сaravans Section -->
 <section class="section">
   <div class="container">
-    <h2 class="title has-text-centered">Наши Прицеп-дачи</h2>
+    <h1 class="title has-text-centered">Европейские прицепы-дачи б/у в Санкт-Петербурге</h1>
     <% if (caravans && caravans.length > 0) { %>
       <div class="columns is-multiline cards-grid">
         <% caravans.forEach(caravan => { %>
@@ -21,7 +21,7 @@
                 </a>
               </div>
               <div class="card-content">
-                <h3 class="title is-5"><%= caravan.title %></h3>
+                <h2 class="title is-5"><%= caravan.title %></h2>
                 <p><%= caravan.description ? caravan.description.substring(0, 100) + '...' : 'Туристический прицеп для комфортных путешествий.' %></p>
                 <a class="button is-success is-small mt-2" href="/caravans/<%= caravan.slug %>">Подробнее</a>
               </div>

@@ -61,7 +61,6 @@ export const getCaravanPage = async (request, reply) => {
 
     const caravan = JSON.parse(response.body);
     return reply.view('pages/catalog/caravan', {
-      title: `Прицеп-дача ${caravan.title}`,
       caravan,
       seo: buildCaravanSeo(caravan)
     });

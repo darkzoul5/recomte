@@ -28,7 +28,7 @@
 <form method="POST" action="<%= isNew ? '/admin/new' : '/admin/edit/' + caravan.id %>" class="admin-form admin-form--sticky-actions" enctype="multipart/form-data">
   <input type="hidden" name="_csrf" value="<%= csrfToken || '' %>">
   <div class="form-section">
-    <h3><i class="fas fa-info-circle"></i> Основная информация</h3>
+    <h2><i class="fas fa-info-circle"></i> Основная информация</h2>
 
     <div class="form-row">
       <div class="form-group">
@@ -115,7 +115,7 @@
   </div>
 
   <div class="form-section">
-    <h3><i class="fas fa-door-open"></i> Планировка</h3>
+    <h2><i class="fas fa-door-open"></i> Планировка</h2>
     <div class="form-row">
       <div class="form-group" style="flex: 2;">
         <label>Типы кроватей</label>
@@ -143,7 +143,7 @@
   </div>
 
   <div class="form-section">
-    <h3><i class="fas fa-bath"></i> Ванная</h3>
+    <h2><i class="fas fa-bath"></i> Ванная</h2>
     <div class="form-row">
       <div class="form-group">
         <label>Тип душа</label>
@@ -162,7 +162,7 @@
   </div>
 
   <div class="form-section">
-    <h3><i class="fas fa-water"></i> Водная система</h3>
+    <h2><i class="fas fa-water"></i> Водная система</h2>
     <div class="form-row">
       <div class="form-group">
         <label>Бак пресной воды (л)</label>
@@ -196,7 +196,7 @@
   </div>
 
   <div class="form-section">
-    <h3><i class="fas fa-utensils"></i> Кухня</h3>
+    <h2><i class="fas fa-utensils"></i> Кухня</h2>
     <div class="form-row">
       <div class="form-group">
         <label>Объём холодильника (л)</label>
@@ -232,7 +232,7 @@
   </div>
 
   <div class="form-section">
-    <h3><i class="fas fa-fire"></i> Отопление и сезон</h3>
+    <h2><i class="fas fa-fire"></i> Отопление и сезон</h2>
     <div class="form-row">
       <div class="form-group">
         <label>Тип Прицеп-дачи</label>
@@ -274,7 +274,7 @@
   </div>
 
   <div class="form-section">
-    <h3><i class="fas fa-plug"></i> Электроснабжение</h3>
+    <h2><i class="fas fa-plug"></i> Электроснабжение</h2>
     <div class="form-row">
       <div class="form-group">
         <label>Тип батареи</label>
@@ -309,7 +309,7 @@
   </div>
 
   <div class="form-section">
-    <h3><i class="fas fa-link"></i> Шасси и буксировка</h3>
+    <h2><i class="fas fa-link"></i> Шасси и буксировка</h2>
     <div class="form-row">
       <div class="form-group">
         <label>Количество осей</label>
@@ -355,7 +355,7 @@
   </div>
 
   <div class="form-section">
-    <h3><i class="fas fa-history"></i> Состояние и сервис</h3>
+    <h2><i class="fas fa-history"></i> Состояние и сервис</h2>
     <div class="form-row">
       <div class="form-group">
         <label>Состояние</label>
@@ -375,7 +375,7 @@
   </div>
 
   <div class="form-section">
-    <h3><i class="fas fa-ruler"></i> Размеры и масса</h3>
+    <h2><i class="fas fa-ruler"></i> Размеры и масса</h2>
     <div class="form-row">
       <div class="form-group">
         <label>Полная длина (мм)</label>
@@ -418,7 +418,7 @@
   </div>
 
   <div class="form-section">
-    <h3><i class="fas fa-star"></i> Дополнительные опции</h3>
+    <h2><i class="fas fa-star"></i> Дополнительные опции</h2>
 
     <div class="form-row">
       <div class="form-group">
@@ -454,7 +454,7 @@
   </div>
 
   <div class="form-section">
-    <h3><i class="fas fa-images"></i> Изображения</h3>
+    <h2><i class="fas fa-images"></i> Изображения</h2>
     <% if (caravan?.images && caravan.images.length > 0) { %>
       <div style="margin-bottom: 2rem;">
         <p style="margin-bottom: 1rem;"><strong>Текущие изображения (<%= caravan.images.length %>/30)</strong></p>

@@ -21,8 +21,7 @@ header.has-background-image::before {
 header.has-background-image .container { position: relative; z-index: 1; }
 
 /* Logo text contrast */
-header.has-background-image h1,
-header.has-background-image h2 {
+header.has-background-image .title {
   color: white;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
@@ -30,8 +29,7 @@ header.has-background-image h2 {
 /* Small-screen header layout (<=600px) */
 @media screen and (max-width: 600px) {
   header.has-background-image { padding: 1.5rem 0 !important; }
-  header.has-background-image h1 { font-size: 1.75rem !important; margin-bottom: 0.25rem !important; }
-  header.has-background-image h2 { margin-bottom: 2rem !important; margin-top: 0.5rem !important; }
+  header.has-background-image .title { margin-bottom: 2rem !important; margin-top: 0.5rem !important; }
   header.has-background-image .navbar { justify-content: center !important; gap: 1rem !important; font-size: 0.9rem; padding: 0.75rem !important; width: 100%; max-width: 100%; }
   header.has-background-image .navbar-item { padding: 0.5rem 0.5rem !important; }
   header.has-background-image .title img { height: 1.3em !important; }

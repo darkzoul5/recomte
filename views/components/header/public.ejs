@@ -6,7 +6,7 @@
   <%
     const siteName = 'Recomte';
     const fallbackDescription = 'Б/у прицепы-дачи из Европы с осмотром, ремонтом и подготовкой к продаже в России.';
-    const metaTitle = seo?.title || title || siteName;
+    const metaTitle = seo?.title || (typeof title !== 'undefined' ? title : siteName);
     const metaDescription = seo?.description || fallbackDescription;
     const canonicalUrl = seo?.canonicalUrl || `${siteUrl}/`;
     const ogImage = seo?.ogImage || `${siteUrl}/public/images/top-image.jpg`;
@@ -29,7 +29,7 @@
   <div style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;" aria-hidden="true">
     <a href="https://www.flaticon.com/free-icons/caravan" title="caravan icons">Caravan icons created by xnimrodx - Flaticon</a>
   </div>
-  <title><%= siteHost %> | <%= metaTitle %></title>
+  <title><%= metaTitle %> | <%= siteHost %></title>
   <meta name="description" content="<%= metaDescription %>">
   <link rel="canonical" href="<%= canonicalUrl %>">
   <meta name="robots" content="index, follow">
@@ -43,6 +43,7 @@
   <% if (structuredDataJson) { %>
     <script type="application/ld+json"><%- structuredDataJson %></script>
   <% } %>
+  <link rel="stylesheet" href="/public/css/website.css">
   <link rel="stylesheet" href="/public/css/bulma.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
   <link rel="stylesheet" href="/public/css/style.css">
@@ -56,7 +57,7 @@
   <div class="container">
     <div class="header-top" style="display: flex; justify-content: space-between; align-items: center;">
       <div>
-        <h2 class="title is-2 has-text-white mb-1"><a href="/" class="has-text-white" style="text-decoration: none;"><img src="/public/images/favicons/favicon-orange-512x512.png" alt="" style="height: 1em; vertical-align: middle;">Recomte</a></h2>
+        <div class="title is-2 has-text-white mb-1"><a href="/" class="has-text-white" style="text-decoration: none;"><img src="/public/images/favicons/favicon-orange-512x512.png" alt="" style="height: 1em; vertical-align: middle;">Recomte</a></div>
       </div>
       <label for="mobile-menu-toggle" class="mobile-menu-button" aria-label="Открыть меню" aria-controls="mobile-menu">Меню</label>
       <nav class="navbar desktop-menu px-5 py-2 rounded" style="background-color: rgba(0, 0, 0, 0.7); gap: 1.5rem; display: inline-flex; align-items: center;" role="navigation">
