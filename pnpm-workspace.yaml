@@ -20,4 +20,4 @@ overrides:
   source-map-js: 1.2.2
   fast-uri@4: 4.1.5
   fast-copy: 4.1.0
-  '@fastify/busboy': 3.2.2
+  '@fastify/busboy': 3.2.3
