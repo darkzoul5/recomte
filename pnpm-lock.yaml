@@ -205,8 +205,8 @@ importers:
         specifier: ^18.0.8
         version: 18.0.8
       ejs:
-        specifier: ^7.0.1
-        version: 7.0.1
+        specifier: ^7.0.2
+        version: 7.0.2
       fastify:
         specifier: ^5.12.7
         version: 5.12.7
@@ -868,8 +868,8 @@ packages:
     engines: {node: '>=12'}
     hasBin: true
 
-  ejs@7.0.1:
-    resolution: {integrity: sha512-TrAb1fY4jNY6aQrNjMJsoWQxGUK47A38JxuUvnt75vDcAA9Ln7ur6FHo+irVa5Bwd3w9rdUT3xLSl5MRgHIugg==}
+  ejs@7.0.2:
+    resolution: {integrity: sha512-LcDSEP6Oclb9sTiSyG0MpG0RuKvLDRxCOOt+2sIk+kdk1rMkFU8SRnT0qaNt5zvU0LOV1YXXOvIoZL/sKwabvw==}
     engines: {node: '>=0.12.18'}
     hasBin: true
 
@@ -2038,7 +2038,7 @@ snapshots:
 
   dotenv@18.0.8: {}
 
-  ejs@7.0.1: {}
+  ejs@7.0.2: {}
 
   end-of-stream@1.4.5:
     dependencies:
