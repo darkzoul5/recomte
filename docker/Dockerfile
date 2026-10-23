@@ -1,5 +1,5 @@
 # ============= Builder Stage =============
-FROM node:24.20.0-slim as builder
+FROM node:24.22.0-slim as builder
 
 WORKDIR /app
 
@@ -24,7 +24,7 @@ RUN pnpm css:build
 RUN pnpm prune --prod
 
 # ============= Runtime Stage =============
-FROM node:24.20.0-slim
+FROM node:24.22.0-slim
 
 WORKDIR /app
 
