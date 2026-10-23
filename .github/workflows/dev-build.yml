@@ -89,7 +89,6 @@ jobs:
           cache-to: type=registry,ref=git.darkzoul.org/dark_zoul/recomte:dev-cache,mode=max
           build-args: |
             NODE_VERSION=${{ steps.node-version.outputs.version }}
-            APP_COMMIT=${{ github.sha }}
 
   deploy-dev:
     runs-on: ubuntu-latest
@@ -97,6 +96,9 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
+      - name: Checkout deployment verifier
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
       - name: Trigger Webhook Deployment
         env:
           WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
@@ -109,7 +111,7 @@ jobs:
           SIGNATURE=$(echo -n "$PAYLOAD" | openssl dgst -sha256 -hmac "$WEBHOOK_SECRET" -hex | cut -d' ' -f2)
 
           # Send webhook
-          curl -X POST \
+          curl --fail --silent --show-error --retry 2 -X POST \
             -H "Content-Type: application/json" \
             -H "X-Gitea-Signature: $SIGNATURE" \
             -d "$PAYLOAD" \
@@ -118,19 +120,8 @@ jobs:
           echo "✅ Deployment webhook triggered!"
 
       - name: Wait for Deployment to Complete
+        env:
+          EXPECTED_COMMIT: ${{ github.sha }}
+          VERSION_URL: https://test.recomte.ru/api/version
         run: |
-          echo "⏳ Waiting for deployment to complete..."
-          sleep 30
-
-          # Check if app is healthy (adjust URL)
-          for i in {1..20}; do
-            if curl -s -f -o /dev/null "https://test.recomte.ru/healthcheck"; then
-              echo "✅ App is healthy!"
-              exit 0
-            fi
-            echo "⏳ Waiting for app... ($i/20)"
-            sleep 3
-          done
-
-          echo "❌ App failed to become healthy"
-          exit 1
+          node scripts/verify-deployment-version.js

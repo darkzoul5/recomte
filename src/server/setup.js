@@ -188,6 +188,15 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
   const siteUrl = getSiteUrl();
   const siteHost = getSiteHost();
   const siteOrigin = getSiteOrigin();
+
+  fastify.get('/api/version', { logLevel: 'silent' }, async (_request, reply) => {
+    reply.header('Cache-Control', 'no-store');
+    return {
+      version: appVersion.version,
+      commit: appVersion.commit
+    };
+  });
+
   fs.mkdirSync(getCaravanImagesDir(), { recursive: true });
   await fastify.register(fastifyCompress, {
     threshold: 1024,
@@ -288,7 +297,7 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
     const url = request.raw.url || request.url || '';
     const statusCode = reply.statusCode || 0;
 
-    if (statusCode < 400 && (url === '/healthcheck' || url.startsWith('/public/'))) {
+    if (statusCode < 400 && (url === '/healthcheck' || url === '/api/version' || url.startsWith('/public/'))) {
       return;
     }
 

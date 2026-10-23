@@ -5,6 +5,8 @@ LOCK_FILE="/tmp/recomte-deploy.lock"
 DEPLOY_DIR="/home/deploy/docker/recomte"
 COMPOSE_FILE="docker/compose.yml"
 MAX_RETRIES=5
+VERSION_MAX_ATTEMPTS=40
+VERSION_RETRY_INTERVAL=3
 
 exec 9>"${LOCK_FILE}"
 if ! flock -n 9; then
@@ -32,6 +34,8 @@ echo "[deploy] Pulling repository updates..."
 git fetch origin
 git reset --hard origin/main
 git clean -fd
+EXPECTED_COMMIT="$(git rev-parse HEAD)"
+echo "[deploy] Expected application commit: ${EXPECTED_COMMIT}"
 
 echo "[deploy] Pulling latest images..."
 docker compose -f "${COMPOSE_FILE}" pull
@@ -54,7 +58,45 @@ while true; do
 	sleep 3
 done
 
-echo "[deploy] Completed successfully."
+echo "[deploy] Waiting for every production container to report ${EXPECTED_COMMIT}..."
+
+version_attempt=1
+while true; do
+	mapfile -t APP_CONTAINER_IDS < <(docker compose -f "${COMPOSE_FILE}" ps -q app)
+	all_containers_verified=true
+
+	if [ "${#APP_CONTAINER_IDS[@]}" -eq 0 ]; then
+		all_containers_verified=false
+		echo "[deploy] No production app containers are available yet."
+	fi
+
+	for CONTAINER_ID in "${APP_CONTAINER_IDS[@]}"; do
+		if ! docker exec \
+			-e "EXPECTED_COMMIT=${EXPECTED_COMMIT}" \
+			-e 'VERSION_URL=http://127.0.0.1:3000/api/version' \
+			-e 'VERSION_VERIFY_TIMEOUT_MS=5000' \
+			-e 'VERSION_VERIFY_INTERVAL_MS=0' \
+			-e 'VERSION_VERIFY_REQUEST_TIMEOUT_MS=2000' \
+			"${CONTAINER_ID}" node /app/scripts/verify-deployment-version.js; then
+			all_containers_verified=false
+			echo "[deploy] Container ${CONTAINER_ID} has not reached the expected commit."
+		fi
+	done
+
+	if [ "${all_containers_verified}" = true ]; then
+		echo "[deploy] Every production container reports ${EXPECTED_COMMIT}."
+		break
+	fi
+
+	if [ "${version_attempt}" -ge "${VERSION_MAX_ATTEMPTS}" ]; then
+		echo "[deploy] Deployment verification failed after ${VERSION_MAX_ATTEMPTS} attempts." >&2
+		exit 1
+	fi
+
+	echo "[deploy] Retrying deployment verification (${version_attempt}/${VERSION_MAX_ATTEMPTS})..."
+	version_attempt=$((version_attempt + 1))
+	sleep "${VERSION_RETRY_INTERVAL}"
+done
 
 echo "[deploy] Checking for replaced images..."
 
@@ -88,3 +130,5 @@ done < <(
 
 cd "${DEPLOY_DIR}"
 ./scripts/sync-test-db.sh
+
+echo "[deploy] Completed successfully."

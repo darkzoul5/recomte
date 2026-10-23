@@ -126,6 +126,7 @@ pnpm css:watch
 node tests/test-sql-injection.js
 node tests/test-xss-protection.js
 node tests/test-db-migrations.js
+node tests/test-deployment-version.js
 node tests/test-csrf-protection.js
 node tests/test-auth-protection.js
 node tests/smoke-http.js
@@ -135,7 +136,7 @@ There is intentionally no `pnpm test` script; tests are standalone Node scripts.
 
 ## Deployment notes
 
-The repository includes a multi-stage Docker image, Docker Compose configuration for production and a test instance, a deployment script, and an optional production-to-test database/image synchronization script. These are tailored to the project's private hosting environment (including its external reverse-proxy network and container registry); adapt the Compose file and deployment settings before using them elsewhere.
+The repository includes a multi-stage Docker image, Docker Compose configuration for production and a test instance, a webhook-triggered deployment script, and an optional production-to-test database/image synchronization script. These are tailored to the project's private hosting environment (including its external reverse-proxy network and container registry); adapt the Compose file and deployment settings before using them elsewhere.
 
 ## Project layout
 

@@ -54,6 +54,9 @@ jobs:
       - name: Run database migration tests
         run: node --experimental-strip-types tests/test-db-migrations.js
 
+      - name: Run deployment version verification tests
+        run: node --experimental-strip-types tests/test-deployment-version.js
+
       # Start server
       - name: Start server
         env:
