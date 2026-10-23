@@ -39,28 +39,29 @@ jobs:
 
       - name: Determine version
         id: version
+        env:
+          RELEASE_VERSION: ${{ github.event.inputs.version }}
         run: |
-          if [ -n "${{ github.event.inputs.version }}" ]; then
-            VERSION="${{ github.event.inputs.version }}"
+          if [ -n "$RELEASE_VERSION" ]; then
+            VERSION="$RELEASE_VERSION"
           else
             VERSION="v$(date +'%Y.%m.%d-%H%M')"
           fi
 
+          if ! printf '%s\n' "$VERSION" | grep -Eq '^[A-Za-z0-9._-]+$'; then
+            echo "Invalid release version: only letters, numbers, dots, underscores, and hyphens are allowed" >&2
+            exit 1
+          fi
+
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Create Git tag
-        run: |
-          git config user.name "gitea-actions"
-          git config user.email "actions@local"
-
-          git tag ${{ steps.version.outputs.version }}
-          git push origin ${{ steps.version.outputs.version }}
-
       - name: Generate version.json
+        env:
+          APP_VERSION: ${{ steps.version.outputs.version }}
         run: |
           cat <<EOF > version.json
           {
-            "version": "${{ steps.version.outputs.version }}",
+            "version": "${APP_VERSION}",
             "env": "prod"
           }
           EOF
@@ -98,6 +99,16 @@ jobs:
             NODE_VERSION=${{ steps.node-version.outputs.version }}
             APP_VERSION=${{ steps.version.outputs.version }}
             APP_COMMIT=${{ github.sha }}
+
+      - name: Create Git tag
+        env:
+          RELEASE_TAG: ${{ steps.version.outputs.version }}
+        run: |
+          git config user.name "gitea-actions"
+          git config user.email "actions@local"
+
+          git tag "$RELEASE_TAG"
+          git push origin "$RELEASE_TAG"
 
       - name: Install git-cliff
         run: |
