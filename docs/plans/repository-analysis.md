@@ -73,7 +73,7 @@
   - `.env.example` documents `NODE_ENV`, `PORT`, `ADMIN_PORT`, `HOST`, `DB_PATH`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `LOG_LEVEL`, `ADMIN_LOG_LEVEL`, `PUBLIC_LOG_LEVEL`, and `SESSION_SECRET`.
   - A `.env` file is present in the repository file list and is referenced by Docker Compose.
 - Docker:
-  - `docker/Dockerfile` builds a Node 24.18.0-slim image in a multi-stage build.
+  - `docker/Dockerfile` builds the Node.js version from `.node-version` in a multi-stage build.
   - `docker/compose.yml` defines `app` and `app_test` services and uses an external `traefik-proxy` network.
   - `docker/entrypoint.sh` is copied into the runtime image and used as the container entrypoint.
 - CI/CD:

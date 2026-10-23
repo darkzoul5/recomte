@@ -33,6 +33,10 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Read Node.js version
+        id: node-version
+        run: echo "version=$(cat .node-version)" >> "$GITHUB_OUTPUT"
+
       - name: Determine version
         id: version
         run: |
@@ -91,6 +95,7 @@ jobs:
           cache-from: type=registry,ref=git.darkzoul.org/dark_zoul/recomte:buildcache
           cache-to: type=registry,ref=git.darkzoul.org/dark_zoul/recomte:buildcache,mode=max
           build-args: |
+            NODE_VERSION=${{ steps.node-version.outputs.version }}
             APP_VERSION=${{ steps.version.outputs.version }}
             APP_COMMIT=${{ github.sha }}
 
