@@ -7,14 +7,15 @@ echo "Starting Recomte.ru application..."
 export NODE_ENV=${NODE_ENV:-production}
 export STORAGE_ROOT=${STORAGE_ROOT:-/app/storage}
 export DB_PATH=${DB_PATH:-${STORAGE_ROOT}/db/app.db}
-export SESSION_SECRET=${SESSION_SECRET:-default_secret_change_in_production}
 export LOG_LEVEL=${LOG_LEVEL:-info}
 export ADMIN_LOG_LEVEL=${ADMIN_LOG_LEVEL:-info}
 export PUBLIC_LOG_LEVEL=${PUBLIC_LOG_LEVEL:-info}
 export PORT=${PORT:-3000}
 export ADMIN_PORT=${ADMIN_PORT:-3001}
-export ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
-export ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+
+: "${SESSION_SECRET:?SESSION_SECRET must be set}"
+: "${ADMIN_USERNAME:?ADMIN_USERNAME must be set}"
+: "${ADMIN_PASSWORD:?ADMIN_PASSWORD must be set}"
 
 # Create runtime storage directories if they don't exist
 mkdir -p "${STORAGE_ROOT}/db"
@@ -30,7 +31,7 @@ else
 
   echo "Running db migrations..."
   node --experimental-strip-types /app/scripts/migrate-db.js
-  
+
   echo "Validating db schema..."
   if node --experimental-strip-types /app/scripts/validate-db.js; then
     echo "✓ Database is properly initialized"
