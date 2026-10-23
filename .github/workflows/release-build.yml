@@ -57,11 +57,11 @@ jobs:
 
       - name: Generate version.json
         env:
-          APP_VERSION: ${{ steps.version.outputs.version }}
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
           cat <<EOF > version.json
           {
-            "version": "${APP_VERSION}",
+            "version": "${VERSION}",
             "env": "prod"
           }
           EOF
@@ -97,7 +97,6 @@ jobs:
           cache-to: type=registry,ref=git.darkzoul.org/dark_zoul/recomte:buildcache,mode=max
           build-args: |
             NODE_VERSION=${{ steps.node-version.outputs.version }}
-            APP_VERSION=${{ steps.version.outputs.version }}
             APP_COMMIT=${{ github.sha }}
 
       - name: Create Git tag

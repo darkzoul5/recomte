@@ -89,7 +89,6 @@ jobs:
           cache-to: type=registry,ref=git.darkzoul.org/dark_zoul/recomte:dev-cache,mode=max
           build-args: |
             NODE_VERSION=${{ steps.node-version.outputs.version }}
-            APP_VERSION=dev
             APP_COMMIT=${{ github.sha }}
 
   deploy-dev:
