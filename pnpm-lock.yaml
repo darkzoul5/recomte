@@ -185,8 +185,8 @@ importers:
         specifier: ^11.1.5
         version: 11.1.5
       '@fastify/static':
-        specifier: ^10.1.7
-        version: 10.1.7
+        specifier: ^10.1.8
+        version: 10.1.8
       '@fastify/view':
         specifier: ^12.0.1
         version: 12.0.1
@@ -344,8 +344,8 @@ packages:
   '@fastify/session@11.1.5':
     resolution: {integrity: sha512-tsoOTzLSDdnBgHNI/SsyNA+f0LNkDoxODUfGrUticeXy6X37FwAB3SdcRzAGZL7f/upCzfcIVZsuX1QLGS7SDA==}
 
-  '@fastify/static@10.1.7':
-    resolution: {integrity: sha512-7+lUiPRraENCiULgjhcqZyWSW6qnwIT87Is0u3c2Z3iGEEEGB45wJhYxzrSdzu12gHM4qcviEYcPEiCe4J6MCQ==}
+  '@fastify/static@10.1.8':
+    resolution: {integrity: sha512-3CbgWOXJX8f46xxsuOgQl9h0lyQQiABMG40kxRF5PWJk4LyBW5m3mLZoW5glnm2TUTC1gVFCBnqOt5S6zIIIrg==}
 
   '@fastify/view@12.0.1':
     resolution: {integrity: sha512-f5iQVXSUVtWIJ+DfGzQ+hoD6390X2QRibmOfs4LxToxupmAMz4bnHnEQoE4VMqL+yqRlsKY17gOW0CEL5W0HKg==}
@@ -1627,7 +1627,7 @@ snapshots:
       fastify-plugin: 6.0.1
       safe-stable-stringify: 2.5.0
 
-  '@fastify/static@10.1.7':
+  '@fastify/static@10.1.8':
     dependencies:
       '@fastify/accept-negotiator': 2.1.2
       '@fastify/error': 4.2.1
