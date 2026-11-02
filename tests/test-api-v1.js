@@ -40,6 +40,16 @@ const main = async () => {
       features: {}
     });
 
+    const apiVersion = await publicServer.inject({
+      method: 'GET',
+      url: '/api/v1/version'
+    });
+    assert.equal(apiVersion.statusCode, 200);
+    const apiVersionData = parseResponse(apiVersion).data;
+    assert.equal(apiVersionData.api_version, 1);
+    assert.equal(typeof apiVersionData.version, 'string');
+    assert.ok(Object.hasOwn(apiVersionData, 'commit'));
+
     const invalidStatus = await publicServer.inject({
       method: 'GET',
       url: '/api/v1/caravans?status=not-a-status'

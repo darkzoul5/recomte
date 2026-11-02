@@ -183,6 +183,7 @@ export const registerCommonPlugins = async (fastify, { rootDir, isAdminServer = 
   };
 
   const appVersion = loadVersionInfo();
+  fastify.decorate('appVersion', appVersion);
   const fallbackAssetVersion = appVersion.version === 'dev' ? `${appVersion.version}-${Date.now()}` : appVersion.version;
   const assetVersion = encodeURIComponent(appVersion.commit || fallbackAssetVersion || 'dev');
   const siteUrl = getSiteUrl();

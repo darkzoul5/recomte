@@ -32,7 +32,13 @@ const parseBooleanQuery = (value, name) => {
 export const registerCaravanV1Routes = async (fastify) => {
   fastify.get('/api/v1/version', { logLevel: 'silent' }, async (_request, reply) => {
     reply.header('Cache-Control', 'no-store');
-    return { data: { api_version: 1 } };
+    return {
+      data: {
+        api_version: 1,
+        version: fastify.appVersion.version,
+        commit: fastify.appVersion.commit
+      }
+    };
   });
 
   fastify.get('/api/v1/caravans', async (request, reply) => {
