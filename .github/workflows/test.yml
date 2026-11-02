@@ -19,7 +19,7 @@ on:
       - "cliff.toml"
 
 concurrency:
-  group: campersite-test-${{ github.ref }}
+  group: recomte-test-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

@@ -11,7 +11,7 @@ on:
         required: false
 
 concurrency:
-  group: campersite-release-build-${{ github.ref }}
+  group: recomte-release-build-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -33,12 +33,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Node.js
+        id: node-version
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: .node-version
+
       - name: Install Corepack
         run: npm install --global corepack@latest
-
-      - name: Read Node.js version
-        id: node-version
-        run: echo "version=$(cat .node-version)" >> "$GITHUB_OUTPUT"
 
       - name: Determine version
         id: version
@@ -101,7 +105,7 @@ jobs:
           cache-from: type=registry,ref=git.darkzoul.org/dark_zoul/recomte:buildcache
           cache-to: type=registry,ref=git.darkzoul.org/dark_zoul/recomte:buildcache,mode=max
           build-args: |
-            NODE_VERSION=${{ steps.node-version.outputs.version }}
+            NODE_VERSION=${{ steps.node-version.outputs.node-version }}
 
       - name: Create Git tag
         env:

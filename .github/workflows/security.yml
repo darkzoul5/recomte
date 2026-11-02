@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: campersite-security-${{ github.ref }}
+  group: recomte-security-${{ github.ref }}
   cancel-in-progress: true
 
 

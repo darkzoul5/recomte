@@ -17,7 +17,7 @@ on:
       - "cliff.toml"
 
 concurrency:
-  group: campersite-quality-check-${{ github.ref }}
+  group: recomte-quality-check-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
