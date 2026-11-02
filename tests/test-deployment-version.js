@@ -30,6 +30,24 @@ await runCase('matching version succeeds', async () => {
   assert.deepEqual(result, { version: 'v1.2.3', commit: expectedCommit });
 });
 
+await runCase('versioned API response succeeds', async () => {
+  const result = await verifyDeploymentVersion({
+    url: 'https://example.test/api/v1/version',
+    expectedCommit,
+    timeoutMs: 20,
+    intervalMs: 0,
+    fetchImpl: async () => response({
+      data: {
+        api_version: 1,
+        version: 'v1.2.3',
+        commit: expectedCommit
+      }
+    })
+  });
+
+  assert.deepEqual(result, { version: 'v1.2.3', commit: expectedCommit });
+});
+
 await runCase('version mismatch fails', async () => {
   await assert.rejects(
     verifyDeploymentVersion({

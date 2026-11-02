@@ -59,17 +59,23 @@ const validateVersionResponse = (payload, expectedCommit) => {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
     throw new Error('response is not a JSON object');
   }
-  if (typeof payload.version !== 'string' || payload.version.length === 0) {
+  const versionData = payload.data
+    && typeof payload.data === 'object'
+    && !Array.isArray(payload.data)
+    ? payload.data
+    : payload;
+
+  if (typeof versionData.version !== 'string' || versionData.version.length === 0) {
     throw new Error('response has no valid version');
   }
-  if (typeof payload.commit !== 'string' || !COMMIT_PATTERN.test(payload.commit)) {
+  if (typeof versionData.commit !== 'string' || !COMMIT_PATTERN.test(versionData.commit)) {
     throw new Error('response has no valid commit SHA');
   }
-  if (payload.commit.toLowerCase() !== expectedCommit.toLowerCase()) {
-    throw new Error(`commit mismatch: expected ${expectedCommit}, got ${payload.commit}`);
+  if (versionData.commit.toLowerCase() !== expectedCommit.toLowerCase()) {
+    throw new Error(`commit mismatch: expected ${expectedCommit}, got ${versionData.commit}`);
   }
 
-  return { version: payload.version, commit: payload.commit };
+  return { version: versionData.version, commit: versionData.commit };
 };
 
 export const verifyDeploymentVersion = async ({

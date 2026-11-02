@@ -129,6 +129,6 @@ jobs:
       - name: Wait for Deployment to Complete
         env:
           EXPECTED_COMMIT: ${{ github.sha }}
-          VERSION_URL: https://test.recomte.ru/api/version
+          VERSION_URL: https://test.recomte.ru/api/v1/version
         run: |
           node scripts/verify-deployment-version.js
