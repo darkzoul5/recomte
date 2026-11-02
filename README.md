@@ -126,6 +126,7 @@ pnpm css:watch
 node tests/test-sql-injection.js
 node tests/test-xss-protection.js
 node tests/test-db-migrations.js
+node tests/test-api-v1.js
 node tests/test-deployment-version.js
 node tests/test-csrf-protection.js
 node tests/test-auth-protection.js
@@ -133,6 +134,10 @@ node tests/smoke-http.js
 ```
 
 There is intentionally no `pnpm test` script; tests are standalone Node scripts. The smoke test requires the relevant server to be running.
+
+## API documentation
+
+See the [REST API reference](docs/api-v1.md) for public catalogue access and authenticated administrative endpoints.
 
 ## Deployment notes
 

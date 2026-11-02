@@ -163,7 +163,7 @@ export const validateCaravanData = (data, isUpdate = false) => {
       errors.push('Brand must be a string');
     }
 
-    if (!data.price || !validateInteger(data.price, 0, 100000000)) {
+    if (data.price === undefined || data.price === null || data.price === '' || !validateInteger(data.price, 0, 100000000)) {
       errors.push('Price is required and must be a number between 0 and 100,000,000');
     }
   }

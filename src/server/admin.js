@@ -6,6 +6,7 @@ import { createServer, registerCommonPlugins } from './setup.js';
 import { ensureInitialAdminUser } from '../modules/auth/index.js';
 import { registerAuthRoutes } from '../modules/auth/index.js';
 import { registerAdminApiRoutes, registerAdminRoutes } from '../modules/admin/index.js';
+import {registerAdminApiV1Routes} from '../modules/admin/admin.api.v1.routes.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.join(__dirname, '..', '..');
@@ -56,6 +57,7 @@ export const buildAdminServer = async () => {
   fastify.get('/healthcheck', { logLevel: 'silent' }, async () => ({ status: 'ok' }));
 
   await fastify.register(registerAdminApiRoutes);
+  await fastify.register(registerAdminApiV1Routes);
   await registerAuthRoutes(fastify);
   await registerAdminRoutes(fastify, { rootDir: projectRoot });
 

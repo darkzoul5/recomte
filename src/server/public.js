@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { createServer, registerCommonPlugins } from './setup.js';
 import { registerCaravansRoutes } from '../modules/caravans/index.js';
+import {registerCaravanV1Routes} from '../modules/caravans/caravan.v1.routes.js';
 import { registerPagesRoutes } from '../modules/pages/index.js';
 import { registerSitemapRoutes } from '../modules/sitemap/index.js';
 
@@ -36,6 +37,7 @@ export const buildPublicServer = async () => {
   fastify.get('/healthcheck', { logLevel: 'silent' }, async () => ({ status: 'ok' }));
 
   await registerCaravansRoutes(fastify);
+  await registerCaravanV1Routes(fastify);
   await registerPagesRoutes(fastify);
   await registerSitemapRoutes(fastify);
 
