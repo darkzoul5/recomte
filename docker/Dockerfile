@@ -7,7 +7,7 @@ WORKDIR /app
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
 
-RUN corepack enable
+RUN npm install --global corepack@latest && corepack enable
 
 # Copy package files for dependency installation
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
@@ -32,7 +32,8 @@ WORKDIR /app
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
 
-RUN corepack enable && \
+RUN npm install --global corepack@latest && \
+    corepack enable && \
     addgroup --system deploy && \
     adduser --system --group deploy --uid 1001 && \
     mkdir -p /app/storage/db /app/storage/backups /app/storage/images/caravans && \

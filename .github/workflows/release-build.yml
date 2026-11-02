@@ -33,6 +33,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install Corepack
+        run: npm install --global corepack@latest
+
       - name: Read Node.js version
         id: node-version
         run: echo "version=$(cat .node-version)" >> "$GITHUB_OUTPUT"

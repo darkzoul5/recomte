@@ -43,6 +43,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
+      - name: Install Corepack
+        run: npm install --global corepack@latest
+
       - name: Read Node.js version
         id: node-version
         run: echo "version=$(cat .node-version)" >> "$GITHUB_OUTPUT"
