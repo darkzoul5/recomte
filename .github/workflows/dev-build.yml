@@ -54,6 +54,12 @@ jobs:
       - name: Install Corepack
         run: npm install --global corepack@latest
 
+      - name: Normalize Docker Node.js version
+        id: docker-node-version
+        env:
+          NODE_VERSION: ${{ steps.node-version.outputs.node-version }}
+        run: echo "version=${NODE_VERSION#v}" >> "$GITHUB_OUTPUT"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
 
@@ -95,7 +101,7 @@ jobs:
           cache-from: type=registry,ref=git.darkzoul.org/dark_zoul/recomte:dev-cache
           cache-to: type=registry,ref=git.darkzoul.org/dark_zoul/recomte:dev-cache,mode=max
           build-args: |
-            NODE_VERSION=${{ steps.node-version.outputs.node-version }}
+            NODE_VERSION=${{ steps.docker-node-version.outputs.version }}
 
   deploy-dev:
     runs-on: ubuntu-latest
