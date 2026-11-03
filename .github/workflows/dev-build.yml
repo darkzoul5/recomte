@@ -117,6 +117,7 @@ jobs:
           WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
           WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
         run: |
+          set -e
           # Minimal payload - just needs to be signed
           PAYLOAD='{"trigger": "gitea-actions"}'
 
