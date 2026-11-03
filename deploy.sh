@@ -78,6 +78,6 @@ for OLD_IMAGE_ID in "${!OLD_APP_IMAGE_IDS[@]}"; do
 done
 
 cd "${DEPLOY_DIR}"
-./scripts/sync-test-db.sh
+bash ./scripts/sync-test-db.sh
 
 echo "[deploy] Completed successfully."
