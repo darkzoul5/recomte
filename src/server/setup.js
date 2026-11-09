@@ -77,6 +77,18 @@ class SqliteSessionStore {
     this.selectStmt = this.db.prepare(
       'SELECT data, expires_at FROM sessions WHERE session_id = ? LIMIT 1'
     );
+    this.compareAndSetStmt = this.db.prepare(
+      `UPDATE sessions
+       SET data = ?, expires_at = ?, updated_at = CURRENT_TIMESTAMP
+       WHERE session_id = ?
+         AND (
+           json_extract(data, '$.__fastifySessionMetadata.generation') = ?
+           OR (
+             json_extract(data, '$.__fastifySessionMetadata.generation') IS NULL
+             AND ? = session_id
+           )
+         )`
+    );
     this.deleteStmt = this.db.prepare('DELETE FROM sessions WHERE session_id = ?');
     this.cleanupStmt = this.db.prepare('DELETE FROM sessions WHERE expires_at <= ?');
 
@@ -123,6 +135,30 @@ class SqliteSessionStore {
       return sessionData;
     } catch (error) {
       if (callback) callback(error, null);
+      throw error;
+    }
+  }
+
+  async compareAndSet(sessionId, expectedGeneration, session, callback) {
+    try {
+      const result = this.compareAndSetStmt.run(
+        JSON.stringify(session),
+        Date.now() + this.maxAge,
+        sessionId,
+        expectedGeneration,
+        expectedGeneration
+      );
+
+      if (result.changes === 0) {
+        const error = new Error('The session does not exist or has changed');
+        error.code = 'ENOENT';
+        if (callback) callback(error);
+        return;
+      }
+
+      if (callback) callback(null);
+    } catch (error) {
+      if (callback) callback(error);
       throw error;
     }
   }
