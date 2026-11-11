@@ -162,9 +162,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@parcel/watcher': 2.6.0
-
 importers:
 
   .:
@@ -185,7 +182,7 @@ importers:
         specifier: ^11.1.5
         version: 11.1.6
       '@fastify/static':
-        specifier: ^10.1.8
+        specifier: ^10.1.10
         version: 10.1.10
       '@fastify/view':
         specifier: ^12.0.1
