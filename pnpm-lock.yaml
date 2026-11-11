@@ -179,7 +179,7 @@ importers:
         specifier: ^10.1.8
         version: 10.1.8
       '@fastify/session':
-        specifier: ^11.1.5
+        specifier: ^11.1.6
         version: 11.1.6
       '@fastify/static':
         specifier: ^10.1.10
