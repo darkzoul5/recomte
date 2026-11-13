@@ -203,11 +203,11 @@ importers:
         specifier: ^5.12.8
         version: 5.12.8
       filepond:
-        specifier: ^4.32.12
-        version: 4.32.12
+        specifier: ^4.32.14
+        version: 4.32.14
       filepond-plugin-image-preview:
         specifier: ^4.6.12
-        version: 4.6.12(filepond@4.32.12)
+        version: 4.6.12(filepond@4.32.14)
       photoswipe:
         specifier: ^5.4.4
         version: 5.4.4
@@ -979,8 +979,8 @@ packages:
     peerDependencies:
       filepond: '>=4.x <5.x'
 
-  filepond@4.32.12:
-    resolution: {integrity: sha512-wro0/deLwua9CkL7HJygOlDaPo1c7Ov8kfzbZjH7m4hdi56gdHGDeRWnYa+qXnRm3Lty69gUGVFb3JZy/9vT8g==}
+  filepond@4.32.14:
+    resolution: {integrity: sha512-tR2HBxQoeXiDdrFkl2ID0xfCazx2RCJuuiySLjTroEqAp+NXsWO4Yzptvrbk1cygH+z0h6A80R+rbe8tsSaUYg==}
 
   find-my-way@9.10.0:
     resolution: {integrity: sha512-eru+uCPQ2g+nLBkf84MHP/KyNNMar0BDy0j+i8Fb72GF9/YHBZ58q7FODUtfVV7XU9nfRUHXSmaM8NmZcIbZ4Q==}
@@ -2187,11 +2187,11 @@ snapshots:
     dependencies:
       flat-cache: 6.1.23
 
-  filepond-plugin-image-preview@4.6.12(filepond@4.32.12):
+  filepond-plugin-image-preview@4.6.12(filepond@4.32.14):
     dependencies:
-      filepond: 4.32.12
+      filepond: 4.32.14
 
-  filepond@4.32.12: {}
+  filepond@4.32.14: {}
 
   find-my-way@9.10.0:
     dependencies:
