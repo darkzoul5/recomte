@@ -203,7 +203,7 @@ importers:
         specifier: ^13.0.3
         version: 13.0.3
       dotenv:
-        specifier: ^18.0.9
+        specifier: ^18.0.10
         version: 18.0.10
       ejs:
         specifier: ^7.0.2
