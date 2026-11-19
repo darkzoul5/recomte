@@ -185,7 +185,7 @@ importers:
         specifier: ^9.0.2
         version: 9.0.2
       '@fastify/multipart':
-        specifier: ^10.1.8
+        specifier: ^10.1.9
         version: 10.1.9
       '@fastify/session':
         specifier: ^11.1.6
