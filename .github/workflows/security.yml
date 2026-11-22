@@ -18,15 +18,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
+      - name: Get Python version
+        id: python-version
+        run: echo "version=$(python3 --version | cut -d' ' -f2)" >> "$GITHUB_OUTPUT"
+
       - name: Cache Semgrep venv
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ~/.cache/semgrep-venv
-          key: semgrep-${{ runner.os }}
+          key: semgrep-${{ runner.os }}-${{ steps.python-version.outputs.version }}
 
       - name: Install Semgrep
         run: |
-          if [ ! -x "$HOME/.cache/semgrep-venv/bin/semgrep" ]; then
+          if ! "$HOME/.cache/semgrep-venv/bin/semgrep" --version >/dev/null 2>&1; then
+            rm -rf "$HOME/.cache/semgrep-venv"
             python3 -m venv "$HOME/.cache/semgrep-venv"
             "$HOME/.cache/semgrep-venv/bin/pip" install --upgrade pip
             "$HOME/.cache/semgrep-venv/bin/pip" install semgrep
