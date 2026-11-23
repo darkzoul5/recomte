@@ -134,6 +134,6 @@ jobs:
               -d "{
                 \"title\": \"Semgrep Security Scan\",
                 \"body\": ${BODY},
-                \"labels\": [\"security\"]
+                \"labels\": [34]
               }"
           fi
