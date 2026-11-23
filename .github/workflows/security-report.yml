@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: recomte-semgrep-security-report
+  cancel-in-progress: false
+
 jobs:
   semgrep:
     name: Semgrep SAST
@@ -60,6 +64,7 @@ jobs:
           results = data.get("results", [])
 
           with open("issue.md", "w") as f:
+              f.write("<!-- semgrep-security-report -->\n\n")
               f.write("# Semgrep Security Scan\n\n")
               f.write(
                   f"Last scan: "
@@ -88,21 +93,28 @@ jobs:
 
       - name: Create or update Gitea issue
         run: |
+          set -euo pipefail
+
           OWNER="${{ github.repository_owner }}"
           REPO="${{ github.event.repository.name }}"
           API="https://git.darkzoul.org/api/v1/repos/${OWNER}/${REPO}"
 
-          EXISTING=$(curl -sf \
+          EXISTING=$(curl -fsS \
             -H "Authorization: token ${{ secrets.REPO_W_TOKEN }}" \
-            "${API}/issues?state=open&labels=security" \
-            | jq '.[0].number // empty')
+            "${API}/issues?state=open&limit=100&page=1" \
+            | jq -r '
+                map(select(
+                  .title == "Semgrep Security Scan"
+                  and ((.body // "") | contains("<!-- semgrep-security-report -->"))
+                )) | .[0].number // empty
+              ')
 
           BODY=$(jq -Rs . < issue.md)
 
           if [ -n "$EXISTING" ]; then
             echo "Updating existing issue #${EXISTING}"
 
-            curl \
+            curl --fail-with-body \
               -X PATCH \
               -H "Authorization: token ${{ secrets.REPO_W_TOKEN }}" \
               -H "Content-Type: application/json" \
@@ -114,7 +126,7 @@ jobs:
           else
             echo "Creating new security issue"
 
-            curl \
+            curl --fail-with-body \
               -X POST \
               -H "Authorization: token ${{ secrets.REPO_W_TOKEN }}" \
               -H "Content-Type: application/json" \
